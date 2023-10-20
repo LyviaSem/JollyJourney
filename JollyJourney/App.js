@@ -7,7 +7,7 @@ export default function App() {
   const [message, setmessage] = useState('')
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/message')
+    fetch('https://jolly-journey-3o4dnumtc-lyvias-projects.vercel.app/api/message')
     .then((response) => response.json())
     .then((data) => setmessage(data.message))
     .catch((error) => console.error('Erreur:', error));
