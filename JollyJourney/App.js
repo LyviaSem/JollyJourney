@@ -4,50 +4,47 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Login from './app/screens/Login';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
-import { User } from '@firebase/auth';
+import Logout from './app/screens/Logout';
 
 
-const auth = getAuth();
-const user = auth.currentUser;
 const Stack = createNativeStackNavigator();
 const InsideStack = createNativeStackNavigator();
 
-// function InsideLayout() {
-//   return(
-//     <InsideStack.Navigator>
-//       <InsideStack.Screen name="Inside" component={Inside} />
-//     </InsideStack.Navigator>
-//   )
-// }
+function InsideLayout() {
+  return(
+    <InsideStack.Navigator>
+      <InsideStack.Screen name="Logout" component={Logout} />
+    </InsideStack.Navigator>
+  )
+}
 
 export default function App() {
-
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      console.log('user ', user);
-      setUser(user);
-    })
-  }, [])
+    const auth = getAuth();
 
-  const Stack = createNativeStackNavigator()
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      console.log(user)
+    });
+    
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Login'>
-        <Stack.Screen name='Login' component={Login} options={{headerShown: false}} />
+        
+        {user ? (
+          <Stack.Screen name='Inside' component={InsideLayout} options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
+        )}
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
