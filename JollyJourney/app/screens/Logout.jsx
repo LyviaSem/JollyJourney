@@ -1,13 +1,14 @@
-import { View, Text, Button, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
-import { NavigationProp } from '@react-navigation/native';
+import { useUser } from '../../context/UserContext';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import Footer from '../components/Footer';
 
-// type RouterProps{
-//     navigation: NavigationProp<any,any>;
-// }
 
 const Logout = () => {
+
+  const { user } = useUser();
+
   return (
     <View style={{
       paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -15,11 +16,13 @@ const Logout = () => {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-    }}>
-      {/* <Button style={styles.logoutButton} onPress={() => FIREBASE_AUTH.signOut()} title='Logout'/> */}
+    }}> 
+
+      <Text>Bienvenue, {user && user.pseudo ? user.pseudo : 'Utilisateur'}</Text>
       <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => FIREBASE_AUTH.signOut()}>
                 <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
+      <Footer/>
     </View>
   )
 }
@@ -43,7 +46,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 50,
-    flexDirection: 'row', // Aligner les boutons horizontalement
+    flexDirection: 'row', 
   },
   logo: {
     width: 250,
@@ -88,8 +91,6 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     height: 51,
     width: 340,
-    // borderWidth: 1,
-    // borderRadius: 5,
     padding: 10,
     backgroundColor: "#fff"
 }
