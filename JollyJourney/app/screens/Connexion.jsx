@@ -1,24 +1,48 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, StatusBar, Image} from 'react-native';
-//import { auth } from '../../FirebaseConfig';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import {signInWithEmailAndPassword} from 'firebase/auth';
-//import { useNavigation } from '@react-navigation/native';
+import { useUser } from '../../context/UserContext';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const Connexion = ({ navigation }) => {
+
+    const { updateUser } = useUser();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const auth = FIREBASE_AUTH;
-  //const [authMode, setAuthMode] = useState('login');
-  //const navigation = useNavigation();  // Initialisez le hook useNavigation ici
+
+  const getUserDetailsFromFirestore = async (uid) => {
+    const db = getFirestore();
+    const userDoc = doc(db, 'utilisateurs', uid);
+
+    try {
+      const userDocSnapshot = await getDoc(userDoc);
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        console.log('UserData from Firestore:', userData)
+        // Mise à jour du contexte utilisateur avec les détails récupérés
+        updateUser({
+          uid: uid,
+          pseudo: userData.pseudo || '', // Utilisez le pseudo s'il existe, sinon une chaîne vide
+          email: email,
+          groupes: userData.groupes || [], // Ajoutez d'autres propriétés si nécessaire
+        });
+      } else {
+        console.log('Le document utilisateur n\'existe pas dans Firestore.');
+      }
+    } catch (error) {
+      console.log('Erreur lors de la récupération des détails utilisateur depuis Firestore:', error);
+    }
+  };
 
   const signIn = async () => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
-      console.log(response);
-      console.log({email});
+      await getUserDetailsFromFirestore(response.user.uid);
       alert('Bienvenue, ' + email + ' !');
     } catch (error) {
       console.log(error);
@@ -85,7 +109,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 50,
-    flexDirection: 'row', // Aligner les boutons horizontalement
+    flexDirection: 'row',
   },
   logo: {
     width: 250,
@@ -130,7 +154,6 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     height: 51,
     width: 340,
-    // borderWidth: 1,
     borderRadius: 5,
     padding: 10,
     backgroundColor: "#fff"

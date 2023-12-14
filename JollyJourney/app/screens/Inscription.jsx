@@ -1,22 +1,42 @@
 import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, StatusBar, Image} from 'react-native'
 import React, { useState } from 'react';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
-import {createUserWithEmailAndPassword} from "firebase/auth"
-//import { useNavigation } from '@react-navigation/native';
+import {createUserWithEmailAndPassword} from "firebase/auth";
+import { useUser } from '../../context/UserContext';
+import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 
 const Inscription = ({ navigation }) => {
 
+    const { updateUser } = useUser();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [pseudo, setPseudo] = useState('');
     const [loading, setLoading] = useState(false);
     const auth = FIREBASE_AUTH;
-    const [authMode, setAuthMode] = useState('login');
-    //const navigation = useNavigation();
+
 
     const signUp = async () => {
         setLoading(true);
         try {
           const response = await createUserWithEmailAndPassword(auth, email, password);
+          const userID = response.user.uid;
+          const db = getFirestore();
+
+          const usersCollection = collection(db, 'utilisateurs');
+          await setDoc(doc(usersCollection, userID), {
+            pseudo: pseudo,
+            email: email,
+            groupes: [],
+          });
+
+          updateUser({
+            uid: userID,
+            pseudo: pseudo,
+            email: email,
+            groupes: [],
+          });
+      
           console.log(response);
           alert('Consultez vos mails !');
         } catch (error) {
@@ -44,6 +64,7 @@ const Inscription = ({ navigation }) => {
           />
         </View>
 
+        <TextInput value={pseudo} style={styles.input} placeholderTextColor="#6E4B6B" placeholder="Pseudo" autoCapitalize="none" onChangeText={(text) => setPseudo(text)} />
       <TextInput value={email} style={styles.input} placeholderTextColor="#6E4B6B" placeholder="Email" autoCapitalize="none" onChangeText={(text) => setEmail(text)} />
       <TextInput secureTextEntry={true} value={password} style={styles.input} placeholderTextColor="#6E4B6B" placeholder="Password" autoCapitalize="none" onChangeText={(text) => setPassword(text)} />
         <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={signUp}>
@@ -64,7 +85,6 @@ export default Inscription;
 const styles = StyleSheet.create({
     container: {
       marginHorizontal: 20,
-      // flex: 1,
       justifyContent: 'center',
     },
     logoContainer: {
@@ -80,11 +100,9 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         height: 51,
         width: 340,
-        // borderWidth: 1,
         borderRadius: 5,
         padding: 10,
         backgroundColor: "#fff",
-        //placeholderTextColor: "#6E4B6B",
     },
     loginButton: {
       backgroundColor: '#6E4B6B',
