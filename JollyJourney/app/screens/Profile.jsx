@@ -1,15 +1,17 @@
 import {
-  StyleSheet,
   View,
-  Image,
   Text,
-  Platform,
   StatusBar,
+  StyleSheet,
   TouchableOpacity,
 } from "react-native";
 import React from "react";
+import { useUser } from "../../context/UserContext";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
 
-const Home = ({ navigation }) => {
+const Profil = () => {
+  const { user } = useUser();
+
   return (
     <View
       style={{
@@ -20,34 +22,18 @@ const Home = ({ navigation }) => {
         alignItems: "center",
       }}
     >
-      <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../../assets/logo-jolly-journey.png")}
-            style={styles.logo}
-          />
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.loginButton]}
-            onPress={() => navigation.navigate("SignIn")}
-          >
-            <Text style={styles.buttonText}>Connexion</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.registerButton]}
-            onPress={() => navigation.navigate("SignUp")}
-          >
-            <Text style={styles.buttonText}>Inscription</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Text>Bienvenue, {user && user.pseudo ? user.pseudo : "users"}</Text>
+      <TouchableOpacity
+        style={[styles.button, styles.registerButton]}
+        onPress={() => FIREBASE_AUTH.signOut()}
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-export default Home;
+export default Profil;
 
 const styles = StyleSheet.create({
   container: {
@@ -72,7 +58,7 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: "contain",
   },
-  loginButton: {
+  logoutButton: {
     backgroundColor: "#6E4B6B",
     borderRadius: 15,
     width: 150,
@@ -95,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   switchButtonText: {
-    color: "#ffffff",
+    color: "#6E4B6B",
     fontSize: 16,
   },
   button: {
@@ -105,5 +91,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFB703",
     fontWeight: "bold",
+  },
+  input: {
+    marginVertical: 4,
+    height: 51,
+    width: 340,
+    padding: 10,
+    backgroundColor: "#fff",
   },
 });

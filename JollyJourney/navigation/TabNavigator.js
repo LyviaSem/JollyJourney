@@ -2,11 +2,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import React from 'react';
 
-import Explorer from '../app/screens/Explorer';
-import Groupes from '../app/screens/Groupes';
-import Profil from '../app/screens/Profil';
+import Explor from '../app/screens/Explor';
+import Groups from '../app/screens/Groups';
+import Profile from '../app/screens/Profile';
 import Messages from '../app/screens/Messages';
-import Voyages from '../app/screens/Voyages';
+import Travel from '../app/screens/Travel';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,23 +18,23 @@ const TabNavigator = () =>{
             tabBarActiveTintColor: '#FFB703',
             tabBarInactiveTintColor: '#fff',
         }}>
-          <Tab.Screen name="Explorer" component={Explorer} options={{
+          <Tab.Screen name="Explorer" component={Explor} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/icon_globe_.png')}
+                    source={require('../assets/planete-terre.png')}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
           }} />
-          <Tab.Screen name="Groupes" component={Groupes} options={{
+          <Tab.Screen name="Groupes" component={Groups} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/icon_group_.png')}
-                    style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
+                    source={require('../assets/groupe.png')}
+                    style={{ tintColor: color, width: size * 1.5, height: size * 1.2 }}
                 />
             )
           }} />
-          <Tab.Screen name="Voyages" component={Voyages} options={{
+          <Tab.Screen name="Voyages" component={Travel} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
                     source={require('../assets/logo-jolly-journey-coeur-blanc.png')}
@@ -45,16 +45,16 @@ const TabNavigator = () =>{
           <Tab.Screen name="Messages" component={Messages} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/icon_chat_bubble_.png')}
+                    source={require('../assets/un-message.png')}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
           }} />
-          <Tab.Screen name="Profil" component={Profil} options={{
+          <Tab.Screen name="Profil" component={Profile} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/icon_user_.png')}
-                    style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
+                    source={require('../assets/profil.png')}
+                    style={{ tintColor: color, width: size * 1.6, height: size * 1.2 }}
                 />
             )
           }} />

@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import Home from '../app/screens/Home';
-import Inscription from '../app/screens/Inscription';
-import Connexion from '../app/screens/Connexion';
+import SignUp from '../app/screens/SignUp';
+import SignIn from '../app/screens/SignIn';
 import TabNavigator from './TabNavigator';
-import VillesDescription from '../app/screens/VillesDescription';
+import Cities from '../app/screens/Cities';
+import CreateGroup from '../app/screens/CreateGroup';
+import Expenses from '../app/screens/Expenses';
 
 
 const Stack = createNativeStackNavigator();
@@ -15,8 +17,12 @@ const InsideStack = createNativeStackNavigator();
 function InsideLayout() {
   return(
     <InsideStack.Navigator>
+
       <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="Villes" component={VillesDescription} options={{ headerShown: false }} />
+      <Stack.Screen name="Cities" component={Cities} options={{ headerShown: false }} />
+      <Stack.Screen name="CreateGroup" component={CreateGroup} options={{ headerShown: false }} />
+      <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
+
     </InsideStack.Navigator>
   )
 }
@@ -43,8 +49,8 @@ export default function App() {
         ) : (
           <>
             <Stack.Screen name='Home' component={Home} options={{ headerShown: false }} />
-            <Stack.Screen name='Inscription' component={Inscription} options={{ headerShown: false }} />
-            <Stack.Screen name='Connexion' component={Connexion} options={{ headerShown: false }} />
+            <Stack.Screen name='SignUp' component={SignUp} options={{ headerShown: false }} />
+            <Stack.Screen name='SignIn' component={SignIn} options={{ headerShown: false }} />
           </>
         )}
         

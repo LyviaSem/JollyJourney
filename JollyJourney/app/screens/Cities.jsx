@@ -1,55 +1,67 @@
 import {
-  StyleSheet,
   View,
-  Image,
   Text,
-  Platform,
   StatusBar,
   TouchableOpacity,
+  Image,
+  StyleSheet,
+  ImageBackground,
 } from "react-native";
 import React from "react";
 
-const Home = ({ navigation }) => {
+const Cities = ({ route, navigation: { goBack } }) => {
+  const { name, description, picture } = route.params;
+
   return (
     <View
       style={{
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         backgroundColor: "#FEF5EE",
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
       }}
     >
-      <View style={styles.container}>
-        <View style={styles.logoContainer}>
+      <ImageBackground
+        source={{ uri: picture }}
+        style={[styles.backgroundImage]}
+      >
+        <TouchableOpacity
+          onPress={() => goBack()}
+          //top 70 pour IOS
+          style={{ top: 20, left: 20 }}
+        >
           <Image
-            source={require("../../assets/logo-jolly-journey.png")}
-            style={styles.logo}
+            source={require("../../assets/avion-papier-retour.png")}
+            style={[styles.backButton]}
           />
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.loginButton]}
-            onPress={() => navigation.navigate("SignIn")}
-          >
-            <Text style={styles.buttonText}>Connexion</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.registerButton]}
-            onPress={() => navigation.navigate("SignUp")}
-          >
-            <Text style={styles.buttonText}>Inscription</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </TouchableOpacity>
+      </ImageBackground>
+      <Text style={[styles.text]}>{name}</Text>
+      <Text style={[styles.text]}>{description}</Text>
+      <TouchableOpacity
+        style={[styles.button, styles.loginButton]}
+        //onPress={() => navigation.navigate('')}
+      >
+        <Text style={styles.buttonText}>Je prépare mon voyage</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-export default Home;
+export default Cities;
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    width: 414,
+    height: 276,
+  },
+  backButton: {
+    width: 40,
+    height: 34,
+  },
+  text: {
+    marginTop: 20,
+    paddingHorizontal: 10,
+  },
   container: {
     alignItems: "center",
   },
@@ -103,7 +115,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#FFB703",
+    color: "#FFFFFF",
     fontWeight: "bold",
   },
 });
