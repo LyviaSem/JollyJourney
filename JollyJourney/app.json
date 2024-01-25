@@ -25,6 +25,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8cef5d4a-f2ea-462e-949a-736cfd8fb372"
+      }
+    },
+    "owner": "lyv_sg",
+    "updates": {
+      "url": "https://u.expo.dev/8cef5d4a-f2ea-462e-949a-736cfd8fb372"
     }
   }
 }
