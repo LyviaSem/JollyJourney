@@ -21,7 +21,7 @@ import { useUser } from "../../context/UserContext";
 import filter from "lodash.filter";
 import Modal from "react-native-modal";
 
-function CreateGroupes({ navigation }) {
+const CreateGroupes = ({route, navigation}) => {
   const { user } = useUser();
 
   const [search, setSearch] = useState("");
@@ -30,6 +30,8 @@ function CreateGroupes({ navigation }) {
   const [fullData, setFullData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [nomDuGroupe, setNomDuGroupe] = useState("");
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSearch = (query) => {
     setSearch(query);
@@ -67,20 +69,39 @@ function CreateGroupes({ navigation }) {
     fetchUserEmail();
   }, []);
 
-  const addUserToSelection = (user) => {
-    setSelectedUsers((prevUsers) => [...prevUsers, user]);
-  };
-
-  const removeUserFromSelection = (user) => {
-    setSelectedUsers((prevUsers) =>
-      prevUsers.filter((u) => u.email !== user.email)
-    );
+  const toggleSelection = (event) => {
+    
+    const user = event;
+  
+    setSelectedUsers((prevUsers) => {
+      const isUserSelected = prevUsers.some((u) => u.email === user.email);
+  
+      return isUserSelected
+        ? prevUsers.filter((u) => u.email !== user.email)
+        : [...prevUsers, user];
+    });
   };
 
   const createGroup = async () => {
     try {
       const firestore = getFirestore();
       const groupCollection = collection(firestore, "groups");
+
+      if (nomDuGroupe.trim() === "") {
+        // Nom du groupe est vide, afficher message d'erreur
+        setErrorMessage("Nom du groupe ne peut pas être vide");
+        setErrorModalVisible(true);
+        setTimeout(() => setErrorModalVisible(false), 3000); // Fermer automatiquement après 3 secondes
+        return;
+      }
+  
+      if (selectedUsers.length === 1 && selectedUsers[0].uid === user.uid) {
+        // selectedUsers ne contient que l'utilisateur connecté, afficher message d'erreur
+        setErrorMessage("Sélectionnez au moins un autre membre pour le groupe");
+        setErrorModalVisible(true);
+        setTimeout(() => setErrorModalVisible(false), 3000); // Fermer automatiquement après 3 secondes
+        return;
+      }
 
       const newGroupDocRef = await addDoc(groupCollection, {
         name: nomDuGroupe,
@@ -101,6 +122,14 @@ function CreateGroupes({ navigation }) {
           userId: member.uid,
         });
       }
+
+      navigation.goBack();
+
+      const onGroupCreatedCallback = route.params?.onGroupCreated;
+    if (onGroupCreatedCallback) {
+      onGroupCreatedCallback();
+    }
+
     } catch (error) {
       console.error("Erreur lors de la création du groupe : ", error);
     }
@@ -120,6 +149,8 @@ function CreateGroupes({ navigation }) {
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         backgroundColor: "#FEF5EE",
         flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <TextInput
@@ -142,38 +173,50 @@ function CreateGroupes({ navigation }) {
         value={search}
         onChangeText={(query) => handleSearch(query)}
       />
-      {console.log(searchResults)}
+
+      <Modal isVisible={errorModalVisible}>
+        <Text>{errorMessage}</Text>
+      </Modal>
+
       <FlatList
         data={searchResults}
         keyExtractor={(item) => item.email}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => addUserToSelection(item)}>
-            <View
-              style={{
-                padding: 10,
-                borderBottomWidth: 1,
-                borderBottomColor: "#ccc",
-              }}
-            >
-              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                {item.pseudo}
-              </Text>
-              <Text style={{ fontSize: 18 }}>{item.email}</Text>
-              {selectedUsers.some((user) => user.email === item.email) && (
-                <TouchableOpacity onPress={() => removeUserFromSelection(item)}>
-                  <Text style={{ color: "red" }}>Retirer la sélection</Text>
-                </TouchableOpacity>
-              )}
+          <TouchableOpacity onPress={() => toggleSelection(item)}>
+          <View style={styles.card}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image
+                source={require('../../assets/utilisateur.png')}
+                style={styles.profileImage}
+              />
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{item.pseudo}</Text>
+              </View>
             </View>
-          </TouchableOpacity>
+            {selectedUsers.includes(item) ? (
+              <View style={[styles.selectionButton, { backgroundColor: '#6E4B6B', borderColor: '#6E4B6B' }]}>
+                {/* Vous pouvez ajouter du contenu supplémentaire ici, comme une icône ou un texte */}
+              </View>
+            ) : (
+              <TouchableOpacity onPress={() => toggleSelection(item)}>
+                <View style={[styles.selectionButton, { borderColor: '#6E4B6B' }]}>
+                  {/* Vous pouvez ajouter du contenu supplémentaire ici, comme une icône ou un texte */}
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+        </TouchableOpacity>
         )}
       />
 
       <TouchableOpacity
-        style={[styles.button, styles.Button]}
+        style={[styles.button, styles.Button, styles.arrowButton]}
         onPress={openModal}
       >
-        <Text style={styles.buttonText}>Créer le groupe</Text>
+        <Image
+          source={require('../../assets/avion-en-papier-blanc.png')}
+          style={styles.arrowImage}
+        />
       </TouchableOpacity>
 
       <Modal
@@ -216,21 +259,53 @@ function CreateGroupes({ navigation }) {
 export default CreateGroupes;
 
 const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10,
-    marginTop: 10,
+  arrowButton: {
+    width: 50, // Ajustez la largeur selon vos besoins
+    height: 50, // Ajustez la hauteur selon vos besoins
+    position: 'absolute',
+    bottom: 10, // Ajustez la position verticale selon vos besoins
+    right: 10, // Ajustez la position horizontale selon vos besoins
   },
-  textPseudo: {
-    fontSize: 17,
-    marginLeft: 10,
-    fontWeight: "600",
+  arrowImage: {
+    width: 30, // Ajustez la largeur de l'image selon vos besoins
+    height: 30, // Ajustez la hauteur de l'image selon vos besoins
   },
-  textEmail: {
-    fontSize: 14,
+  card: {
+    width: 344,
+    height: 68,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    marginBottom: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.27)',
+  },
+  profileImage: {
+  width: 35,
+  height: 35,
+  borderRadius: 10,
+  },
+  userInfo: {
     marginLeft: 10,
-    color: "grey",
+  },
+  userName: {
+    fontSize: 18,
+  },
+  selectionButton: {
+    width: 20,
+    height: 20,
+    borderRadius: 12,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 'auto',
+  },
+  selectedIndicator: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#6E4B6B',
   },
   Button: {
     backgroundColor: "#6E4B6B",

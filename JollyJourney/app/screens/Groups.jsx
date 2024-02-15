@@ -6,6 +6,7 @@ import {
   FlatList,
   StatusBar,
   StyleSheet,
+  Image,
 } from "react-native";
 import {
   getFirestore,
@@ -18,12 +19,11 @@ import {
 } from "@firebase/firestore";
 import { useUser } from "../../context/UserContext";
 
-const Groups = ({ navigation }) => {
+const Groups = ({navigation }) => {
   const { user } = useUser();
 
   const [userGroups, setUserGroups] = useState([]);
 
-  useEffect(() => {
     const fetchUserGroups = async (firestore) => {
       try {
         const firestore = getFirestore();
@@ -56,16 +56,29 @@ const Groups = ({ navigation }) => {
       }
     };
 
+  useEffect(() => {
     fetchUserGroups();
   }, [user]);
 
+  const updateGroups = async () => {
+    fetchUserGroups();
+  };
+
   const renderGroupItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate("Expenses", { members: item.members })}
+      onPress={() => navigation.navigate("GroupDetails")}
     >
-      <View>
-        <Text>{item.name}</Text>
-      </View>
+      <View style={styles.card}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image
+                source={require('../../assets/utilisateur.png')}
+                style={styles.profileImage}
+              />
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{item.name}</Text>
+              </View>
+            </View>
+          </View>
     </TouchableOpacity>
   );
 
@@ -78,23 +91,40 @@ const Groups = ({ navigation }) => {
       }}
     >
       {userGroups.length > 0 ? (
-        <FlatList
-          data={userGroups}
-          keyExtractor={(item) => item.id}
-          renderItem={renderGroupItem}
-        />
+        <>
+          <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
+            >
+              <Image
+                source={require('../../assets/plus.png')}
+                style={{ width: 16.17, height: 16.17 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <FlatList
+              data={userGroups}
+              keyExtractor={(item) => item.id}
+              renderItem={renderGroupItem}
+            />
+          </View>
+        </>
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text>Tu n'es encore dans aucun groupe</Text>
+        <View>
+        <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes groupes</Text>
+        <View style={{ alignItems: "center", }}>
           <TouchableOpacity
             style={[styles.button, styles.Button]}
-            onPress={() => navigation.navigate("CreateGroup")}
+            onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
           >
-            <Text style={styles.buttonText}>Créer un groupe</Text>
+            <Text style={styles.buttonText}>Créer mon premier groupe</Text>
           </TouchableOpacity>
         </View>
+      </View>
+      
+
       )}
     </View>
   );
@@ -103,11 +133,34 @@ const Groups = ({ navigation }) => {
 export default Groups;
 
 const styles = StyleSheet.create({
+
+  card: {
+    width: 344,
+    height: 68,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Pour espacer les éléments à l'intérieur
+    alignItems: 'center',
+    padding: 10,
+    marginBottom: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.27)', // Ajout de la couleur de fond
+  },
+  profileImage: {
+  width: 35, // Modification de la largeur
+  height: 35, // Modification de la hauteur
+  borderRadius: 10, // Ajout de la bordure pour garder une forme arrondie
+  },
+  userInfo: {
+    marginLeft: 10,
+  },
+  userName: {
+    fontSize: 18,
+  },
   Button: {
     backgroundColor: "#6E4B6B",
     borderRadius: 15,
-    width: 150,
-    height: 70,
+    width: 190,
+    height: 57,
     margin: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -117,7 +170,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#FFB703",
+    color: "#FFFFFF",
     fontWeight: "bold",
   },
 });
