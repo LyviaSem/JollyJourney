@@ -37,12 +37,6 @@ const Cities = ({ route, navigation: { goBack } }) => {
       </ImageBackground>
       <Text style={[styles.text]}>{name}</Text>
       <Text style={[styles.text]}>{description}</Text>
-      <TouchableOpacity
-        style={[styles.button, styles.loginButton]}
-        //onPress={() => navigation.navigate('')}
-      >
-        <Text style={styles.buttonText}>Je prépare mon voyage</Text>
-      </TouchableOpacity>
     </View>
   );
 };

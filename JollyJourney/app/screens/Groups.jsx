@@ -7,6 +7,7 @@ import {
   StatusBar,
   StyleSheet,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import {
   getFirestore,
@@ -14,8 +15,6 @@ import {
   getDocs,
   where,
   query,
-  doc,
-  getDoc,
 } from "@firebase/firestore";
 import { useUser } from "../../context/UserContext";
 
@@ -23,8 +22,9 @@ const Groups = ({navigation }) => {
   const { user } = useUser();
 
   const [userGroups, setUserGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const fetchUserGroups = async (firestore) => {
+    const fetchUserGroups = async () => {
       try {
         const firestore = getFirestore();
         const userl = collection(firestore, "members");
@@ -48,11 +48,13 @@ const Groups = ({navigation }) => {
           const flattenedGroups = groupData.flat();
 
           setUserGroups(flattenedGroups);
+          setLoading(false);
         } else {
           console.log("Utilisateur non trouvé.");
         }
       } catch (error) {
         console.error("Error fetching user groups: ", error);
+        setLoading(false);
       }
     };
 
@@ -64,9 +66,21 @@ const Groups = ({navigation }) => {
     fetchUserGroups();
   };
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   const renderGroupItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate("GroupDetails")}
+      onPress={() => navigation.navigate("GroupDetails", {
+        groupName: item.name,
+        members: item.members,
+        id: item.id
+      })}
     >
       <View style={styles.card}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -78,7 +92,19 @@ const Groups = ({navigation }) => {
                 <Text style={styles.userName}>{item.name}</Text>
               </View>
             </View>
-          </View>
+            <TouchableOpacity
+            onPress={() => navigation.navigate("GroupDetails", {
+              groupName: item.name,
+              members: item.members,
+              id: item.id,
+            })}
+            >
+          <Image
+            source={require("../../assets/avion-papier-retour.png")}
+            style={[styles.backButton]}
+          />
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 
@@ -92,16 +118,19 @@ const Groups = ({navigation }) => {
     >
       {userGroups.length > 0 ? (
         <>
-          <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
-            >
-              <Image
-                source={require('../../assets/plus.png')}
-                style={{ width: 16.17, height: 16.17 }}
-              />
-            </TouchableOpacity>
-          </View>
+          <View>
+          <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes groupes</Text>
+            <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
+              >
+                <Image
+                  source={require('../../assets/plus.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              </TouchableOpacity>
+            </View>
+            </View>
 
           <View style={{ alignItems: 'center', marginTop: 30 }}>
             <FlatList
@@ -143,7 +172,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     marginBottom: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.27)', // Ajout de la couleur de fond
+    backgroundColor: 'white',
   },
   profileImage: {
   width: 35, // Modification de la largeur
@@ -172,5 +201,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
+  },
+  backButton: {
+    width: 30,
+    height: 25
+    ,
   },
 });

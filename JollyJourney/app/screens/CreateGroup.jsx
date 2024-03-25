@@ -8,6 +8,7 @@ import {
   StatusBar,
   Image,
   FlatList,
+  Modal
 } from "react-native";
 import {
   getFirestore,
@@ -19,7 +20,6 @@ import {
 } from "@firebase/firestore";
 import { useUser } from "../../context/UserContext";
 import filter from "lodash.filter";
-import Modal from "react-native-modal";
 
 const CreateGroupes = ({route, navigation}) => {
   const { user } = useUser();
@@ -32,6 +32,7 @@ const CreateGroupes = ({route, navigation}) => {
   const [nomDuGroupe, setNomDuGroupe] = useState("");
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [groupImage, setGroupImage] = useState(null);
 
   const handleSearch = (query) => {
     setSearch(query);
@@ -39,15 +40,24 @@ const CreateGroupes = ({route, navigation}) => {
     const filteredData = filter(fullData, (user) => {
       return contains(user, formattedQuery);
     });
+    console.log('filteredData')
+    console.log(filteredData)
     setSearchResults(filteredData);
   };
 
   const contains = ({ pseudo, email }, query) => {
-    if ((pseudo && pseudo.includes(query)) || email.includes(query)) {
-      return true;
+    if (pseudo && pseudo.includes(query)) {
+        return true;
     }
+
+    const emailPrefix = email.split('@')[0];
+    if (emailPrefix.includes(query)) {
+        return true;
+    }
+
     return false;
   };
+
 
   useEffect(() => {
     const fetchUserEmail = async (firestore) => {
@@ -88,18 +98,9 @@ const CreateGroupes = ({route, navigation}) => {
       const groupCollection = collection(firestore, "groups");
 
       if (nomDuGroupe.trim() === "") {
-        // Nom du groupe est vide, afficher message d'erreur
-        setErrorMessage("Nom du groupe ne peut pas être vide");
+        setErrorMessage("Vous devez saisir un nom de groupe");
         setErrorModalVisible(true);
-        setTimeout(() => setErrorModalVisible(false), 3000); // Fermer automatiquement après 3 secondes
-        return;
-      }
-  
-      if (selectedUsers.length === 1 && selectedUsers[0].uid === user.uid) {
-        // selectedUsers ne contient que l'utilisateur connecté, afficher message d'erreur
-        setErrorMessage("Sélectionnez au moins un autre membre pour le groupe");
-        setErrorModalVisible(true);
-        setTimeout(() => setErrorModalVisible(false), 3000); // Fermer automatiquement après 3 secondes
+        setTimeout(() => setErrorModalVisible(false), 3000);
         return;
       }
 
@@ -143,6 +144,26 @@ const CreateGroupes = ({route, navigation}) => {
     setModalVisible(false);
   };
 
+  const openImagePicker = () => {
+    const options = {
+      title: 'Sélectionner une photo',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        console.log(`L'utilisateur a annulé la sélection de l'image'`);
+      } else if (response.error) {
+        console.log('Erreur: ', response.error);
+      } else {
+        setGroupImage(response.uri);
+      }
+    });
+  };
+
   return (
     <View
       style={{
@@ -153,6 +174,7 @@ const CreateGroupes = ({route, navigation}) => {
         alignItems: "center",
       }}
     >
+      <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes amis</Text>
       <TextInput
         placeholder="search"
         clearButtonMode="always"
@@ -165,7 +187,7 @@ const CreateGroupes = ({route, navigation}) => {
           borderWidth: 1,
           borderRadius: 28.5,
           marginTop: 49,
-          marginBottom: 20,
+          marginBottom: 40,
           backgroundColor: "#C4C4C4",
           opacity: 0.22,
           width: 344,
@@ -174,8 +196,13 @@ const CreateGroupes = ({route, navigation}) => {
         onChangeText={(query) => handleSearch(query)}
       />
 
-      <Modal isVisible={errorModalVisible}>
-        <Text>{errorMessage}</Text>
+      <Modal 
+      isVisible={errorModalVisible} transparent={true} backdropColor="none">
+        <View style={styles.modalContainerError}>
+          <View  style={styles.modalContentError}>
+        <Text style={styles.modalErrorText}>{errorMessage}</Text>
+        </View>
+        </View>
       </Modal>
 
       <FlatList
@@ -184,7 +211,7 @@ const CreateGroupes = ({route, navigation}) => {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => toggleSelection(item)}>
           <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center',  }}>
               <Image
                 source={require('../../assets/utilisateur.png')}
                 style={styles.profileImage}
@@ -211,7 +238,15 @@ const CreateGroupes = ({route, navigation}) => {
 
       <TouchableOpacity
         style={[styles.button, styles.Button, styles.arrowButton]}
-        onPress={openModal}
+        onPress={() => {
+          if (selectedUsers.length > 1) {
+            openModal();
+          } else {
+            setErrorMessage("Au moin un contact doit être sélectionné");
+            setErrorModalVisible(true);
+            setTimeout(() => setErrorModalVisible(false), 1500); // Fermer automatiquement après 3 secondes
+          }
+        }}
       >
         <Image
           source={require('../../assets/avion-en-papier-blanc.png')}
@@ -220,33 +255,46 @@ const CreateGroupes = ({route, navigation}) => {
       </TouchableOpacity>
 
       <Modal
-        transparent={true}
+        animationType="slide"
+        transparent={false}
         visible={modalVisible}
         onRequestClose={closeModal}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <View style={{ backgroundColor: "white", padding: 20 }}>
             <TextInput
-              style={styles.modalInput}
+              style={{ height: 40, borderColor: "gray", borderWidth: 1, marginBottom: 20, paddingHorizontal: 10, borderRadius: 5 }}
               placeholder="Nom du groupe"
               value={nomDuGroupe}
               onChangeText={(text) => setNomDuGroupe(text)}
             />
-            <View style={styles.modalButtonsContainer}>
+
+              <Image
+                //source={{ uri: groupImage }}
+                style={{ width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: 'black', marginBottom: 20 }}
+              />
+            <TouchableOpacity 
+              //onPress={onButtonPress}
+            >
+              <Text>Sélectionner une photo</Text>
+            </TouchableOpacity>
+            {/* <Button title="Sélectionner une photo" onPress={openImagePicker} /> */}
+
+            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "green" }]}
+                style={{ padding: 10, borderRadius: 5, width: "45%", alignItems: "center", backgroundColor: "green" }}
                 onPress={() => {
                   createGroup();
                   closeModal();
                 }}
               >
-                <Text style={styles.modalButtonText}>Créer</Text>
+                <Text style={{ color: "white", fontWeight: "bold" }}>Créer</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "red" }]}
+                style={{ padding: 10, borderRadius: 5, width: "45%", alignItems: "center", backgroundColor: "red" }}
                 onPress={closeModal}
               >
-                <Text style={styles.modalButtonText}>Annuler</Text>
+                <Text style={{ color: "white", fontWeight: "bold" }}>Annuler</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -278,8 +326,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    marginBottom: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.27)',
+    marginBottom: 20,
+    backgroundColor: 'white',
   },
   profileImage: {
   width: 35,
@@ -338,6 +386,26 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  modalContainerError: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginBottom: 80,
+  },
+  modalContentError: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5);',
+    padding: 20,
+    borderRadius: 10,
+    // elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  modalErrorText: {
+    color: "white",
+    fontWeight: "bold",
   },
   modalInput: {
     height: 40,
