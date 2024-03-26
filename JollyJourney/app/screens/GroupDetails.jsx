@@ -1,4 +1,4 @@
-import { View, StatusBar, TouchableOpacity, Image, ImageBackground, StyleSheet, Modal, Button, TextInput, FlatList, Text } from 'react-native';
+import { View, StatusBar, TouchableOpacity, Image, ImageBackground, StyleSheet, Modal, Button, TextInput, FlatList, Text, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Calendar } from 'react-native-calendars';
 import {
@@ -21,13 +21,13 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
   const [nom, setNom] = useState("");
   const [selectedStartDate, setSelectedStartDate] = useState('');
   const [selectedEndDate, setSelectedEndDate] = useState('');
-  //const [loading, setLoading] = useState(true);
   const [groupTrips, setGroupTrips] = useState([]);
 
   useEffect(() => {
     if (!modalVisible) {
       setSelectedStartDate('');
       setSelectedEndDate('');
+      setNom('');
     }
   }, [modalVisible]);
 
@@ -177,7 +177,7 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
                 />
               </TouchableOpacity>
 
-              <View style={{ alignItems: 'center', marginTop: 30 }}>
+              <View style={{ alignItems: 'center', marginTop: '50%' }}>
                 <FlatList
                   data={groupTrips}
                   keyExtractor={(item) => item.id}

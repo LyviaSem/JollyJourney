@@ -20,6 +20,7 @@ import {
 } from "@firebase/firestore";
 import { useUser } from "../../context/UserContext";
 import filter from "lodash.filter";
+// import { Modal } from "react-native-Mo";
 
 const CreateGroupes = ({route, navigation}) => {
   const { user } = useUser();
@@ -197,7 +198,7 @@ const CreateGroupes = ({route, navigation}) => {
       />
 
       <Modal 
-      isVisible={errorModalVisible} transparent={true} backdropColor="none">
+      visible={errorModalVisible} transparent={true} backdropColor="none">
         <View style={styles.modalContainerError}>
           <View  style={styles.modalContentError}>
         <Text style={styles.modalErrorText}>{errorMessage}</Text>
