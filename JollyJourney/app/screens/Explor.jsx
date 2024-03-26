@@ -19,7 +19,7 @@ function Explore({ navigation }) {
   };
 
   useEffect(() => {
-    const fetchLocations = async (firestore) => {
+    const fetchLocations = async () => {
       try {
         const firestore = getFirestore();
         const locationsSnapshot = await getDocs(
