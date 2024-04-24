@@ -15,7 +15,7 @@ const GroupTrip = ({route}) => {
       case 'Aperçu':
         return <ApercuContent />;
       case 'Itinéraire':
-        return <ItineraireContent />;
+        return <ItineraireContent id={id} />;
       case 'Dépense':
         return <DepenseContent />;
       default:

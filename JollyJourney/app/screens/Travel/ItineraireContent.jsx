@@ -10,41 +10,37 @@ import {
   query,
 } from "@firebase/firestore";
 
-const ItineraireContent = ({ route }) => {
-
-  const {id} = route.params;
-
-  console.log(id)
+const ItineraireContent = ({ id }) => {
 
   const [voyage, setVoyage] = useState(null);
   const [activites, setActivites] = useState([]);
 
   useEffect(() => {
-    // Récupérer les informations du voyage depuis Firestore
     const fetchVoyage = async () => {
       const firestore = getFirestore();
       const getTrip = collection(firestore, "trips");
-      const q = query(trips, where(""))
-      const voyageRef = firestore().collection('voyages').doc('ID_DU_VOYAGE');
-      const voyageDoc = await voyageRef.get();
-      if (voyageDoc.exists) {
-        setVoyage(voyageDoc.data());
-      }
+      const q = query(getTrip, where("id", "==", id));
+      const voyageDoc = await getDocs(q);
+      const voyageData = [];
+      voyageDoc.forEach((doc) => {
+        voyageData.push(doc.data());
+      });
+      setVoyage(voyageData);
     };
     fetchVoyage();
   }, []);
 
   const renderJours = () => {
-    if (!voyage) return null;
-    const { dateDebut, dateFin } = voyage;
+    if (!voyage || voyage.length === 0) return null;
     const jours = [];
-    let currentDate = new Date(dateDebut);
-
-    while (currentDate <= new Date(dateFin)) {
-      jours.push(currentDate);
-      currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
-    }
-
+    voyage.forEach((jourData) => {
+      const { dateDebut, dateFin } = jourData;
+      let currentDate = new Date(dateDebut);
+      while (currentDate <= new Date(dateFin)) {
+        jours.push(currentDate);
+        currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+      }
+    });
     return jours.map((jour, index) => (
       <View key={index}>
         <Text>{jour.toDateString()}</Text>
@@ -55,6 +51,7 @@ const ItineraireContent = ({ route }) => {
       </View>
     ));
   };
+  
 
   const handleActiviteChange = (text, index) => {
     const newActivites = [...activites];
@@ -63,8 +60,6 @@ const ItineraireContent = ({ route }) => {
   };
 
   const sauvegarderActivites = () => {
-    // Sauvegarder les activités dans Firestore
-    // Vous pouvez utiliser activites et les associer au jour correspondant dans la base de données
   };
 
   return (

@@ -89,7 +89,6 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
 
       updateFirebase(newTripRef, tripId)
 
-      //changer en alert
       alert('Voyage créé avec succès avec l\'ID:', newTripRef.id);
     } catch (error) {
       console.error('Erreur lors de la création du voyage:', error);
@@ -124,7 +123,7 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
   }, [id]);
 
   const renderTripsItem = ({ item }) => (
-    <Cards behaviorType="type2" name={item.nom} image={ProfilIcon} onPressProps={{ routeName: "GroupTrip", additionalProps: { id: item.id}}}/>
+   <Cards behaviorType="type2" name={item.nom} image={ProfilIcon} onPressProps={{ routeName: "GroupTrip", additionalProps: { id: item.id}}}/>
   );
 
   //if(loading){
@@ -240,7 +239,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: 100,
     height: 50,
-    //padding: 25,
     margin: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -289,16 +287,16 @@ const styles = StyleSheet.create({
     height: 68,
     borderRadius: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between', // Pour espacer les éléments à l'intérieur
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
     marginBottom: 30,
     backgroundColor: 'white',
   },
   profileImage: {
-  width: 35, // Modification de la largeur
-  height: 35, // Modification de la hauteur
-  borderRadius: 10, // Ajout de la bordure pour garder une forme arrondie
+  width: 35,
+  height: 35,
+  borderRadius: 10,
   },
   userInfo: {
     marginLeft: 10,
