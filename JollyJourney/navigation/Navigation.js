@@ -10,6 +10,7 @@ import Cities from '../app/screens/Explore/Cities';
 import CreateGroup from '../app/screens/Groups/CreateGroup';
 import GroupDetails from '../app/screens/Groups/GroupDetails';
 import GroupTrip from '../app/screens/Groups/GroupTrip';
+import Messages from '../app/screens/Chats/Messages';
 
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ function InsideLayout() {
       <Stack.Screen name="CreateGroup" component={CreateGroup} options={{ headerShown: false }} />
       <Stack.Screen name="GroupDetails" component={GroupDetails} options={{ headerShown: false }} />
       <Stack.Screen name="GroupTrip" component={GroupTrip} options={{ headerShown: false }} />
+      <Stack.Screen name="Message" component={Messages} />
 
     </InsideStack.Navigator>
   )
