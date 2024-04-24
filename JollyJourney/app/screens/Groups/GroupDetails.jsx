@@ -13,7 +13,7 @@ import {
 import Cards from '../../component/Card/Cards';
 import ProfilIcon from "../../../assets/utilisateur.png";
 
-const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
+const GroupDetails = ({ route, navigation: { goBack }}) => {
 
   const { id } = route.params;
 
