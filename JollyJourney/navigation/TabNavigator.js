@@ -5,7 +5,7 @@ import React from 'react';
 import Explore from '../app/screens/Explore/Explore';
 import Groups from '../app/screens/Groups/Groups';
 import Profile from '../app/screens/Profile';
-import Messages from '../app/screens/Messages';
+import Contacts from '../app/screens/Chats/Contacts';
 import Travel from '../app/screens/Travel/Travel';
 
 const Tab = createBottomTabNavigator();
@@ -42,7 +42,7 @@ const TabNavigator = () =>{
                 />
             )
           }} />
-          <Tab.Screen name="Messages" component={Messages} options={{
+          <Tab.Screen name="Messages" component={Contacts} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
                     source={require('../assets/un-message.png')}
