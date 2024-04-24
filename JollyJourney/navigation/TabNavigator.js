@@ -2,11 +2,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import React from 'react';
 
-import Explor from '../app/screens/Explor';
-import Groups from '../app/screens/Groups';
+import Explore from '../app/screens/Explore/Explore';
+import Groups from '../app/screens/Groups/Groups';
 import Profile from '../app/screens/Profile';
 import Messages from '../app/screens/Messages';
-import Travel from '../app/screens/Travel';
+import Travel from '../app/screens/Travel/Travel';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,7 +18,7 @@ const TabNavigator = () =>{
             tabBarActiveTintColor: '#FFB703',
             tabBarInactiveTintColor: '#fff',
         }}>
-          <Tab.Screen name="Explorer" component={Explor} options={{
+          <Tab.Screen name="Explorer" component={Explore} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
                     source={require('../assets/planete-terre.png')}

@@ -18,9 +18,11 @@ import {
   updateDoc,
   serverTimestamp,
 } from "@firebase/firestore";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../../context/UserContext";
 import filter from "lodash.filter";
-// import { Modal } from "react-native-Mo";
+import Cards from "../../component/Card/Cards";
+import ProfilIcon from "../../../assets/utilisateur.png";
+import SearchBar from "../../component/SearchBar";
 
 const CreateGroupes = ({route, navigation}) => {
   const { user } = useUser();
@@ -41,8 +43,6 @@ const CreateGroupes = ({route, navigation}) => {
     const filteredData = filter(fullData, (user) => {
       return contains(user, formattedQuery);
     });
-    console.log('filteredData')
-    console.log(filteredData)
     setSearchResults(filteredData);
   };
 
@@ -61,7 +61,7 @@ const CreateGroupes = ({route, navigation}) => {
 
 
   useEffect(() => {
-    const fetchUserEmail = async (firestore) => {
+    const fetchUserEmail = async () => {
       try {
         const firestore = getFirestore();
         const UserSnapshot = await getDocs(collection(firestore, "users"));
@@ -145,25 +145,9 @@ const CreateGroupes = ({route, navigation}) => {
     setModalVisible(false);
   };
 
-  const openImagePicker = () => {
-    const options = {
-      title: 'Sélectionner une photo',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    ImagePicker.showImagePicker(options, (response) => {
-      if (response.didCancel) {
-        console.log(`L'utilisateur a annulé la sélection de l'image'`);
-      } else if (response.error) {
-        console.log('Erreur: ', response.error);
-      } else {
-        setGroupImage(response.uri);
-      }
-    });
-  };
+  const renderItem = ({ item }) => (
+    <Cards behaviorType="toggle" name={item.pseudo} image={ProfilIcon} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
+  )
 
   return (
     <View
@@ -176,26 +160,8 @@ const CreateGroupes = ({route, navigation}) => {
       }}
     >
       <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes amis</Text>
-      <TextInput
-        placeholder="search"
-        clearButtonMode="always"
-        autoCapitalize="none"
-        style={{
-          color: "#000000",
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-          borderColor: "#ccc",
-          borderWidth: 1,
-          borderRadius: 28.5,
-          marginTop: 49,
-          marginBottom: 40,
-          backgroundColor: "#C4C4C4",
-          opacity: 0.22,
-          width: 344,
-        }}
-        value={search}
-        onChangeText={(query) => handleSearch(query)}
-      />
+      
+      <SearchBar searchQuery={search} handleSearch={handleSearch} />
 
       <Modal 
       visible={errorModalVisible} transparent={true} backdropColor="none">
@@ -209,32 +175,7 @@ const CreateGroupes = ({route, navigation}) => {
       <FlatList
         data={searchResults}
         keyExtractor={(item) => item.email}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => toggleSelection(item)}>
-          <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center',  }}>
-              <Image
-                source={require('../../assets/utilisateur.png')}
-                style={styles.profileImage}
-              />
-              <View style={styles.userInfo}>
-                <Text style={styles.userName}>{item.pseudo}</Text>
-              </View>
-            </View>
-            {selectedUsers.includes(item) ? (
-              <View style={[styles.selectionButton, { backgroundColor: '#6E4B6B', borderColor: '#6E4B6B' }]}>
-                {/* Vous pouvez ajouter du contenu supplémentaire ici, comme une icône ou un texte */}
-              </View>
-            ) : (
-              <TouchableOpacity onPress={() => toggleSelection(item)}>
-                <View style={[styles.selectionButton, { borderColor: '#6E4B6B' }]}>
-                  {/* Vous pouvez ajouter du contenu supplémentaire ici, comme une icône ou un texte */}
-                </View>
-              </TouchableOpacity>
-            )}
-          </View>
-        </TouchableOpacity>
-        )}
+        renderItem={renderItem}
       />
 
       <TouchableOpacity
@@ -250,7 +191,7 @@ const CreateGroupes = ({route, navigation}) => {
         }}
       >
         <Image
-          source={require('../../assets/avion-en-papier-blanc.png')}
+          source={require('../../../assets/avion-en-papier-blanc.png')}
           style={styles.arrowImage}
         />
       </TouchableOpacity>

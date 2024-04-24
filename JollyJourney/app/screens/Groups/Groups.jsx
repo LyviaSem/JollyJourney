@@ -16,7 +16,9 @@ import {
   where,
   query,
 } from "@firebase/firestore";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../../context/UserContext";
+import Cards from "../../component/Card/Cards";
+import ProfilIcon from "../../../assets/utilisateur.png";
 
 const Groups = ({navigation }) => {
   const { user } = useUser();
@@ -39,18 +41,16 @@ const Groups = ({navigation }) => {
             const groupDocRef = collection(firestore, "groups");
             const q = query(groupDocRef, where("id", "==", groupId));
             const groupDoc = await getDocs(q);
-            console.log(groupDoc.docs.map((doc) => doc.data()));
             return groupDoc.docs.map((doc) => doc.data());
           });
 
           const groupData = await Promise.all(groupPromises);
-          console.log(groupData);
           const flattenedGroups = groupData.flat();
 
           setUserGroups(flattenedGroups);
           setLoading(false);
         } else {
-          console.log("Utilisateur non trouvé.");
+          alert("Utilisateur non trouvé.");
         }
       } catch (error) {
         console.error("Error fetching user groups: ", error);
@@ -75,37 +75,7 @@ const Groups = ({navigation }) => {
   }
 
   const renderGroupItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate("GroupDetails", {
-        groupName: item.name,
-        members: item.members,
-        id: item.id
-      })}
-    >
-      <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image
-                source={require('../../assets/utilisateur.png')}
-                style={styles.profileImage}
-              />
-              <View style={styles.userInfo}>
-                <Text style={styles.userName}>{item.name}</Text>
-              </View>
-            </View>
-            <TouchableOpacity
-            onPress={() => navigation.navigate("GroupDetails", {
-              groupName: item.name,
-              members: item.members,
-              id: item.id,
-            })}
-            >
-          <Image
-            source={require("../../assets/avion-papier-retour.png")}
-            style={[styles.backButton]}
-          />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+    <Cards behaviorType="type2" name={item.name} image={ProfilIcon} onPressProps={{ routeName: "GroupDetails", additionalProps: { groupName: item.name, members: item.members, id: item.id }}}/>
   );
 
   return (
@@ -125,7 +95,7 @@ const Groups = ({navigation }) => {
                 onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
               >
                 <Image
-                  source={require('../../assets/plus.png')}
+                  source={require('../../../assets/plus.png')}
                   style={{ width: 30, height: 30 }}
                 />
               </TouchableOpacity>

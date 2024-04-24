@@ -16,7 +16,8 @@ import {
   where,
   query,
 } from "@firebase/firestore";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../../context/UserContext";
+import City from "../../component/City";
 
 function Travel({navigation}) {
   const { user } = useUser();
@@ -67,51 +68,7 @@ function Travel({navigation}) {
   }
 
   const renderTripsItem = ({ item }) => (
-    <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("GroupTrip")}
-        >
-          <View
-            // key={item.id}
-            style={{
-              overflow: "hidden",
-              width: 344,
-              height: 165,
-              marginBottom: 30,
-            }}
-          >
-            {/* <ImageBackground
-              source={{ uri: location.pic }}
-              imageStyle={{ borderRadius: 10 }}
-              style={{
-                resizeMode: "cover",
-                overflow: "hidden",
-                flex: 1,
-                width: "100%",
-                height: "100%",
-              }}
-            > */}
-              <View
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  backgroundColor: "#FFFF",
-                  opacity: 0.85,
-                  width: 144,
-                  height: 38,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderBottomLeftRadius: 10,
-                }}
-              >
-                <Text style={{ color: "#6E4B6B", fontSize: 12 }}>
-                  {item.nom}
-                </Text>
-              </View>
-            {/* </ImageBackground> */}
-          </View>
-        </TouchableOpacity>
+    <City name={item.nom} onPressProps="GroupTrip"/>
   )
 
   return (
@@ -131,7 +88,7 @@ function Travel({navigation}) {
                 onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
               >
                 <Image
-                  source={require('../../assets/plus.png')}
+                  source={require('../../../assets/plus.png')}
                   style={{ width: 30, height: 30 }}
                 />
               </TouchableOpacity> */}

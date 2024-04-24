@@ -5,17 +5,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  TextInput,
-  Button,
   Modal,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import React, {useState} from "react";
 import { useUser } from "../../context/UserContext";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { sendPasswordResetEmail, updateEmail } from "firebase/auth";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import placeholder from '../../assets/utilisateur.png';
+import { uploadImage, removeImage } from "../services/imageService";
+import Cards from "../component/Card/Cards";
+
 
 const Profil = () => {
   const { user, updateUser } = useUser();
@@ -27,7 +27,7 @@ const Profil = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [image, setImage] = useState();
 
-  const handleToogleEdit = (field) => {
+  const handleToggleEdit = (field) => {
     if(field == 'password'){
       sendPasswordResetEmail(auth, user.email)
         .then(() => {
@@ -50,7 +50,6 @@ const Profil = () => {
           console.log('Pseudo mis à jour avec succès dans Firebase');
         } catch (error) {
           console.error('Erreur lors de la mise à jour du pseudo dans Firebase', error);
-          // Gérez l'erreur ici, par exemple en affichant un message à l'utilisateur
         }
         updateUser({ ...user, pseudo: newPseudo });
         break;
@@ -60,56 +59,6 @@ const Profil = () => {
         break;
     }
     setIsEditing({...isEditing, [field]: false});
-  }
-
-  const uploadImage = async (mode) => {
-    try{
-      let result = {};
-      if(mode === "gallery"){
-        await ImagePicker.requestMediaLibraryPermissionsAsync()
-        result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [1,1],
-          quality: 1,
-        })
-
-      }
-      else{
-        await ImagePicker.requestCameraPermissionsAsync();
-        result = await ImagePicker.launchCameraAsync({
-          cameraType: ImagePicker.CameraType.front,
-          allowsEditing: true,
-          aspect: [1,1],
-          quality: 1,
-        });
-      }
-
-      if(!result.canceled){
-        console.log('ici')
-        await saveImage(result.assets[0].uri);
-      }
-    } catch(error){
-      alert("Error uploading image: " + error.message);
-      setModalVisible(false);
-    }
-  }
-
-  const saveImage = async (image) => {
-    try{
-      setImage(image);
-      setModalVisible(false);
-    }catch(error){
-      throw(error);
-    }
-  }
-
-  const removeImage = async () => {
-    try{
-      saveImage(null);
-    } catch({message}) {
-      alert(message);
-    }
   }
 
   return (
@@ -146,83 +95,47 @@ const Profil = () => {
           visible={modalVisible}
         >
           <View style={styles.modalios}>
-            <TouchableOpacity onPress={() => uploadImage()}>
+            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage)}>
               <Text>Camera</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => uploadImage('gallery')}>
+            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage, 'gallery')}>
               <Text>Gallerie</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => removeImage()}>
+            <TouchableOpacity onPress={() => removeImage(setImage, setModalVisible)}>
               <Text>Annuler</Text>
             </TouchableOpacity>
 
           </View>
         </Modal>
 
-        <View style={styles.card}>
-          {isEditing.pseudo ? (
-            <View>
-              <Text>Nouveau pseudo</Text>
-              <TextInput
-                value={newPseudo}
-                onChangeText={(text) => setNewPseudo(text)}
-              />
-              <Button title="Enregister" onPress={() => handleSavePress('pseudo')}/>
-            </View>
-          ) : (
-            <>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{user.pseudo}</Text>
-                </View>
-              </View>
-          
-              <TouchableOpacity onPress={() => handleToogleEdit('pseudo')}>
-                <Image source={require("../../assets/avion-papier-retour.png")} style={[styles.backButton]} />
-              </TouchableOpacity>
-            </>
-          )} 
-        </View>
+        <Cards 
+          behaviorType="type1" isEditing={isEditing}
+          newData={newPseudo}
+          setNewData={setNewPseudo}
+          type="pseudo"
+          onPressProps={handleToggleEdit}
+          handleSavePress={handleSavePress}
+          name ={user.pseudo}
+        />
 
-        <View style={styles.card}>
-          {isEditing.email ? (
-            <View>
-              <Text>Nouvel email</Text>
-              <TextInput
-                value={newEmail}
-                onChangeText={(text) => setNewEmail(text)}
-              />
-              <Button title="Enregister" onPress={() => handleSavePress('email')}/>
-            </View>
-          ) : (
-            <>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{user.email}</Text>
-                </View>
-              </View>
-          
-              <TouchableOpacity onPress={() => handleToogleEdit('email')}>
-                <Image source={require("../../assets/avion-papier-retour.png")} style={[styles.backButton]} />
-              </TouchableOpacity>
-            </>
-          )} 
-        </View>
+        <Cards 
+          behaviorType="type1" isEditing={isEditing}
+          newData={newEmail}
+          setNewData={setNewEmail}
+          type="email"
+          onPressProps={handleToggleEdit}
+          handleSavePress={handleSavePress}
+          name ={user.email}
+        />
 
-        <View style={styles.card}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>Changer de mot de passe</Text>
-            </View>
-          </View>
-          
-          <TouchableOpacity onPress={() => handleToogleEdit('password')}>
-            <Image source={require("../../assets/avion-papier-retour.png")} style={[styles.backButton]} />
-          </TouchableOpacity> 
-        </View>
-
+        <Cards 
+          behaviorType="type2"isEditing={isEditing}
+          type="password"
+          onPressProps={handleToggleEdit}
+          name ="Changer de mot de passe"
+        />
 
       </View>
 

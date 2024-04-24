@@ -10,12 +10,12 @@ import {
   where,
   query,
 } from "@firebase/firestore";
+import Cards from '../../component/Card/Cards';
+import ProfilIcon from "../../../assets/utilisateur.png";
 
 const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
 
   const { id } = route.params;
-
-  //console.log(route.params)
 
   const [modalVisible, setModalVisible] = useState(false);
   const [nom, setNom] = useState("");
@@ -51,10 +51,25 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
       return;
     }
 
-    creerVoyage(id, nom, selectedStartDate, selectedEndDate)
+    const overlappingTrips = groupTrips.filter(trip => {
+      const tripStartDate = new Date(trip.dateDebut);
+      const tripEndDate = new Date(trip.dateFin);
+      const selectedStartDateObj = new Date(selectedStartDate);
+      const selectedEndDateObj = new Date(selectedEndDate);
+  
+      return (
+        (selectedStartDateObj >= tripStartDate && selectedStartDateObj <= tripEndDate) ||
+        (selectedEndDateObj >= tripStartDate && selectedEndDateObj <= tripEndDate) ||
+        (tripStartDate >= selectedStartDateObj && tripEndDate <= selectedEndDateObj)
+      );
+    });
+  
+    if (overlappingTrips.length > 0) {
+      alert('Alerte Vous avez déjà un voyage prévu pour les dates sélectionnées. Veuillez modifier vos dates.');
+      return;
+    }
 
-    console.log('Date de début:', selectedStartDate);
-    console.log('Date de fin:', selectedEndDate);
+    creerVoyage(id, nom, selectedStartDate, selectedEndDate)
     setModalVisible(false);
     getVoyagesGroupe(id);
   };
@@ -67,24 +82,27 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
         groupId: groupId,
         nom: nom,
         dateDebut: dateDebut,
-        dateFin: dateFin
+        dateFin: dateFin,
       });
 
       const tripId = newTripRef.id;
 
-      await updateDoc(newTripRef, { id: tripId });
-  
-      console.log('Voyage créé avec succès avec l\'ID:', newTripRef.id);
-      //return newTripRef.id; // Retourner l'ID du nouveau voyage créé
+      updateFirebase(newTripRef, tripId)
+
+      //changer en alert
+      alert('Voyage créé avec succès avec l\'ID:', newTripRef.id);
     } catch (error) {
       console.error('Erreur lors de la création du voyage:', error);
       return null;
     }
   };
 
+  const updateFirebase = async (docRef, id) => {
+    await updateDoc(docRef, { id: id });
+  }
+
   const getVoyagesGroupe = async (groupId) => {
     try {
-        // Récupérer tous les voyages du groupe spécifié
         const firestore = getFirestore();
         const trips = collection(firestore, "trips");
         const q = query(trips, where("groupId", "==", groupId));
@@ -95,13 +113,9 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
             tripData.push(doc.data());
         });
 
-        //console.log(tripData)
-
         setGroupTrips(tripData);
-        //setLoading(false);
     } catch (error) {
         console.error('Erreur lors de la récupération des voyages du groupe:', error);
-        //setLoading(false);
     }
 };
 
@@ -109,35 +123,8 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
     getVoyagesGroupe(id)
   }, [id]);
 
- console.log(groupTrips)
-  const updateGroups = async () => {
-    getVoyagesGroupe
-  };
-
   const renderTripsItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate("GroupTrip")}
-    >
-      <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image
-                source={require('../../assets/utilisateur.png')}
-                style={styles.profileImage}
-              />
-              <View style={styles.userInfo}>
-                <Text style={styles.userName}>{item.nom}</Text>
-              </View>
-            </View>
-            <TouchableOpacity
-            onPress={() => navigation.navigate("GroupTrip")}
-            >
-          <Image
-            source={require("../../assets/avion-papier-retour.png")}
-            style={[styles.backButton]}
-          />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+    <Cards behaviorType="type2" name={item.nom} image={ProfilIcon} onPressProps={{ routeName: "GroupTrip", additionalProps: { id: item.id}}}/>
   );
 
   //if(loading){
@@ -152,7 +139,7 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
 
           <View>
             <ImageBackground
-            source={require('../../assets/image_default.jpg')}
+            source={require('../../../assets/image_default.jpg')}
             style={[styles.backgroundImage]}
             >
                 <TouchableOpacity
@@ -161,7 +148,7 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
                 style={{ top: 20, left: 20 }}
                 >
                 <Image
-                    source={require("../../assets/avion-papier-retour.png")}
+                    source={require("../../../assets/avion-papier-retour.png")}
                     style={[styles.backButton]}
                 />
                 </TouchableOpacity>
@@ -169,21 +156,23 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
 
             <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
               <TouchableOpacity
-                onPress={() => setModalVisible(true)/*navigation.navigate("CreateTravel")*/}
+                onPress={() => setModalVisible(true)}
               >
                 <Image
-                  source={require('../../assets/plus.png')}
+                  source={require('../../../assets/plus.png')}
                   style={{ width: 30, height: 30 }}
                 />
               </TouchableOpacity>
+            
+            </View>
 
-              <View style={{ alignItems: 'center', marginTop: '50%' }}>
+              <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center" }}>
                 <FlatList
                   data={groupTrips}
                   keyExtractor={(item) => item.id}
                   renderItem={renderTripsItem}
                 />
-              </View>
+              </ScrollView>
 
               <Modal visible={modalVisible} animationType="slide">
                 <View style={styles.modalContainer}>
@@ -200,16 +189,39 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
                         [selectedStartDate]: { selected: true, startingDay: true, color: 'green' },
                         [selectedEndDate]: { selected: true, endingDay: true, color: 'green' },
                       }}
-                      minDate={new Date().toISOString().split('T')[0]} // Empêcher la sélection de dates passées
+                      minDate={new Date().toISOString().split('T')[0]}
+                      theme={{
+                        calendarBackground: 'white',
+                        textSectionTitleColor: 'black',
+                        selectedDayBackgroundColor: '#6E4B6B',
+                        selectedDayTextColor: 'white',
+                        todayTextColor: '#FFB703',
+                        todayButtonFontWeight: 'bold',
+                        dayTextColor: 'black',
+                        textDisabledColor: 'gray',
+                        arrowColor: '#6E4B6B',
+                        monthTextColor: 'black',
+                        indicatorColor: 'purple',
+                      }}
                     />
                     <View style={styles.buttonContainer}>
-                      <Button title="Valider" onPress={handleSubmit} />
-                      <Button title="Annuler" onPress={() => setModalVisible(false)} />
+                      <TouchableOpacity
+                        style={[styles.button, styles.loginButton]}
+                        onPress={handleSubmit}
+                      >
+                        <Text style={styles.buttonText}>Valider</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.button, styles.loginButton]}
+                        onPress={() => setModalVisible(false)}
+                      >
+                        <Text style={styles.buttonText}>Annuler</Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 </View>
               </Modal>
-            </View>
           </View>
         </View>
     )
@@ -219,6 +231,24 @@ const GroupDetails = ({ route, navigation: { goBack } , navigation}) => {
 export default GroupDetails;
 
 const styles = StyleSheet.create({
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loginButton: {
+    backgroundColor: "#6E4B6B",
+    borderRadius: 15,
+    width: 100,
+    height: 50,
+    //padding: 25,
+    margin: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
   backButton: {
       width: 40,
       height: 34,
@@ -226,6 +256,7 @@ const styles = StyleSheet.create({
   backgroundImage: {
       width: 414,
       height: 189,
+    marginBottom: 30
   },
   modalContainer: {
     flex: 1,

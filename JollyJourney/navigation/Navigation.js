@@ -6,10 +6,10 @@ import Home from '../app/screens/Home';
 import SignUp from '../app/screens/SignUp';
 import SignIn from '../app/screens/SignIn';
 import TabNavigator from './TabNavigator';
-import Cities from '../app/screens/Cities';
-import CreateGroup from '../app/screens/CreateGroup';
-import GroupDetails from '../app/screens/GroupDetails';
-import GroupTrip from '../app/screens/Travel/GroupTrip';
+import Cities from '../app/screens/Explore/Cities';
+import CreateGroup from '../app/screens/Groups/CreateGroup';
+import GroupDetails from '../app/screens/Groups/GroupDetails';
+import GroupTrip from '../app/screens/Groups/GroupTrip';
 
 
 const Stack = createNativeStackNavigator();
@@ -22,9 +22,7 @@ function InsideLayout() {
       <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="Cities" component={Cities} options={{ headerShown: false }} />
       <Stack.Screen name="CreateGroup" component={CreateGroup} options={{ headerShown: false }} />
-      {/* <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} /> */}
       <Stack.Screen name="GroupDetails" component={GroupDetails} options={{ headerShown: false }} />
-      {/* <Stack.Screen name="CreateTravel" component={CreateTravel} options={{ headerShown: false }} /> */}
       <Stack.Screen name="GroupTrip" component={GroupTrip} options={{ headerShown: false }} />
 
     </InsideStack.Navigator>

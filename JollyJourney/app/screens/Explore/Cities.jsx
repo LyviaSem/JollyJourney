@@ -30,7 +30,7 @@ const Cities = ({ route, navigation: { goBack } }) => {
           style={{ top: 20, left: 20 }}
         >
           <Image
-            source={require("../../assets/avion-papier-retour.png")}
+            source={require("../../../assets/avion-papier-retour.png")}
             style={[styles.backButton]}
           />
         </TouchableOpacity>
