@@ -4,7 +4,7 @@ import ApercuContent from '../Travel/ApercuContent';
 import ItineraireContent from '../Travel/ItineraireContent';
 import DepenseContent from '../Travel/DepenseContent';
 
-const GroupTrip = ({route}) => {
+const GroupTrip = ({route, navigation: { goBack } }) => {
 
   const {id}  = route.params;
 
