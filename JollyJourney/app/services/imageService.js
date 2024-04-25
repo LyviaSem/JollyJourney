@@ -1,9 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../../FirebaseConfig';
+import { updateDoc, doc } from 'firebase/firestore';
+import { storage, firestore } from '../../FirebaseConfig';
 
 
-export const uploadImage = async (setModalVisible, setImage, mode) => {
+export const uploadImage = async (setModalVisible, setImage, user, updateUser, mode) => {
     try {
         let result = {};
         if (mode === "gallery") {
@@ -26,7 +27,7 @@ export const uploadImage = async (setModalVisible, setImage, mode) => {
         }
 
         if (!result.canceled) {
-           await uploadImageFirestorage(result.assets[0].uri, setImage, setModalVisible);
+           await uploadImageFirestorage(result.assets[0].uri, setImage, setModalVisible, user, updateUser,);
         }
     } catch (error) {
         alert("Error uploading image: " + error.message);
@@ -34,7 +35,7 @@ export const uploadImage = async (setModalVisible, setImage, mode) => {
     }
 };
 
-const uploadImageFirestorage = async (uri, setImage, setModalVisible) => {
+const uploadImageFirestorage = async (uri, setImage, setModalVisible, user, updateUser) => {
     try {
         if (uri) {
             const imageName = uri.substring(uri.lastIndexOf('/') + 1);
@@ -43,8 +44,14 @@ const uploadImageFirestorage = async (uri, setImage, setModalVisible) => {
             const fileRef = ref(storage, `images/${imageName}`);
             await uploadBytes(fileRef, blob);
             const downloadURL = await getDownloadURL(fileRef);
-            console.log("succes");
-            //setImage(uri)
+            
+            const userDocRef = doc(firestore, 'users', user.uid);
+            await updateDoc(userDocRef, { imageURL: downloadURL });
+
+            updateUser({ ...user, imageURL: downloadURL });
+
+            console.log(user)
+
             setModalVisible(false);
         }
     } catch (error) {

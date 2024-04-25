@@ -4,8 +4,9 @@ import { stylesCards } from '../../style/StyleCards';
 import CardChildren from './CardChildren';
 import CardChildrenProfil from './CardChildrenProfil';
 import { useNavigation } from '@react-navigation/native';
+import { images } from '../../theme/theme';
 
-const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditing, newData, setNewData, type, handleSavePress, image}) => {
+const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditing, newData, setNewData, type, handleSavePress, image, setIsEditing}) => {
   const navigation = useNavigation();
 
   const ChildComponent = behaviorType === 'type1' ? CardChildrenProfil : CardChildren;
@@ -34,7 +35,6 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
     buttonContent = (
       <TouchableOpacity onPress={onSelect}>
         <View style={[stylesCards.selectionButton, isSelected ? { backgroundColor: '#6E4B6B', borderColor: '#6E4B6B' } : { borderColor: '#6E4B6B' }]}>
-          {/* Contenu du bouton de basculement */}
         </View>
       </TouchableOpacity>
     );
@@ -42,7 +42,7 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
     buttonContent = (
       <TouchableOpacity onPress={handlePress}>
         <Image
-          source={require('../../../assets/avion-papier-retour.png')}
+          source={images.planeBtn}
           style={[stylesCards.backButton]}
         />
       </TouchableOpacity>
@@ -51,7 +51,7 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
 
   return (
     <View style={stylesCards.card}>
-      <ChildComponent name={name} image={image} isEditing={isEditing} newData={newData} setNewData={setNewData} type={type} handleSavePress={handleSavePress}/>
+      <ChildComponent name={name} image={image} isEditing={isEditing} newData={newData} setNewData={setNewData} type={type} handleSavePress={handleSavePress} setIsEditing={setIsEditing}/>
       {buttonContent}
     </View>
   );

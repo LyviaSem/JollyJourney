@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import ApercuContent from '../Travel/ApercuContent';
 import ItineraireContent from '../Travel/ItineraireContent';
 import DepenseContent from '../Travel/DepenseContent';
+import { images } from "../../theme/theme";
 
 const GroupTrip = ({route, navigation: { goBack } }) => {
 
@@ -67,7 +68,7 @@ const GroupTrip = ({route, navigation: { goBack } }) => {
     }}>
 
       <ImageBackground
-        source={require('../../../assets/image_default.jpg')}
+        source={images.defaultImage}
         style={[styles.backgroundImage]}
       >
         <TouchableOpacity
@@ -76,7 +77,7 @@ const GroupTrip = ({route, navigation: { goBack } }) => {
         style={{ top: 20, left: 20 }}
         >
         <Image
-          source={require("../../../assets/avion-papier-retour.png")}
+          source={images.planeBtn}
           style={[styles.backButton]}
         />
         </TouchableOpacity>

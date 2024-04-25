@@ -18,7 +18,7 @@ import {
 } from "@firebase/firestore";
 import { useUser } from "../../../context/UserContext";
 import Cards from "../../component/Card/Cards";
-import ProfilIcon from "../../../assets/utilisateur.png";
+import { images } from "../../theme/theme";
 
 const Groups = ({navigation }) => {
   const { user } = useUser();
@@ -75,7 +75,7 @@ const Groups = ({navigation }) => {
   }
 
   const renderGroupItem = ({ item }) => (
-    <Cards behaviorType="type2" name={item.name} image={ProfilIcon} onPressProps={{ routeName: "GroupDetails", additionalProps: { groupName: item.name, members: item.members, id: item.id }}}/>
+    <Cards behaviorType="type2" name={item.name} image={images.defaultProfile} onPressProps={{ routeName: "GroupDetails", additionalProps: { groupName: item.name, members: item.members, id: item.id }}}/>
   );
 
   return (
@@ -95,7 +95,7 @@ const Groups = ({navigation }) => {
                 onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
               >
                 <Image
-                  source={require('../../../assets/plus.png')}
+                  source={images.plusIcon}
                   style={{ width: 30, height: 30 }}
                 />
               </TouchableOpacity>

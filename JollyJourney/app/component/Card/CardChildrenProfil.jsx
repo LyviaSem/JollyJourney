@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Button } from 'react-native';
 import { stylesCards } from '../../style/StyleCards';
 
-const CardChildrenProfil = ({ isEditing, newData, setNewData, type, handleToggleEdit, handleSavePress, name }) => {
+const CardChildrenProfil = ({ isEditing, newData, setNewData, type, setIsEditing, handleSavePress, name }) => {
     return (
       <>
         {isEditing[type] ? (
@@ -13,6 +13,7 @@ const CardChildrenProfil = ({ isEditing, newData, setNewData, type, handleToggle
               onChangeText={(text) => setNewData(text)}
             />
             <Button title="Enregistrer" onPress={() => handleSavePress(type)}/>
+            <Button title='Annuler' onPress={() => setIsEditing({...isEditing, [type]: false})}/>
           </View>
         ) : (
           
