@@ -12,9 +12,10 @@ import { useUser } from "../../context/UserContext";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { sendPasswordResetEmail, updateEmail } from "firebase/auth";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
-import placeholder from '../../assets/utilisateur.png';
 import { uploadImage, removeImage } from "../services/imageService";
 import Cards from "../component/Card/Cards";
+import { images } from "../theme/theme";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 
 const Profil = () => {
@@ -69,46 +70,52 @@ const Profil = () => {
         flex: 1,
       }}
     >
-      <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Profil</Text>
+      <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Profile</Text>
       <View style={{ alignItems: 'center', marginTop: 30 }}>
-        
-        <View style={styles.card}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image
-                  source={image ? { uri: image } : placeholder}
-                  style={styles.profileImage}
-                />
-              </View>
-              <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-              >
-            <Image
-              source={require("../../assets/avion-papier-retour.png")}
-              style={[styles.backButton]}
-            />
+
+        <TouchableOpacity>
+          <Image
+            source={user.imageURL ? { uri: user.imageURL } : images.defaultProfile}
+            style={styles.profilImage}
+          />
+
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Icon name="camera-outline" size={20} color="#FFB703" />
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
 
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={modalVisible}
-        >
-          <View style={styles.modalios}>
-            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage)}>
-              <Text>Camera</Text>
+<Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+            <Icon name="close" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Photo de profil</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage, user, updateUser)} style={styles.button}>
+              <Icon name="camera-outline" size={20} color="#FFB703" />
+              <Text>Caméra</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage, 'gallery')}>
-              <Text>Gallerie</Text>
+            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage, user, updateUser, 'gallery')} style={styles.button}>
+              <Icon name="image-outline" size={20} color="#FFB703" />
+              <Text>Galerie</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => removeImage(setImage, setModalVisible)}>
-              <Text>Annuler</Text>
+            <TouchableOpacity onPress={removeImage} style={styles.button}>
+              <Icon name="trash-can-outline" size={20} color="black" />
+              <Text>Supprimer</Text>
             </TouchableOpacity>
-
           </View>
-        </Modal>
+        </View>
+      </View>
+    </Modal>
 
         <Cards 
           behaviorType="type1" isEditing={isEditing}
@@ -116,6 +123,7 @@ const Profil = () => {
           setNewData={setNewPseudo}
           type="pseudo"
           onPressProps={handleToggleEdit}
+          setIsEditing={setIsEditing}
           handleSavePress={handleSavePress}
           name ={user.pseudo}
         />
@@ -126,6 +134,7 @@ const Profil = () => {
           setNewData={setNewEmail}
           type="email"
           onPressProps={handleToggleEdit}
+          setIsEditing={setIsEditing}
           handleSavePress={handleSavePress}
           name ={user.email}
         />
@@ -140,7 +149,7 @@ const Profil = () => {
       </View>
 
       <TouchableOpacity
-        style={[styles.button, styles.registerButton]}
+        style={[styles.buttonL, styles.registerButton]}
         onPress={() => FIREBASE_AUTH.signOut()}
       >
         <Text style={styles.userName}>Logout</Text>
@@ -153,8 +162,21 @@ const Profil = () => {
 export default Profil;
 
 const styles = StyleSheet.create({
-  modalios:{
-    marginTop: 100,
+  profilImage:{
+    borderRadius: 75,
+    width: 150,
+    height:150,
+    borderColor: '#f0f0f0',
+    borderWidth: 5,
+  },
+
+  editButton:{
+    backgroundColor:'#f0f0f0',
+    borderRadius: 24,
+    padding: 8,
+    position:'absolute',
+    right:5,
+    bottom: 5,
   },
 
   editButtonsContainer: {
@@ -162,6 +184,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 10,
   },
+
   card: {
     width: 344,
     height: 68,
@@ -173,17 +196,21 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     backgroundColor: 'white',
   },
+
   profileImage: {
   width: 35,
   height: 35,
   borderRadius: 10,
   },
+
   userInfo: {
     marginLeft: 10,
   },
+
   userName: {
     fontSize: 18,
   },
+
   Button: {
     backgroundColor: "#6E4B6B",
     borderRadius: 15,
@@ -193,17 +220,61 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  button: {
+
+  buttonL: {
     justifyContent: "center",
     alignItems: "center",
   },
+
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
   },
+
   backButton: {
     width: 30,
     height: 25
-    ,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    width: 350,
+    height: 150,
+  },
+
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+
+  button: {
+    width: '30%',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    padding: 14,
+    borderRadius: 10,
+  },
+
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 });
