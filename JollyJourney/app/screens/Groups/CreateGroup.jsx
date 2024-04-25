@@ -21,8 +21,8 @@ import {
 import { useUser } from "../../../context/UserContext";
 import filter from "lodash.filter";
 import Cards from "../../component/Card/Cards";
-import ProfilIcon from "../../../assets/utilisateur.png";
 import SearchBar from "../../component/SearchBar";
+import { images } from "../../theme/theme";
 
 const CreateGroupes = ({route, navigation}) => {
   const { user } = useUser();
@@ -146,7 +146,7 @@ const CreateGroupes = ({route, navigation}) => {
   };
 
   const renderItem = ({ item }) => (
-    <Cards behaviorType="toggle" name={item.pseudo} image={ProfilIcon} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
+    <Cards behaviorType="toggle" name={item.pseudo} image={images.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
   )
 
   return (
@@ -191,7 +191,7 @@ const CreateGroupes = ({route, navigation}) => {
         }}
       >
         <Image
-          source={require('../../../assets/avion-en-papier-blanc.png')}
+          source={images.whitePlaneBtn}
           style={styles.arrowImage}
         />
       </TouchableOpacity>

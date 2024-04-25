@@ -7,6 +7,7 @@ import Groups from '../app/screens/Groups/Groups';
 import Profile from '../app/screens/Profile';
 import Contacts from '../app/screens/Chats/Contacts';
 import Travel from '../app/screens/Travel/Travel';
+import { images } from '../app/theme/theme';
 
 const Tab = createBottomTabNavigator();
 
@@ -21,7 +22,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Explorer" component={Explore} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/planete-terre.png')}
+                    source={images.globe}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
@@ -29,7 +30,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Groupes" component={Groups} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/groupe.png')}
+                    source={images.group}
                     style={{ tintColor: color, width: size * 1.5, height: size * 1.2 }}
                 />
             )
@@ -37,7 +38,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Voyages" component={Travel} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/logo-jolly-journey-coeur-blanc.png')}
+                    source={images.travel}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
@@ -45,7 +46,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Messages" component={Contacts} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/un-message.png')}
+                    source={images.chat}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
@@ -53,7 +54,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Profil" component={Profile} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={require('../assets/profil.png')}
+                    source={images.profil}
                     style={{ tintColor: color, width: size * 1.6, height: size * 1.2 }}
                 />
             )

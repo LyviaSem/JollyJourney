@@ -13,6 +13,7 @@ import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useUser } from "../../context/UserContext";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { images } from "../theme/theme";
 
 const SignIn = ({ navigation }) => {
   const { updateUser } = useUser();
@@ -36,6 +37,7 @@ const SignIn = ({ navigation }) => {
           uid: uid,
           pseudo: userData.pseudo || "",
           email: email,
+          imageURL: userData.imageURL || "",
         });
       } else {
         console.log("Le document utilisateur n'existe pas dans Firestore.");
@@ -75,7 +77,7 @@ const SignIn = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={require("../../assets/logo-jolly-journey.png")}
+            source={images.logo}
             style={styles.logo}
           />
         </View>

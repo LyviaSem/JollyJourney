@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React from "react";
+import { images } from "../theme/theme";
 
 const Home = ({ navigation }) => {
   return (
@@ -23,7 +24,7 @@ const Home = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={require("../../assets/logo-jolly-journey.png")}
+            source={images.logo}
             style={styles.logo}
           />
         </View>

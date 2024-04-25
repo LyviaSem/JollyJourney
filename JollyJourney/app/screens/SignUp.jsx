@@ -13,6 +13,7 @@ import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useUser } from "../../context/UserContext";
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { images } from "../theme/theme";
 
 const Inscription = ({ navigation }) => {
   const { updateUser } = useUser();
@@ -71,7 +72,7 @@ const Inscription = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={require("../../assets/logo-jolly-journey.png")}
+            source={images.logo}
             style={styles.logo}
           />
         </View>

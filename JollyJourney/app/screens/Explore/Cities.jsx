@@ -8,6 +8,7 @@ import {
   ImageBackground,
 } from "react-native";
 import React from "react";
+import { images } from "../../theme/theme";
 
 const Cities = ({ route, navigation: { goBack } }) => {
   const { name, description, picture } = route.params;
@@ -30,7 +31,7 @@ const Cities = ({ route, navigation: { goBack } }) => {
           style={{ top: 20, left: 20 }}
         >
           <Image
-            source={require("../../../assets/avion-papier-retour.png")}
+            source={images.planeBtn}
             style={[styles.backButton]}
           />
         </TouchableOpacity>

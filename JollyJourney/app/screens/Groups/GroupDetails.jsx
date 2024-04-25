@@ -11,7 +11,7 @@ import {
   query,
 } from "@firebase/firestore";
 import Cards from '../../component/Card/Cards';
-import ProfilIcon from "../../../assets/utilisateur.png";
+import { images } from '../../theme/theme';
 
 const GroupDetails = ({ route, navigation: { goBack }}) => {
 
@@ -123,7 +123,7 @@ const GroupDetails = ({ route, navigation: { goBack }}) => {
   }, [id]);
 
   const renderTripsItem = ({ item }) => (
-   <Cards behaviorType="type2" name={item.nom} image={ProfilIcon} onPressProps={{ routeName: "GroupTrip", additionalProps: { id: item.id}}}/>
+   <Cards behaviorType="type2" name={item.nom} image={images.defaultProfile} onPressProps={{ routeName: "GroupTrip", additionalProps: { id: item.id}}}/>
   );
 
   //if(loading){
@@ -138,7 +138,7 @@ const GroupDetails = ({ route, navigation: { goBack }}) => {
 
           <View>
             <ImageBackground
-            source={require('../../../assets/image_default.jpg')}
+            source={images.defaultImage}
             style={[styles.backgroundImage]}
             >
                 <TouchableOpacity
@@ -147,7 +147,7 @@ const GroupDetails = ({ route, navigation: { goBack }}) => {
                 style={{ top: 20, left: 20 }}
                 >
                 <Image
-                    source={require("../../../assets/avion-papier-retour.png")}
+                    source={images.planeBtn}
                     style={[styles.backButton]}
                 />
                 </TouchableOpacity>
@@ -158,7 +158,7 @@ const GroupDetails = ({ route, navigation: { goBack }}) => {
                 onPress={() => setModalVisible(true)}
               >
                 <Image
-                  source={require('../../../assets/plus.png')}
+                  source={images.plusIcon}
                   style={{ width: 30, height: 30 }}
                 />
               </TouchableOpacity>
