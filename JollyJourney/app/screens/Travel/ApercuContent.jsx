@@ -8,11 +8,10 @@ const ApercuContent = ({ route, navigation }) => {
 
   const [inputs, setInputs] = useState([{ title: 'Title', value: '' }]);
 
-  const [showOptions, setShowOptions] = useState(false); // État pour contrôler l'affichage des options
-  const spinValue = useRef(new Animated.Value(0)).current; // Référence pour l'animation
+  const [showOptions, setShowOptions] = useState(false);
+  const spinValue = useRef(new Animated.Value(0)).current;
 
   const toggleOptions = () => {
-    // Fonction pour basculer l'affichage des options et lancer l'animation
     setShowOptions(!showOptions);
     Animated.timing(spinValue, {
       toValue: showOptions ? 0 : 1,
@@ -62,20 +61,17 @@ const ApercuContent = ({ route, navigation }) => {
       ))}
       <TouchableOpacity style={stylesApercuContent.addButton} onPress={toggleOptions}>
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
-          <AntDesign name={showOptions ? "minus" : "plus"} size={24} color="white" />
+          <AntDesign name={showOptions ? "close" : "plus"} size={24} color="white" />
         </Animated.View>
       </TouchableOpacity>
-      {/* Affichage des options */}
       {showOptions && (
         <View style={stylesApercuContent.optionsContainer}>
-          {/* Ajoutez vos options ici */}
           <TouchableOpacity style={stylesApercuContent.option}>
             <Text style={stylesApercuContent.optionText}>Option 1</Text>
           </TouchableOpacity>
           <TouchableOpacity style={stylesApercuContent.option}>
             <Text style={stylesApercuContent.optionText}>Nouvelle liste</Text>
           </TouchableOpacity>
-          {/* Ajoutez autant d'options que nécessaire */}
         </View>
       )}
     </View>
