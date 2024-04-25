@@ -1,7 +1,56 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, StatusBar, Image} from 'react-native'; 
+import React, {useEffect, useState, useLayoutEffect, useCallback} from 'react';
+import { firestore } from '../../../FirebaseConfig';
+import { collection, addDoc, orderBy, query, onSnapshot, where, getDocs } from 'firebase/firestore';
+import { useUser } from '../../../context/UserContext';
+import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, StatusBar, Image, FlatList} from 'react-native';
+import Cards from '../../component/Card/Cards'; 
+import { images } from "../../theme/theme";
 
 const Contacts = ({navigation}) => {
+
+  const { user } = useUser();
+  const [userGroups, setUserGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUserGroups = async () => {
+    try {
+      const userl = collection(firestore, "members");
+      const q = query(userl, where("userId", "==", user.uid));
+      const userSnapshot = await getDocs(q);
+      if (!userSnapshot.empty) {
+        const UserData = userSnapshot.docs.map((doc) => doc.data());
+
+        const groups = UserData.map((user) => user.groupId || []);
+
+        const groupPromises = groups.map(async (groupId) => {
+          const groupDocRef = collection(firestore, "groups");
+          const q = query(groupDocRef, where("id", "==", groupId));
+          const groupDoc = await getDocs(q);
+          return groupDoc.docs.map((doc) => doc.data());
+        });
+
+        const groupData = await Promise.all(groupPromises);
+        const flattenedGroups = groupData.flat();
+
+        setUserGroups(flattenedGroups);
+        setLoading(false);
+      } else {
+        alert("Utilisateur non trouvé.");
+      }
+    } catch (error) {
+      console.error("Error fetching user groups: ", error);
+      setLoading(false);
+    }
+  };
+
+useEffect(() => {
+  fetchUserGroups();
+}, [user]);
+
+const renderGroupItem = ({ item }) => (
+  <Cards behaviorType="type2" name={item.name} image={images.defaultProfile} onPressProps={{ routeName: "Message" }}/>
+);
+
   return (
     <View
       style={{
@@ -10,14 +59,21 @@ const Contacts = ({navigation}) => {
         flex: 1,
       }}
     >
-      <View style={styles.buttonContainer}>
+      <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <FlatList
+              data={userGroups}
+              keyExtractor={(item) => item.id}
+              renderItem={renderGroupItem}
+            />
+          </View>
+      {/* <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.button, styles.loginButton]}
             onPress={() => navigation.navigate("Message")}
           >
             <Text style={styles.buttonText}>Connexion</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
     </View>
   )
 }
