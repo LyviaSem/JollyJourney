@@ -38,27 +38,8 @@ const Messages = ({ route, navigation: {goBack}}) => {
 
     fetchMessages();
 
-    // Unsubscribe function not needed here since we're fetching initial messages only once
-
   }, []);
 
-  // useLayoutEffect(() => {
-  //   const collectionRef = collection(firestore, 'chats');
-  //   const q = query(collectionRef, orderBy('createAt', 'desc'));
-
-  //   const unsubscribe = onSnapshot(q, snapshot => {
-  //     console.log(snapshot);
-  //     setMessages(
-  //       snapshot.docs.map(doc => ({
-  //         _id: doc.id,
-  //         createAt: doc.data().createAt,
-  //         text: doc.data().text,
-  //         user: doc.data().user
-  //       }))
-  //     )
-  //   });
-  //   return () => unsubscribe();
-  // }, []);
 
   const onSend = useCallback((messages = []) => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, messages));

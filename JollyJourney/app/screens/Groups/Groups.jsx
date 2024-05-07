@@ -10,15 +10,16 @@ import {
   ActivityIndicator,
 } from "react-native";
 import {
-  getFirestore,
   collection,
   getDocs,
   where,
   query,
+  onSnapshot,
 } from "@firebase/firestore";
 import { useUser } from "../../../context/UserContext";
 import Cards from "../../component/Card/Cards";
 import { images } from "../../theme/theme";
+import { firestore } from "../../../FirebaseConfig";
 
 const Groups = ({navigation }) => {
   const { user } = useUser();
@@ -26,46 +27,74 @@ const Groups = ({navigation }) => {
   const [userGroups, setUserGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
-    const fetchUserGroups = async () => {
-      try {
-        const firestore = getFirestore();
-        const userl = collection(firestore, "members");
-        const q = query(userl, where("userId", "==", user.uid));
-        const userSnapshot = await getDocs(q);
-        console.log(!userSnapshot.empty)
-        if (!userSnapshot.empty) {
-          console.log('ici')
-          const UserData = userSnapshot.docs.map((doc) => doc.data());
+  //   const fetchUserGroups = async () => {
+  //     try {
 
-          const groups = UserData.map((user) => user.groupId || []);
+  //       const groupsRef = collection(firestore, "groups");
+  //       const querySnapshot = await getDocs(groupsRef);
+  //       const groups = [];
 
-          const groupPromises = groups.map(async (groupId) => {
-            const groupDocRef = collection(firestore, "groups");
-            const q = query(groupDocRef, where("id", "==", groupId));
-            const groupDoc = await getDocs(q);
-            return groupDoc.docs.map((doc) => doc.data());
-          });
+  //       if(!querySnapshot.empty){
+  //         for (const doc of querySnapshot.docs) {
+  //           const groupId = doc.id;
+  //           const membersRef = collection(firestore, "groups", groupId, "members");
+  //           const memberSnapshot = await getDocs(query(membersRef, where("userId", "==", user.uid)));
 
-          const groupData = await Promise.all(groupPromises);
-          const flattenedGroups = groupData.flat();
+  //           if (!memberSnapshot.empty) {
+  //               const groupData = doc.data();
+  //               groups.push({ id: groupId, ...groupData });
+  //           }
+  //         }
+  //         setUserGroups(groups)
+  //         setLoading(false)
+  //       }
+  //       setLoading(false)
+  //     } catch (error) {
+  //       console.error("Error fetching user groups: ", error);
+  //       setLoading(false);
+  //     }
+  //   };
 
-          setUserGroups(flattenedGroups);
-          setLoading(false);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user groups: ", error);
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   fetchUserGroups();
+  // }, []);
 
   useEffect(() => {
-    fetchUserGroups();
-  }, [user]);
+    const fetchUserGroups = async () => {
+        try {
+            const groupsRef = collection(firestore, "groups");
 
-  const updateGroups = async () => {
+            // Mettre en place un écouteur sur la collection "groups"
+            const unsubscribe = onSnapshot(groupsRef, (snapshot) => {
+                const groups = [];
+                snapshot.forEach(async (doc) => {
+                    const groupId = doc.id;
+                    const membersRef = collection(firestore, "groups", groupId, "members");
+                    const memberSnapshot = await getDocs(query(membersRef, where("userId", "==", user.uid)));
+
+                    if (!memberSnapshot.empty) {
+                        const groupData = doc.data();
+                        groups.push({ id: groupId, ...groupData });
+                    }
+                });
+
+                // Mettre à jour l'état des groupes de l'utilisateur
+                setUserGroups(groups);
+                setLoading(false);
+            });
+
+            return unsubscribe; // Renvoyer la fonction pour arrêter l'écoute lorsqu'elle n'est plus nécessaire
+        } catch (error) {
+            console.error("Error fetching user groups: ", error);
+            setLoading(false);
+        }
+    };
+
     fetchUserGroups();
-  };
+
+    unsubscribe();
+}, []);
+
 
   if (loading) {
     return (
@@ -93,7 +122,7 @@ const Groups = ({navigation }) => {
           <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes groupes</Text>
             <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
               <TouchableOpacity
-                onPress={() => navigation.navigate("GroupSelectMembers", { onGroupCreated: updateGroups })}
+                onPress={() => navigation.navigate("GroupSelectMembers")}
               >
                 <Image
                   source={images.plusIcon}
@@ -117,7 +146,7 @@ const Groups = ({navigation }) => {
         <View style={{ alignItems: "center", }}>
           <TouchableOpacity
             style={[styles.button, styles.Button]}
-            onPress={() => navigation.navigate("GroupSelectMembers", { onGroupCreated: updateGroups })}
+            onPress={() => navigation.navigate("GroupSelectMembers")}
           >
             <Text style={styles.buttonText}>Créer mon premier groupe</Text>
           </TouchableOpacity>

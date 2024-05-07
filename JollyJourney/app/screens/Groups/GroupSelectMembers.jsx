@@ -26,8 +26,6 @@ import { images } from "../../theme/theme";
 
 const GroupSelectMembers = ({route, navigation}) => {
 
-  const {updateGroups} = route.params;
-
   const { user } = useUser();
 
   const [search, setSearch] = useState("");
@@ -135,7 +133,7 @@ const GroupSelectMembers = ({route, navigation}) => {
         onPress={() => {
           if (selectedUsers.length > 2) {
             console.log('ici')
-            navigation.navigate("GroupInfo", {selectedUsers: selectedUsers, setSelectedUsers: setSelectedUsers, onGroupCreated: updateGroups, creatorId: user.uid})
+            navigation.navigate("GroupInfo", {selectedUsers: selectedUsers, setSelectedUsers: setSelectedUsers, creatorId: user.uid})
           } else {
             setErrorMessage("Au moins deux contact doivent être sélectionné");
             setErrorModalVisible(true);

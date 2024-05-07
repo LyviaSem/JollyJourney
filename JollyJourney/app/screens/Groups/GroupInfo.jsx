@@ -6,16 +6,22 @@ import { images } from '../../theme/theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import PicModal from '../../component/PicModal';
 import { uploadImage, removeImage } from "../../services/imageService";
+import { useUser } from '../../../context/UserContext';
 
 const GroupInfo = ({route, navigation}) => {
 
-    const {selectedUsers, creatorId, setSelectedUsers, updateGroups} = route.params;
+    const {selectedUsers, creatorId, setSelectedUsers} = route.params;
 
     const [nomDuGroupe, setNomDuGroupe] = useState("");
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [imageUri, setImageUri] = useState();
+    const { user } = useUser();
+
+    const isAdmin = (member) => {
+      return member.uid === user.uid
+    }
 
     const createGroup = async () => {
         try {
@@ -31,7 +37,6 @@ const GroupInfo = ({route, navigation}) => {
     
           const newGroupDocRef = await addDoc(groupCollection, {
             name: nomDuGroupe,
-            members: [...selectedUsers.map((user) => user.uid)],
             creator: creatorId,
             createdAt: serverTimestamp(),
             imageURL: imageUri || null,
@@ -42,23 +47,23 @@ const GroupInfo = ({route, navigation}) => {
           await updateDoc(newGroupDocRef, { id: groupId });
     
           for (const member of selectedUsers) {
-            const membreCollection = collection(firestore, "members");
+            const membreCollection = collection(firestore, 'groups', groupId, 'members');
     
             await addDoc(membreCollection, {
-              groupId: groupId,
               userId: member.uid,
+              role: isAdmin(member) ? "admin" : "member"
             });
           }
 
           const docSnapshot = await getDoc(newGroupDocRef);
 
-// Vérifier si le document existe
-if (docSnapshot.exists()) {
-  // Extraire les données du document
-  const groupData = docSnapshot.data();
-  setSelectedUsers([])
-  navigation.navigate('GroupDetails', { group: groupData});
-} 
+          // Vérifier si le document existe
+          if (docSnapshot.exists()) {
+            // Extraire les données du document
+            const groupData = docSnapshot.data();
+            setSelectedUsers([])
+            navigation.navigate('GroupDetails', { group: groupData});
+          } 
           
           
         if (onGroupCreatedCallback) {
@@ -68,7 +73,7 @@ if (docSnapshot.exists()) {
         } catch (error) {
           console.error("Erreur lors de la création du groupe : ", error);
         }
-    };
+  };
 
   return (
     <View
