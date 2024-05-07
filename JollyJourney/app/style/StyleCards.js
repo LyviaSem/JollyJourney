@@ -23,7 +23,7 @@ export const stylesCards = StyleSheet.create({
   profileImage: {
     width: 35,
     height: 35,
-    borderRadius: 10,
+    borderRadius: 20,
   },
   userInfo: {
     marginLeft: 10,
@@ -61,4 +61,7 @@ export const stylesCards = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 'auto',
   },
+  editing: {
+    flexDirection: 'row'
+  }
 });
