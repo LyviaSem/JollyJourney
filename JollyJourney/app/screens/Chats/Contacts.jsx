@@ -48,7 +48,7 @@ useEffect(() => {
 }, [user]);
 
 const renderGroupItem = ({ item }) => (
-  <Cards behaviorType="type2" name={item.name} image={images.defaultProfile} onPressProps={{ routeName: "Message" }}/>
+  <Cards behaviorType="type2" name={item.name} image={images.defaultProfile} onPressProps={{ routeName: "Message", additionalProps: { group: item }}}/>
 );
 
   return (
@@ -66,14 +66,6 @@ const renderGroupItem = ({ item }) => (
               renderItem={renderGroupItem}
             />
           </View>
-      {/* <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.loginButton]}
-            onPress={() => navigation.navigate("Message")}
-          >
-            <Text style={styles.buttonText}>Connexion</Text>
-          </TouchableOpacity>
-        </View> */}
     </View>
   )
 }

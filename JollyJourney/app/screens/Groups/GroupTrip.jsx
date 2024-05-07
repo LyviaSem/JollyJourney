@@ -7,16 +7,17 @@ import { images } from "../../theme/theme";
 
 const GroupTrip = ({route, navigation: { goBack } }) => {
 
-  const {id}  = route.params;
+  const { trip }  = route.params;
+  console.log(trip)
 
   const [selectedTab, setSelectedTab] = useState('Aperçu');
 
   const renderContent = () => {
     switch (selectedTab) {
       case 'Aperçu':
-        return <ApercuContent />;
+        return <ApercuContent trip={trip}/>;
       case 'Itinéraire':
-        return <ItineraireContent id={id} />;
+        return <ItineraireContent id={trip.id} />;
       case 'Dépense':
         return <DepenseContent />;
       default:
@@ -68,7 +69,7 @@ const GroupTrip = ({route, navigation: { goBack } }) => {
     }}>
 
       <ImageBackground
-        source={images.defaultImage}
+        source={trip.imageURL? { uri: trip.imageURL } : images.defaultImage}
         style={[styles.backgroundImage]}
       >
         <TouchableOpacity

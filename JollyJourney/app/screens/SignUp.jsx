@@ -3,16 +3,15 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  ActivityIndicator,
   TouchableOpacity,
   StatusBar,
   Image,
 } from "react-native";
 import React, { useState } from "react";
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { FIREBASE_AUTH, firestore } from "../../FirebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useUser } from "../../context/UserContext";
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import { images } from "../theme/theme";
 
 const Inscription = ({ navigation }) => {
@@ -33,9 +32,8 @@ const Inscription = ({ navigation }) => {
         password
       );
       const userID = response.user.uid;
-      const db = getFirestore();
 
-      const usersCollection = collection(db, "users");
+      const usersCollection = collection(firestore, "users");
       await setDoc(doc(usersCollection, userID), {
         uid: userID,
         pseudo: pseudo,

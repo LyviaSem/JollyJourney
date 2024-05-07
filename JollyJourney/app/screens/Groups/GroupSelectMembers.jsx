@@ -24,18 +24,21 @@ import Cards from "../../component/Card/Cards";
 import SearchBar from "../../component/SearchBar";
 import { images } from "../../theme/theme";
 
-const CreateGroupes = ({route, navigation}) => {
+const GroupSelectMembers = ({route, navigation}) => {
+
+  const {updateGroups} = route.params;
+
   const { user } = useUser();
 
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([user]);
   const [fullData, setFullData] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [nomDuGroupe, setNomDuGroupe] = useState("");
+  // const [modalVisible, setModalVisible] = useState(false);
+  // const [nomDuGroupe, setNomDuGroupe] = useState("");
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [groupImage, setGroupImage] = useState(null);
+  // const [groupImage, setGroupImage] = useState(null);
 
   const handleSearch = (query) => {
     setSearch(query);
@@ -86,67 +89,15 @@ const CreateGroupes = ({route, navigation}) => {
   
     setSelectedUsers((prevUsers) => {
       const isUserSelected = prevUsers.some((u) => u.email === user.email);
-  
+
       return isUserSelected
         ? prevUsers.filter((u) => u.email !== user.email)
         : [...prevUsers, user];
     });
   };
 
-  const createGroup = async () => {
-    try {
-      const firestore = getFirestore();
-      const groupCollection = collection(firestore, "groups");
-
-      if (nomDuGroupe.trim() === "") {
-        setErrorMessage("Vous devez saisir un nom de groupe");
-        setErrorModalVisible(true);
-        setTimeout(() => setErrorModalVisible(false), 3000);
-        return;
-      }
-
-      const newGroupDocRef = await addDoc(groupCollection, {
-        name: nomDuGroupe,
-        members: [...selectedUsers.map((user) => user.uid)],
-        creator: user.uid,
-        createdAt: serverTimestamp(),
-      });
-
-      const groupId = newGroupDocRef.id;
-
-      await updateDoc(newGroupDocRef, { id: groupId });
-
-      for (const member of selectedUsers) {
-        const membreCollection = collection(firestore, "members");
-
-        await addDoc(membreCollection, {
-          groupId: groupId,
-          userId: member.uid,
-        });
-      }
-
-      navigation.goBack();
-
-      const onGroupCreatedCallback = route.params?.onGroupCreated;
-    if (onGroupCreatedCallback) {
-      onGroupCreatedCallback();
-    }
-
-    } catch (error) {
-      console.error("Erreur lors de la création du groupe : ", error);
-    }
-  };
-
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
   const renderItem = ({ item }) => (
-    <Cards behaviorType="toggle" name={item.pseudo} image={images.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
+    <Cards behaviorType="toggle" name={item.pseudo} image={item.imageURL? { uri: item.imageURL } : images.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
   )
 
   return (
@@ -164,11 +115,12 @@ const CreateGroupes = ({route, navigation}) => {
       <SearchBar searchQuery={search} handleSearch={handleSearch} />
 
       <Modal 
-      visible={errorModalVisible} transparent={true} backdropColor="none">
+        visible={errorModalVisible} transparent={true} backdropColor="none"
+      >
         <View style={styles.modalContainerError}>
           <View  style={styles.modalContentError}>
-        <Text style={styles.modalErrorText}>{errorMessage}</Text>
-        </View>
+            <Text style={styles.modalErrorText}>{errorMessage}</Text>
+          </View>
         </View>
       </Modal>
 
@@ -181,12 +133,13 @@ const CreateGroupes = ({route, navigation}) => {
       <TouchableOpacity
         style={[styles.button, styles.Button, styles.arrowButton]}
         onPress={() => {
-          if (selectedUsers.length > 1) {
-            openModal();
+          if (selectedUsers.length > 2) {
+            console.log('ici')
+            navigation.navigate("GroupInfo", {selectedUsers: selectedUsers, setSelectedUsers: setSelectedUsers, onGroupCreated: updateGroups, creatorId: user.uid})
           } else {
-            setErrorMessage("Au moin un contact doit être sélectionné");
+            setErrorMessage("Au moins deux contact doivent être sélectionné");
             setErrorModalVisible(true);
-            setTimeout(() => setErrorModalVisible(false), 1500); // Fermer automatiquement après 3 secondes
+            setTimeout(() => setErrorModalVisible(false), 1500);
           }
         }}
       >
@@ -196,69 +149,23 @@ const CreateGroupes = ({route, navigation}) => {
         />
       </TouchableOpacity>
 
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <View style={{ backgroundColor: "white", padding: 20 }}>
-            <TextInput
-              style={{ height: 40, borderColor: "gray", borderWidth: 1, marginBottom: 20, paddingHorizontal: 10, borderRadius: 5 }}
-              placeholder="Nom du groupe"
-              value={nomDuGroupe}
-              onChangeText={(text) => setNomDuGroupe(text)}
-            />
-
-              <Image
-                //source={{ uri: groupImage }}
-                style={{ width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: 'black', marginBottom: 20 }}
-              />
-            <TouchableOpacity 
-              //onPress={onButtonPress}
-            >
-              <Text>Sélectionner une photo</Text>
-            </TouchableOpacity>
-            {/* <Button title="Sélectionner une photo" onPress={openImagePicker} /> */}
-
-            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <TouchableOpacity
-                style={{ padding: 10, borderRadius: 5, width: "45%", alignItems: "center", backgroundColor: "green" }}
-                onPress={() => {
-                  createGroup();
-                  closeModal();
-                }}
-              >
-                <Text style={{ color: "white", fontWeight: "bold" }}>Créer</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{ padding: 10, borderRadius: 5, width: "45%", alignItems: "center", backgroundColor: "red" }}
-                onPress={closeModal}
-              >
-                <Text style={{ color: "white", fontWeight: "bold" }}>Annuler</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
 
-export default CreateGroupes;
+export default GroupSelectMembers;
 
 const styles = StyleSheet.create({
   arrowButton: {
-    width: 50, // Ajustez la largeur selon vos besoins
-    height: 50, // Ajustez la hauteur selon vos besoins
+    width: 50,
+    height: 50,
     position: 'absolute',
-    bottom: 10, // Ajustez la position verticale selon vos besoins
-    right: 10, // Ajustez la position horizontale selon vos besoins
+    bottom: 10,
+    right: 10,
   },
   arrowImage: {
-    width: 30, // Ajustez la largeur de l'image selon vos besoins
-    height: 30, // Ajustez la hauteur de l'image selon vos besoins
+    width: 30,
+    height: 30,
   },
   card: {
     width: 344,

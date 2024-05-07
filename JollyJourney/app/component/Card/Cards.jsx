@@ -5,6 +5,7 @@ import CardChildren from './CardChildren';
 import CardChildrenProfil from './CardChildrenProfil';
 import { useNavigation } from '@react-navigation/native';
 import { images } from '../../theme/theme';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditing, newData, setNewData, type, handleSavePress, image, setIsEditing}) => {
   const navigation = useNavigation();
@@ -31,7 +32,23 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
   };
 
   let buttonContent;
-  if (behaviorType === 'toggle') {
+  if (behaviorType === 'type1' && isEditing[type]) {
+    buttonContent = (
+      <View style={stylesCards.editing}>
+        <TouchableOpacity 
+          onPress={() => handleSavePress(type)}
+        >
+          <Icon name="check" size={24} color="green" />
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          onPress={() => setIsEditing({...isEditing, [type]: false})}
+        >
+          <Icon name="close" size={24} color="red" />
+        </TouchableOpacity>
+      </View>
+    );
+  } else if (behaviorType === 'toggle') {
     buttonContent = (
       <TouchableOpacity onPress={onSelect}>
         <View style={[stylesCards.selectionButton, isSelected ? { backgroundColor: '#6E4B6B', borderColor: '#6E4B6B' } : { borderColor: '#6E4B6B' }]}>
