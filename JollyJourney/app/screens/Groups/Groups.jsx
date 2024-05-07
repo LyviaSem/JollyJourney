@@ -32,7 +32,9 @@ const Groups = ({navigation }) => {
         const userl = collection(firestore, "members");
         const q = query(userl, where("userId", "==", user.uid));
         const userSnapshot = await getDocs(q);
+        console.log(!userSnapshot.empty)
         if (!userSnapshot.empty) {
+          console.log('ici')
           const UserData = userSnapshot.docs.map((doc) => doc.data());
 
           const groups = UserData.map((user) => user.groupId || []);
@@ -49,9 +51,8 @@ const Groups = ({navigation }) => {
 
           setUserGroups(flattenedGroups);
           setLoading(false);
-        } else {
-          alert("Utilisateur non trouvé.");
         }
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching user groups: ", error);
         setLoading(false);
@@ -75,7 +76,7 @@ const Groups = ({navigation }) => {
   }
 
   const renderGroupItem = ({ item }) => (
-    <Cards behaviorType="type2" name={item.name} image={images.defaultProfile} onPressProps={{ routeName: "GroupDetails", additionalProps: { groupName: item.name, members: item.members, id: item.id }}}/>
+    <Cards behaviorType="type2" name={item.name} image={item.imageURL? { uri: item.imageURL } : images.defaultProfile} onPressProps={{ routeName: "GroupDetails", additionalProps: {group: item, groupName: item.name, members: item.members, id: item.id, pic: item.imageURL }}}/>
   );
 
   return (
@@ -92,7 +93,7 @@ const Groups = ({navigation }) => {
           <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes groupes</Text>
             <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
               <TouchableOpacity
-                onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
+                onPress={() => navigation.navigate("GroupSelectMembers", { onGroupCreated: updateGroups })}
               >
                 <Image
                   source={images.plusIcon}
@@ -116,7 +117,7 @@ const Groups = ({navigation }) => {
         <View style={{ alignItems: "center", }}>
           <TouchableOpacity
             style={[styles.button, styles.Button]}
-            onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
+            onPress={() => navigation.navigate("GroupSelectMembers", { onGroupCreated: updateGroups })}
           >
             <Text style={styles.buttonText}>Créer mon premier groupe</Text>
           </TouchableOpacity>
@@ -138,16 +139,16 @@ const styles = StyleSheet.create({
     height: 68,
     borderRadius: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between', // Pour espacer les éléments à l'intérieur
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
     marginBottom: 30,
     backgroundColor: 'white',
   },
   profileImage: {
-  width: 35, // Modification de la largeur
-  height: 35, // Modification de la hauteur
-  borderRadius: 10, // Ajout de la bordure pour garder une forme arrondie
+    width: 35,
+    height: 35,
+    borderRadius: 10,
   },
   userInfo: {
     marginLeft: 10,
@@ -175,6 +176,5 @@ const styles = StyleSheet.create({
   backButton: {
     width: 30,
     height: 25
-    ,
   },
 });

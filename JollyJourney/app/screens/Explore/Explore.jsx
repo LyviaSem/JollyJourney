@@ -48,7 +48,7 @@ function Explore({ navigation }) {
   });
 
   renderCityItem = ({item}) => (
-    <City picture={item.pic} name={item.name} onPressProps={{ routeName: "Cities", additionalProps: { name: item.name, description: item.description, picture: item.pic }}} />
+    <City picture={item.pic} name={item.name} onPressProps={{ routeName: "Cities", additionalProps: { city: item }}} />
   );
 
   return (

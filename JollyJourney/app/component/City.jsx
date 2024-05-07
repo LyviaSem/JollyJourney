@@ -2,6 +2,7 @@ import React from 'react';
 import { ImageBackground, View, Text, TouchableOpacity } from 'react-native';
 import { stylesCity } from '../style/StyleCity';
 import { useNavigation } from '@react-navigation/native';
+import { images } from '../theme/theme';
 
 const City = ({picture, name, onPressProps, description }) => {
   const navigation = useNavigation();
@@ -27,9 +28,8 @@ const City = ({picture, name, onPressProps, description }) => {
           <View
             style={stylesCity.container}
           >
-            {picture && (
             <ImageBackground
-              source={{ uri: picture }}
+              source={picture? { uri: picture } : images.defaultImage}
               imageStyle={{ borderRadius: 10 }}
               style={stylesCity.imageBackground}
             >
@@ -41,7 +41,6 @@ const City = ({picture, name, onPressProps, description }) => {
                 </Text>
               </View>
             </ImageBackground>
-            )}
           </View>
         </TouchableOpacity>
   );

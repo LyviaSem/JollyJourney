@@ -11,7 +11,7 @@ import React from "react";
 import { images } from "../../theme/theme";
 
 const Cities = ({ route, navigation: { goBack } }) => {
-  const { name, description, picture } = route.params;
+  const { city } = route.params;
 
   return (
     <View
@@ -22,7 +22,7 @@ const Cities = ({ route, navigation: { goBack } }) => {
       }}
     >
       <ImageBackground
-        source={{ uri: picture }}
+        source={{ uri: city.pic }}
         style={[styles.backgroundImage]}
       >
         <TouchableOpacity
@@ -36,8 +36,8 @@ const Cities = ({ route, navigation: { goBack } }) => {
           />
         </TouchableOpacity>
       </ImageBackground>
-      <Text style={[styles.text]}>{name}</Text>
-      <Text style={[styles.text]}>{description}</Text>
+      <Text style={[styles.text]}>{city.name}</Text>
+      <Text style={[styles.text]}>{city.description}</Text>
     </View>
   );
 };

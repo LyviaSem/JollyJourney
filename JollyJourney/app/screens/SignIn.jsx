@@ -9,10 +9,10 @@ import {
   StatusBar,
   Image,
 } from "react-native";
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { FIREBASE_AUTH, firestore } from "../../FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useUser } from "../../context/UserContext";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { images } from "../theme/theme";
 
 const SignIn = ({ navigation }) => {
@@ -24,8 +24,7 @@ const SignIn = ({ navigation }) => {
   const auth = FIREBASE_AUTH;
 
   const getUserDetailsFromFirestore = async (uid) => {
-    const db = getFirestore();
-    const userDoc = doc(db, "users", uid);
+    const userDoc = doc(firestore, "users", uid);
 
     try {
       const userDocSnapshot = await getDoc(userDoc);

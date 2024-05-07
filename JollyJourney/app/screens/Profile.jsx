@@ -15,7 +15,8 @@ import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { uploadImage, removeImage } from "../services/imageService";
 import Cards from "../component/Card/Cards";
 import { images } from "../theme/theme";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import PicModal from "../component/PicModal";
 
 
 const Profil = () => {
@@ -26,7 +27,6 @@ const Profil = () => {
   const [newPseudo, setNewPseudo] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [image, setImage] = useState();
 
   const handleToggleEdit = (field) => {
     if(field == 'password'){
@@ -73,7 +73,8 @@ const Profil = () => {
       <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Profile</Text>
       <View style={{ alignItems: 'center', marginTop: 30 }}>
 
-        <TouchableOpacity>
+
+        <TouchableOpacity style={styles.profilImageContainer}>
           <Image
             source={user.imageURL ? { uri: user.imageURL } : images.defaultProfile}
             style={styles.profilImage}
@@ -87,35 +88,15 @@ const Profil = () => {
           </TouchableOpacity>
         </TouchableOpacity>
 
-<Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
-    >
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-            <Icon name="close" size={24} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.modalTitle}>Photo de profil</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage, user, updateUser)} style={styles.button}>
-              <Icon name="camera-outline" size={20} color="#FFB703" />
-              <Text>Caméra</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => uploadImage(setModalVisible, setImage, user, updateUser, 'gallery')} style={styles.button}>
-              <Icon name="image-outline" size={20} color="#FFB703" />
-              <Text>Galerie</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={removeImage} style={styles.button}>
-              <Icon name="trash-can-outline" size={20} color="black" />
-              <Text>Supprimer</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
+        <PicModal
+          docId={user.uid}
+          collection="users"
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          uploadImage={uploadImage}
+          removeImage={removeImage}
+          updateUser={updateUser}
+        />
 
         <Cards 
           behaviorType="type1" isEditing={isEditing}
@@ -146,14 +127,14 @@ const Profil = () => {
           name ="Changer de mot de passe"
         />
 
-      </View>
-
-      <TouchableOpacity
-        style={[styles.buttonL, styles.registerButton]}
+<TouchableOpacity
+        style={[styles.buttonL]}
         onPress={() => FIREBASE_AUTH.signOut()}
       >
         <Text style={styles.userName}>Logout</Text>
       </TouchableOpacity>
+
+      </View>
 
     </View>
   );
@@ -162,12 +143,28 @@ const Profil = () => {
 export default Profil;
 
 const styles = StyleSheet.create({
+  profilImageContainer:{
+    marginBottom: 50
+  },
+
   profilImage:{
     borderRadius: 75,
     width: 150,
     height:150,
     borderColor: '#f0f0f0',
     borderWidth: 5,
+  },
+
+  loginButton: {
+    textAlign: 'center',
+    marginLeft: 30,
+    backgroundColor: "#6E4B6B",
+    borderRadius: 15,
+    width: 150,
+    height: 70,
+    margin: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   editButton:{
@@ -208,6 +205,7 @@ const styles = StyleSheet.create({
   },
 
   userName: {
+    color: '#fff',
     fontSize: 18,
   },
 
@@ -224,6 +222,10 @@ const styles = StyleSheet.create({
   buttonL: {
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#6E4B6B",
+    width: 100,
+    height: 50,
+    borderRadius: 10
   },
 
   buttonText: {

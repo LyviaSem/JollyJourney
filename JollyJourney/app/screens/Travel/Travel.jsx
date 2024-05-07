@@ -68,7 +68,7 @@ function Travel({navigation}) {
   }
 
   const renderTripsItem = ({ item }) => (
-    <City name={item.nom} onPressProps="GroupTrip"/>
+    <City name={item.nom} picture={item.imageURL} onPressProps={{ routeName: "GroupTrip", additionalProps: { trip: item }}}/>
   )
 
   return (

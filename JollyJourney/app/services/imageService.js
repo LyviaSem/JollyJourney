@@ -1,10 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { updateDoc, doc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { updateDoc, doc, deleteField } from 'firebase/firestore';
 import { storage, firestore } from '../../FirebaseConfig';
 
 
-export const uploadImage = async (setModalVisible, setImage, user, updateUser, mode) => {
+export const uploadImage = async (setModalVisible, docId, collection, setImage = null, updateUser, mode) => {
     try {
         let result = {};
         if (mode === "gallery") {
@@ -27,7 +27,12 @@ export const uploadImage = async (setModalVisible, setImage, user, updateUser, m
         }
 
         if (!result.canceled) {
-           await uploadImageFirestorage(result.assets[0].uri, setImage, setModalVisible, user, updateUser,);
+            if (collection === "users") {
+                console.log(updateUser)
+                await uploadImageFirestorage(result.assets[0].uri, setModalVisible, collection, docId, null, updateUser);
+            } else {
+                await uploadImageFirestorage(result.assets[0].uri, setModalVisible, collection, docId, setImage);
+            }
         }
     } catch (error) {
         alert("Error uploading image: " + error.message);
@@ -35,22 +40,34 @@ export const uploadImage = async (setModalVisible, setImage, user, updateUser, m
     }
 };
 
-const uploadImageFirestorage = async (uri, setImage, setModalVisible, user, updateUser) => {
+const uploadImageFirestorage = async (uri, setModalVisible, collection, docId, setImage, updateUser) => {
     try {
-        if (uri) {
+        if (uri && collection) {
             const imageName = uri.substring(uri.lastIndexOf('/') + 1);
             const response = await fetch(uri);
             const blob = await response.blob();
-            const fileRef = ref(storage, `images/${imageName}`);
+            const fileRef = ref(storage, `${collection}/${imageName}`);
             await uploadBytes(fileRef, blob);
             const downloadURL = await getDownloadURL(fileRef);
-            
-            const userDocRef = doc(firestore, 'users', user.uid);
-            await updateDoc(userDocRef, { imageURL: downloadURL });
 
-            updateUser({ ...user, imageURL: downloadURL });
+            if(docId){
+                console.log('la')
+               const docRef = doc(firestore, collection, docId);
+               await updateDoc(docRef, { imageURL: downloadURL });
 
-            console.log(user)
+              if(collection === "users" && updateUser){
+                updateUser(prevUser => ({
+                    ...prevUser,
+                    imageURL: downloadURL
+                }));
+            }
+
+            } else {
+              if(setImage){
+                setImage(downloadURL)
+              }
+            } 
+
 
             setModalVisible(false);
         }
@@ -60,19 +77,51 @@ const uploadImageFirestorage = async (uri, setImage, setModalVisible, user, upda
     }
 };
 
-export const saveImage = async (image, setImage, setModalVisible) => {
+export const removeImage = async (user, setModalVisible, updateUser) => {
     try {
-        setImage(image);
+        // Supprimer l'image de Firebase Storage
+        await deleteImageFromStorage(user.imageURL);
+        
+        // Supprimer l'URL de l'image de Firestore
+        const userDocRef = doc(firestore, 'users', user.uid);
+        await updateDoc(userDocRef, { imageURL: deleteField() });
+        
+        // Mettre à jour l'état utilisateur localement
+        updateUser({ ...user, imageURL: null });
+
+        // Masquer la modal
         setModalVisible(false);
     } catch (error) {
-        throw (error);
+        console.error("Une erreur est survenue lors de la suppression de l'image :", error);
+        // Gérer l'erreur, afficher un message d'erreur, etc.
     }
 };
 
-export const removeImage = async (setImage, setModalVisible) => {
+const deleteImageFromStorage = async (imageURL) => {
     try {
-        saveImage(null, setImage, setModalVisible);
-    } catch ({ message }) {
-        alert(message);
+        // Extraire le nom du fichier de l'URL de l'image
+        console.log(imageURL)
+        const fileName = extractFileName(imageURL);
+        console.log(fileName)
+        
+        // Créer une référence au fichier dans Firebase Storage
+        const fileRef = ref(storage, `images/${fileName}`);
+        
+        // Supprimer le fichier de Firebase Storage
+        await deleteObject(fileRef);
+        
+        console.log("Image supprimée de Firebase Storage avec succès");
+    } catch (error) {
+        throw error;
+    }
+};
+
+const extractFileName = (url) => {
+    const regex = /\/images%2F(.*?\.jpeg)/;
+    const match = url.match(regex);
+    if (match && match.length > 1) {
+        return match[1];
+    } else {
+        throw new Error('Impossible d\'extraire le nom du fichier de l\'URL.');
     }
 };
