@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Image, Modal, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Modal, StyleSheet, StatusBar, Platform } from 'react-native';
 import React, { useState } from 'react';
 import { firestore } from '../../../FirebaseConfig';
 import { collection, addDoc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
@@ -62,7 +62,7 @@ const GroupInfo = ({route, navigation}) => {
             // Extraire les données du document
             const groupData = docSnapshot.data();
             setSelectedUsers([])
-            navigation.navigate('GroupDetails', { group: groupData});
+            navigation.navigate('GroupTrips', { group: groupData});
           } 
           
           

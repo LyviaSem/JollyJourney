@@ -3,20 +3,17 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   StatusBar,
   Image,
   FlatList,
-  Modal
+  Modal, 
+  Platform
 } from "react-native";
 import {
   getFirestore,
   collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  serverTimestamp,
+  getDocs
 } from "@firebase/firestore";
 import { useUser } from "../../../context/UserContext";
 import filter from "lodash.filter";
@@ -24,7 +21,7 @@ import Cards from "../../component/Card/Cards";
 import SearchBar from "../../component/SearchBar";
 import { images } from "../../theme/theme";
 
-const GroupSelectMembers = ({route, navigation}) => {
+const GroupSelectMembers = ({navigation}) => {
 
   const { user } = useUser();
 

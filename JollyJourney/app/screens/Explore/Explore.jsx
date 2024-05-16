@@ -4,13 +4,10 @@ import {
   StatusBar,
   ScrollView,
   FlatList,
-  View,
-  TouchableOpacity,
-  StyleSheet,
+  Platform,
 } from "react-native";
 import { getFirestore, collection, getDocs } from "@firebase/firestore";
 import City from "../../component/City";
-import Icon from 'react-native-vector-icons/FontAwesome';
 import SearchBar from "../../component/SearchBar";
 
 function Explore({ navigation }) {

@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   ImageBackground,
+  Platform
 } from "react-native";
 import React from "react";
 import { images } from "../../theme/theme";

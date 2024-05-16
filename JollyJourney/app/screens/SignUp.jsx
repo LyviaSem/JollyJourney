@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StatusBar,
   Image,
+  Platform
 } from "react-native";
 import React, { useState } from "react";
 import { FIREBASE_AUTH, firestore } from "../../FirebaseConfig";

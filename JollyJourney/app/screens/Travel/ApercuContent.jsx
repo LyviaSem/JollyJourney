@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button, TouchableOpacity, Animated } from "react-native";
+import { View, Text, TouchableOpacity, Animated } from "react-native";
 import React, { useState, useRef } from "react";
 import { stylesApercuContent } from "../../style/StyleApercuContent";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'

@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Modal,
+  Platform
 } from "react-native";
 import React, {useState} from "react";
 import { useUser } from "../../context/UserContext";

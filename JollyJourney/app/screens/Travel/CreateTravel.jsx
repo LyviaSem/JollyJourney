@@ -1,4 +1,4 @@
-import { View, StatusBar, TouchableOpacity, Image, ImageBackground, StyleSheet, Modal, Button, TextInput, FlatList, Text, ScrollView } from 'react-native';
+import { View, StatusBar, TouchableOpacity, Image, StyleSheet, TextInput, Text, Platform} from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Calendar } from 'react-native-calendars';
 import {

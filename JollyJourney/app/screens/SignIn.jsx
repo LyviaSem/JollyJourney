@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StatusBar,
   Image,
+  Platform
 } from "react-native";
 import { FIREBASE_AUTH, firestore } from "../../FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
