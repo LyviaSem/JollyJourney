@@ -1,11 +1,11 @@
-import { View, Text, StatusBar, ImageBackground, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, ImageBackground, TouchableOpacity, Image, StyleSheet, Platform } from "react-native";
 import React, {useState} from "react";
-import ApercuContent from '../Travel/ApercuContent';
-import ItineraireContent from '../Travel/ItineraireContent';
-import DepenseContent from '../Travel/DepenseContent';
+import ApercuContent from './ApercuContent';
+import ItineraireContent from './ItineraireContent';
+import DepenseContent from './DepenseContent';
 import { images } from "../../theme/theme";
 
-const GroupTrip = ({route, navigation: { goBack } }) => {
+const Trip = ({route, navigation: { goBack } }) => {
 
   const { trip }  = route.params;
   console.log(trip)
@@ -102,7 +102,7 @@ const GroupTrip = ({route, navigation: { goBack } }) => {
   );
 };
 
-export default GroupTrip;
+export default Trip;
 
 const styles = StyleSheet.create({
   container: {

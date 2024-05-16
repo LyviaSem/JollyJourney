@@ -1,18 +1,19 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import React from 'react';
 
 import Explore from '../app/screens/Explore/Explore';
 import Groups from '../app/screens/Groups/Groups';
 import Profile from '../app/screens/Profile';
 import Contacts from '../app/screens/Chats/Contacts';
-import Travel from '../app/screens/Travel/Travel';
+import Travels from '../app/screens/Travel/Travels';
 import Cities from '../app/screens/Explore/Cities';
 import GroupSelectMembers from '../app/screens/Groups/GroupSelectMembers';
-import GroupDetails from '../app/screens/Groups/GroupDetails';
+import GroupTrips from '../app/screens/Groups/GroupTrips';
 import GroupInfo from '../app/screens/Groups/GroupInfo';
-import GroupTrip from '../app/screens/Groups/GroupTrip';
+import Trip from '../app/screens/Travel/Trip';
 import Messages from '../app/screens/Chats/Messages';
 import { images } from '../app/theme/theme';
 
@@ -39,8 +40,8 @@ function GroupsStackScreen() {
       <GroupsStack.Screen name="Groups" component={Groups} options={{ headerShown: false }} />
       <GroupsStack.Screen name="GroupSelectMembers" component={GroupSelectMembers} options={{ headerShown: false }} />
       <GroupsStack.Screen name="GroupInfo" component={GroupInfo} options={{ headerShown: false }} />
-      <GroupsStack.Screen name="GroupDetails" component={GroupDetails} options={{ headerShown: false }} />
-      <GroupsStack.Screen name="GroupTrip" component={GroupTrip} options={{ headerShown: false }} />
+      <GroupsStack.Screen name="GroupTrips" component={GroupTrips} options={{ headerShown: false }} />
+      <GroupsStack.Screen name="Trip" component={Trip} options={{ headerShown: false }} />
     </GroupsStack.Navigator>
   );
 }
@@ -48,8 +49,8 @@ function GroupsStackScreen() {
 function TravelStackScreen() {
   return (
     <TravelStack.Navigator>
-      <TravelStack.Screen name="Travel" component={Travel} options={{ headerShown: false }} />
-      <TravelStack.Screen name="GroupTrip" component={GroupTrip} options={{ headerShown: false }} />
+      <TravelStack.Screen name="Travels" component={Travels} options={{ headerShown: false }} />
+      <TravelStack.Screen name="Trip" component={Trip} options={{ headerShown: false }} />
     </TravelStack.Navigator>
   );
 }
@@ -81,6 +82,8 @@ const TabNavigator = () =>{
           }} />
           <Tab.Screen name="Groupes" component={GroupsStackScreen} options={{
             tabBarIcon:({color, size}) => (
+
+              // <Icon name={"account-group-outline"} size={30} color="white"  />
                 <Image 
                     source={images.group}
                     style={{ tintColor: color, width: size * 1.5, height: size * 1.2 }}
