@@ -1,12 +1,12 @@
 import React, { useState, useLayoutEffect, useCallback } from 'react';
-import { View, Text, StatusBar, TouchableOpacity, Image } from 'react-native'; 
-import { collection, addDoc, orderBy, query, onSnapshot , getDocs} from 'firebase/firestore';
+import { View, Text, StatusBar, TouchableOpacity, Image, Platform } from 'react-native'; 
+import { collection, addDoc, orderBy, query, getDocs, where } from 'firebase/firestore';
 import { firestore } from '../../../FirebaseConfig';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { useUser } from '../../../context/UserContext';
 import { images } from '../../theme/theme';
 
-const Messages = ({ route, navigation: {goBack}}) => {
+const Messages = ({ route, navigation: {goBack, navigate}}) => {
 
   const {group} =route.params
 
@@ -17,13 +17,13 @@ const Messages = ({ route, navigation: {goBack}}) => {
   useLayoutEffect(() => {
     const fetchMessages = async () => {
       try {
-        const chatCollectionRef = collection(firestore, 'groups', group.id, 'chats');
-        const q = query(chatCollectionRef, orderBy('createdAt', 'desc'));
-        const querySnapshot = await getDocs(q);
+        const chatCollectionRef = collection(firestore, 'chats'); // Référence à la collection "chats"
+        const qWhere = query(chatCollectionRef, where('groupId', '==', group.id)); // Requête pour le filtre where
+        const qOrderBy = query(qWhere, orderBy('createdAt', 'desc')); // Requête pour l'ordre orderBy
+        const querySnapshot = await getDocs(qOrderBy);
 
         const loadedMessages = querySnapshot.docs.map(doc => {
           const message = doc.data();
-          console.log(doc.data().createdAt.toDate())
           return {
             ...message,
             createdAt: message.createdAt.toDate() // Convertir la date Firestore en objet Date JavaScript
@@ -36,19 +36,19 @@ const Messages = ({ route, navigation: {goBack}}) => {
       }
     };
 
-    fetchMessages();
-
-  }, []);
+    fetchMessages(); // Appel de la fonction
+}, []);
 
 
   const onSend = useCallback((messages = []) => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, messages));
 
     const { _id, createdAt, text, user } = messages[0];
-    addDoc(collection(firestore, 'groups', group.id, 'chats'), {
+    addDoc(collection(firestore, 'chats'), {
       _id,
       createdAt,
       text,
+      groupId: group.id,
       user
     });
   }, []);
@@ -65,9 +65,13 @@ const Messages = ({ route, navigation: {goBack}}) => {
       style={{ width: 40, height: 34 }} // Assurez-vous de définir les dimensions de l'image
     />
   </TouchableOpacity>
-  <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: 'bold', padding: 10 }}>
-    {group.name}
-  </Text>
+  <TouchableOpacity
+    onPress={() => navigate('GroupDetails', {group: group})}
+  >
+    <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: 'bold', padding: 10 }}>
+      {group.name}
+    </Text>
+  </TouchableOpacity>
 </View>
       <GiftedChat
         messages={messages}

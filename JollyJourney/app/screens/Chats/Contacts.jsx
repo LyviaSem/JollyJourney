@@ -1,51 +1,12 @@
-import React, {useEffect, useState, useLayoutEffect, useCallback} from 'react';
-import { firestore } from '../../../FirebaseConfig';
-import { collection, addDoc, orderBy, query, onSnapshot, where, getDocs } from 'firebase/firestore';
+import React from 'react';
 import { useUser } from '../../../context/UserContext';
-import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, StatusBar, Image, FlatList} from 'react-native';
+import { View, StyleSheet, StatusBar, FlatList, Platform} from 'react-native';
 import Cards from '../../component/Card/Cards'; 
 import { images } from "../../theme/theme";
 
-const Contacts = ({navigation}) => {
-
-  const { user } = useUser();
-  const [userGroups, setUserGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchUserGroups = async () => {
-    try {
-      const userl = collection(firestore, "members");
-      const q = query(userl, where("userId", "==", user.uid));
-      const userSnapshot = await getDocs(q);
-      if (!userSnapshot.empty) {
-        const UserData = userSnapshot.docs.map((doc) => doc.data());
-
-        const groups = UserData.map((user) => user.groupId || []);
-
-        const groupPromises = groups.map(async (groupId) => {
-          const groupDocRef = collection(firestore, "groups");
-          const q = query(groupDocRef, where("id", "==", groupId));
-          const groupDoc = await getDocs(q);
-          return groupDoc.docs.map((doc) => doc.data());
-        });
-
-        const groupData = await Promise.all(groupPromises);
-        const flattenedGroups = groupData.flat();
-
-        setUserGroups(flattenedGroups);
-        setLoading(false);
-      } else {
-        alert("Utilisateur non trouvé.");
-      }
-    } catch (error) {
-      console.error("Error fetching user groups: ", error);
-      setLoading(false);
-    }
-  };
-
-useEffect(() => {
-  fetchUserGroups();
-}, [user]);
+const Contacts = ({}) => {
+  const { userGroups } = useUser();
+  console.log(userGroups)
 
 const renderGroupItem = ({ item }) => (
   <Cards behaviorType="type2" name={item.name} image={images.defaultProfile} onPressProps={{ routeName: "Message", additionalProps: { group: item }}}/>
