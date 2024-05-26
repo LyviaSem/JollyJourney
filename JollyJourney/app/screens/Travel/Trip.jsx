@@ -1,29 +1,92 @@
-import { View, Text, StatusBar, ImageBackground, TouchableOpacity, Image, StyleSheet, Platform } from "react-native";
-import React, {useState} from "react";
+import { View, Text, StatusBar, ImageBackground, TouchableOpacity, Image, StyleSheet, Platform, ScrollView, Animated } from "react-native";
+import React, {useState, useRef, useEffect} from "react";
 import ApercuContent from './ApercuContent';
 import ItineraireContent from './ItineraireContent';
 import DepenseContent from './DepenseContent';
 import { images } from "../../theme/theme";
+import { firestore } from "../../../FirebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 
 const Trip = ({route, navigation: { goBack } }) => {
 
   const { trip }  = route.params;
-  console.log(trip)
 
   const [selectedTab, setSelectedTab] = useState('Aperçu');
+  const [showOptions, setShowOptions] = useState(false);
+  const [overviewElements, setOverviewElements] = useState([]);
+  const [itineraryElements, setItineraryElements] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const spinValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+
+        const overviewCollection = collection(firestore, 'trips', trip.id, 'overview');
+        const overviewSnapshot = await getDocs(overviewCollection);
+
+        if (!overviewSnapshot.empty) {
+          const overviewData = [];
+          overviewSnapshot.forEach((doc) => {
+            overviewData.push(doc.data());
+          });
+          setOverviewElements(overviewData);
+        }
+
+        const itineraryCollection = collection(firestore, 'trips', trip.id, 'itinerary');
+        const itinerarySnapshot = await getDocs(itineraryCollection);
+        let itineraryData = [];
+        if (!itinerarySnapshot.empty) {
+          itineraryData = itinerarySnapshot.docs.map(doc => doc.data());
+        }
+    
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+        // Gestion de l'erreur, comme afficher un message ou définir un état d'erreur
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData();
+  }, [trip.id]);
 
   const renderContent = () => {
     switch (selectedTab) {
       case 'Aperçu':
-        return <ApercuContent trip={trip}/>;
+        return <ApercuContent 
+          trip={trip}
+          showOptions={showOptions}
+          toggleOptions={toggleOptions}
+          overview={overviewElements}
+        />;
       case 'Itinéraire':
-        return <ItineraireContent id={trip.id} />;
+        return <ItineraireContent 
+          trip={trip} 
+          itinerary={itineraryElements} 
+        />;
       case 'Dépense':
         return <DepenseContent />;
       default:
         return null;
     }
   };
+
+
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+    Animated.timing(spinValue, {
+      toValue: showOptions ? 0 : 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '45deg'],
+  });
+
   const tabStyles = {
     Aperçu: {
       backgroundColor: selectedTab === 'Aperçu' ? '#6E4B6B' : '#dddddd',
@@ -61,6 +124,14 @@ const Trip = ({route, navigation: { goBack } }) => {
     },
   };
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{
       paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -95,9 +166,18 @@ const Trip = ({route, navigation: { goBack } }) => {
           <Text style={[styles.tabText, textStyles['Dépense']]}>Dépense</Text>
         </TouchableOpacity>
       </View>
-      <View>
+      <ScrollView>
         {renderContent()}
-      </View>
+      </ScrollView>
+      {selectedTab === 'Aperçu' && (
+  <>
+    <TouchableOpacity style={styles.addButton} onPress={toggleOptions}>
+      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+        <Icon name={"plus"} size={24} color="white" />
+      </Animated.View>
+    </TouchableOpacity>
+  </>
+)}
     </View>
   );
 };
@@ -141,5 +221,35 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 34,
+  },
+  addButton: {
+    backgroundColor: '#6E4B6B',
+    borderRadius: 50,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    elevation: 5,
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    width: 150,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 3,
+  },
+  option: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  optionText: {
+    color: 'black',
+    fontSize: 16,
   },
 });

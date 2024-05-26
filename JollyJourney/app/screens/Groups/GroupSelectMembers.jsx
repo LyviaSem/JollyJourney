@@ -23,17 +23,14 @@ import { images } from "../../theme/theme";
 
 const GroupSelectMembers = ({navigation}) => {
 
-  const { user } = useUser();
+  const { user, selectedUsers, setSelectedUsers } = useUser();
+  console.log( 'selectedUsers', selectedUsers)
 
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([user]);
   const [fullData, setFullData] = useState([]);
-  // const [modalVisible, setModalVisible] = useState(false);
-  // const [nomDuGroupe, setNomDuGroupe] = useState("");
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  // const [groupImage, setGroupImage] = useState(null);
 
   const handleSearch = (query) => {
     setSearch(query);
@@ -59,7 +56,8 @@ const GroupSelectMembers = ({navigation}) => {
 
 
   useEffect(() => {
-    const fetchUserEmail = async () => {
+    const fetchUserEmail = async (user) => {
+      setSelectedUsers([user])
       try {
         const firestore = getFirestore();
         const UserSnapshot = await getDocs(collection(firestore, "users"));
@@ -75,7 +73,7 @@ const GroupSelectMembers = ({navigation}) => {
         throw error;
       }
     };
-    fetchUserEmail();
+    fetchUserEmail(user);
   }, []);
 
   const toggleSelection = (event) => {
@@ -91,9 +89,12 @@ const GroupSelectMembers = ({navigation}) => {
     });
   };
 
-  const renderItem = ({ item }) => (
-    <Cards behaviorType="toggle" name={item.pseudo} image={item.imageURL? { uri: item.imageURL } : images.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
-  )
+  const renderItem = ({ item }) => {
+    // console.log('item',selectedUsers.includes(item));
+    return (
+      <Cards behaviorType="toggle" name={item.pseudo} image={item.imageURL ? { uri: item.imageURL } : images.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
+    );
+  };
 
   return (
     <View
@@ -128,11 +129,10 @@ const GroupSelectMembers = ({navigation}) => {
       <TouchableOpacity
         style={[styles.button, styles.Button, styles.arrowButton]}
         onPress={() => {
-          if (selectedUsers.length > 2) {
-            console.log('ici')
-            navigation.navigate("GroupInfo", {selectedUsers: selectedUsers, setSelectedUsers: setSelectedUsers, creatorId: user.uid})
+          if (selectedUsers.length > 1) {
+            navigation.navigate("GroupInfo", {creatorId: user.uid})
           } else {
-            setErrorMessage("Au moins deux contact doivent être sélectionné");
+            setErrorMessage("Au moins un contact doit être sélectionné");
             setErrorModalVisible(true);
             setTimeout(() => setErrorModalVisible(false), 1500);
           }

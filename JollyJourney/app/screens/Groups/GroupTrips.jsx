@@ -21,7 +21,8 @@ const GroupTrips = ({ route, navigation }) => {
 
 useLayoutEffect(() => {
     setLoading(true)
-    const groupId = group.id
+    const groupId = group.info.id
+
     try {
       const trips = collection(firestore, "trips");
       const q = query(trips, where("groupId", "==", groupId));
@@ -35,7 +36,6 @@ useLayoutEffect(() => {
           setLoading(false);
       });
 
-      // Retourne une fonction de nettoyage pour arrêter l'écoute lorsque vous n'en avez plus besoin
       return unsubscribe;
   } catch (error) {
       console.error('Erreur lors de la récupération des voyages du groupe:', error);
@@ -73,12 +73,11 @@ useLayoutEffect(() => {
                 />
                 </TouchableOpacity>
             </ImageBackground>
-
             <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('CreateTravel', {groupTrips: groupTrips, id: group.id})}
+                onPress={() => navigation.navigate('CreateTravel', {groupTrips: groupTrips, groupId: group.info.id})}
               >
-                <Icon name={"plus"} size={30} color="black" />
+                <Icon name={"dots-vertical"} size={30} color="black" />
               </TouchableOpacity>
             
             </View>
@@ -97,7 +96,7 @@ useLayoutEffect(() => {
         <View style={{ alignItems: "center", }}>
           <TouchableOpacity
             style={[styles.button, styles.Button]}
-            onPress={() => navigation.navigate('CreateTravel', {groupTrips: groupTrips, id: group.id})}
+            onPress={() => navigation.navigate('CreateTravel', {groupTrips: groupTrips, groupId: group.info.id})}
           >
             <Text style={styles.buttonText}>Créer le premier voyage</Text>
           </TouchableOpacity>
@@ -148,7 +147,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   modalContent: {
-    //backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
     width: '80%',

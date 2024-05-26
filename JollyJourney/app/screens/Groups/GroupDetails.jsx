@@ -1,57 +1,134 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, Button, FlatList } from 'react-native';
-import { collection, addDoc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { firestore } from '../../../FirebaseConfig';
+import React, {useEffect, useState} from 'react';
+import { View, Text, Image, TouchableOpacity, Modal, Button, FlatList, Platform, StatusBar } from 'react-native';
+import { getUserInfo, deleteMembers } from '../../services/firebaseFunction';
+import { useUser } from '../../../context/UserContext';
 import { images } from "../../theme/theme";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomModal from '../../component/Card/DeleteMemberModal';
 
-const GroupDetails = ({ route }) => {
 
+const GroupDetails = ({ route, navigation: { goBack, navigate } }) => {
+
+    const {user, updateUserGroups} = useUser();
     const {group} = route.params;
-    console.log(group)
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+    const [creatorName, setCreatorName] = useState("");
+    const [memberNames, setMemberNames] = useState([]);
+    const [modalMessage, setModalMessage] = useState("");
+    const [modalAction, setModalAction] = useState(() => () => {});
+ console.log(memberNames)
+
+
+    useEffect(() => {
+
+        if (user.uid === group.info.creator) {
+            setIsAdmin(true);
+        } else {
+            setIsAdmin(false);
+        }
+        
+        // Récupération du nom du créateur
+        getUserInfo(group.info.creator)
+            .then(username => setCreatorName(username))
+            .catch(error => console.error("Error fetching creator info:", error));
+
+        // Récupération des noms des membres
+        Promise.all(group.members.map(member => getUserInfo(member.userId)))
+        .then(memberUsernames => {
+            setMemberNames(memberUsernames);
+        })
+        .catch(error => console.error("Error fetching member info:", error));
+       
+
+    }, [group]);
+
+    const handleOpenModal = (message, action) => {
+        setModalMessage(message);
+        setModalAction(() => action);
+        setIsVisible(true);
+    };
+
+    const handleDeleteMember = (memberId) => {
+        deleteMembers(group.info.id, memberId, updateUserGroups, navigate, user.uid);
+        setIsVisible(false);
+    };
+    
 
     return (
-        <View style={styles.container}>
+        <View 
+            style={{
+                paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+                backgroundColor: "#FEF5EE",
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}
+        >
+
+<TouchableOpacity 
+    onPress={() => goBack()}
+    style={{ top: 20, left: 20 }}
+  >
+    <Image
+      source={images.planeBtn}
+      style={{ width: 40, height: 34 }}
+    />
+  </TouchableOpacity>
             <Image
-             source={group.imageURL ? { uri: group.imageURL } : images.defaultProfile} 
+             source={group.info.imageURL ? { uri: group.info.imageURL } : images.defaultProfile} 
              style={styles.groupImage} 
             />
-            <Text style={styles.groupName}>{group.name}</Text>
-            {/* <Text style={styles.memberCount}>Members: {groupData.members.length}</Text> */}
-            <Text style={styles.createdBy}>Created by {group.creator}</Text>
-            
-            {/* <FlatList
-                data={groupData.members}
+            <Text style={styles.groupName}>{group.info.name}</Text>
+            <Text style={styles.memberCount}>Members: {group.members.length}</Text>
+            <Text style={styles.createdBy}>Created by {creatorName.pseudo} </Text>
+
+            <FlatList
+                data={memberNames}
                 renderItem={({ item }) => (
-                    <Text>{item.name}</Text>
+                    <View>
+                        <Image
+                            source={item.imageURL ? { uri: item.imageURL } : images.defaultProfile}
+                            style={styles.profilImage}
+                        />
+                        <Text>{item.pseudo}</Text>
+                        {isAdmin && item.id !== user.uid && (
+                            <TouchableOpacity
+                            onPress={() => handleOpenModal(
+                                `Etes vous sur de voulour supprimer ${item.pseudo} de ce groupe ?`,
+                                () => handleDeleteMember(item.id)
+                            )}
+                        >
+                            <Icon name="trash-can-outline" size={24} color="black" />
+                        </TouchableOpacity>
+                        )}
+                        
+                    </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}
-            /> */}
+            />
             
-            {/* {isAdmin && (
-                <View style={styles.adminButtons}>
-                    <TouchableOpacity onPress={onAddMember}>
-                        <Text>Add Member</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={onRemoveMember}>
-                        <Text>Remove Member</Text>
-                    </TouchableOpacity>
-                </View>
-            )} */}
 
-            <TouchableOpacity /*onPress={onLeaveGroup}*/>
-                <Text>Leave Group</Text>
+            <TouchableOpacity onPress={() => handleOpenModal(
+                "Etes vous sûr de vouloir quiter ce groupe ?",
+                () => handleDeleteMember(user.uid)
+            )}>
+                <Icon name="exit-to-app" size={24} color="red" />
+                <Text>Quitter le groupe</Text>
             </TouchableOpacity>
 
-            <Modal visible={false}>
-                <View style={styles.modal}>
-                    <Text>Are you sure you want to leave the group?</Text>
-                    <Button title="Yes" /*onPress={onLeaveGroup}*/ />
-                    <Button title="No" /*onPress={() => setModalVisible(false)}*/ />
-                </View>
-            </Modal>
+            <CustomModal
+                visible={isVisible}
+                onClose={() => setIsVisible(false)}
+                message={modalMessage}
+                onConfirm={modalAction}
+            />
+
         </View>
     );
 };
+
+export default GroupDetails;
 
 const styles = {
     container: {
@@ -81,11 +158,27 @@ const styles = {
         flexDirection: 'row',
         marginVertical: 10,
     },
-    modal: {
+    modalOverlay: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    profilImage:{
+        borderRadius: 75,
+        width: 50,
+        height:50,
+    },
+    adminButtons: {
+        flexDirection: 'row',
+        marginVertical: 10,
     },
 };
 
-export default GroupDetails;

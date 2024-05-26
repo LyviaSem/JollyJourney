@@ -16,7 +16,7 @@ import { uploadImage, removeImage } from "../../services/imageService";
 
 const CreateTravel = ({navigation: { goBack }, route}) => {
 
-    const {groupTrips, id} = route.params
+  const {groupTrips, groupId} = route.params
 
   const [modalVisible, setModalVisible] = useState(false);
   const [nom, setNom] = useState("");
@@ -70,7 +70,7 @@ const CreateTravel = ({navigation: { goBack }, route}) => {
       return;
     }
 
-    creerVoyage(id, nom, selectedStartDate, selectedEndDate)
+    creerVoyage(groupId, nom, selectedStartDate, selectedEndDate)
     setModalVisible(false);
     goBack()
   };
@@ -211,18 +211,6 @@ const styles = StyleSheet.create({
         height: 189,
       marginBottom: 30
     },
-    // modalContainer: {
-    //   flex: 1,
-    //   justifyContent: 'center',
-    //   alignItems: 'center',
-    //   backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-    // },
-    // modalContent: {
-    //   backgroundColor: '#fff',
-    //   padding: 20,
-    //   borderRadius: 10,
-    //   width: '80%',
-    // },
     input: {
       marginBottom: 20,
       paddingHorizontal: 10,
@@ -246,7 +234,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       padding: 10,
       marginBottom: 30,
-      //backgroundColor: 'white',
     },
     profileImage: {
     width: 35,

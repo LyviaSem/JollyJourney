@@ -1,8 +1,8 @@
-import { collection, query, getDocs, where } from 'firebase/firestore';
-import { firestore } from '../../FirebaseConfig'; // Assurez-vous d'importer correctement votre configuration Firebase
+import { collection, query, getDocs, where, getDoc, doc, deleteDoc } from 'firebase/firestore';
+import { firestore } from '../../FirebaseConfig'; 
 
 export const fetchUserGroupsFromFirebase = async (userId) => {
-    console.log(userId)
+
     const userGroups = [];
     
     try {
@@ -10,7 +10,7 @@ export const fetchUserGroupsFromFirebase = async (userId) => {
         const groupDocs = await getDocs(groupsQuery);
 
         for (const groupDoc of groupDocs.docs) {
-            const groupId = groupDoc.id;
+           
             const membersCollection = collection(groupDoc.ref, "members");
             const membersQuery = query(membersCollection, where("userId", "==", userId));
             const membersDocs = await getDocs(membersQuery);
@@ -24,9 +24,8 @@ export const fetchUserGroupsFromFirebase = async (userId) => {
                 members.forEach(doc => {
                     group.members.push(doc.data());
                 });
-                userGroups.push({id: groupId, ...group});
+                userGroups.push(group);
             }
-            console.log(userGroups)
         }
 
         return userGroups;
@@ -34,3 +33,45 @@ export const fetchUserGroupsFromFirebase = async (userId) => {
         throw error;
     }
 };
+
+export const getUserInfo = async (userId) => {
+    const userDoc = await getDoc(doc(firestore, "users", userId));
+    if (userDoc.exists()) {
+        const userData = userDoc.data();
+        return {
+            pseudo: userData.pseudo,
+            imageURL: userData.imageURL || null,
+            id: userId 
+        };
+    } else {
+        return {
+            pseudo: "Unknown",
+            imageURL: null
+        };
+    }
+};
+
+export const deleteMembers = async (groupId, userId, updateUserGroups, navigate, uid) => {
+    try {
+        const membersRef = collection(firestore, 'groups', groupId, 'members');
+        const q = query(membersRef, where('userId', '==', userId));
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+          alert('Erreur', 'Aucun membre trouvé avec cet ID.');
+          return;
+        }
+  
+        querySnapshot.forEach(async (docSnapshot) => {
+            await deleteDoc(docSnapshot.ref);
+        });
+        
+         updateUserGroups(uid)
+         navigate('Contacts')
+        alert('Succès', 'Le membre a été supprimé avec succès.');
+    } catch (error) {
+        console.error('Erreur de suppression du membre: ', error);
+        alert('Erreur', 'La suppression du membre a échoué.');
+    }
+}
+

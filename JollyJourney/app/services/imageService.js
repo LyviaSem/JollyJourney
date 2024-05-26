@@ -28,7 +28,6 @@ export const uploadImage = async (setModalVisible, docId, collection, setImage =
 
         if (!result.canceled) {
             if (collection === "users") {
-                console.log(updateUser)
                 await uploadImageFirestorage(result.assets[0].uri, setModalVisible, collection, docId, null, updateUser);
             } else {
                 await uploadImageFirestorage(result.assets[0].uri, setModalVisible, collection, docId, setImage);
@@ -51,7 +50,6 @@ const uploadImageFirestorage = async (uri, setModalVisible, collection, docId, s
             const downloadURL = await getDownloadURL(fileRef);
 
             if(docId){
-                console.log('la')
                const docRef = doc(firestore, collection, docId);
                await updateDoc(docRef, { imageURL: downloadURL });
 
@@ -99,10 +97,7 @@ export const removeImage = async (user, setModalVisible, updateUser) => {
 
 const deleteImageFromStorage = async (imageURL) => {
     try {
-        // Extraire le nom du fichier de l'URL de l'image
-        console.log(imageURL)
         const fileName = extractFileName(imageURL);
-        console.log(fileName)
         
         // Créer une référence au fichier dans Firebase Storage
         const fileRef = ref(storage, `images/${fileName}`);

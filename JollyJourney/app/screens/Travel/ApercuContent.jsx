@@ -1,21 +1,82 @@
-import { View, Text, TouchableOpacity, Animated } from "react-native";
-import React, { useState, useRef } from "react";
+import { View, Text, TouchableOpacity, Animated, FlatList, Platform, StatusBar, StyleSheet} from "react-native";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { stylesApercuContent } from "../../style/StyleApercuContent";
+import { firestore } from "../../../FirebaseConfig";
+import { collection, setDoc, getDocs, where, updateDoc, query, deleteDoc, doc } from "firebase/firestore";
+import TodoList from "../../component/TodoList";
+import Input from "../../component/Input";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { images } from "../../theme/theme";
 
 
-const ApercuContent = ({ trip }) => {
+const ApercuContent = ({route, navigation }) => {
 
-  console.log(trip)
-
-  const [inputs, setInputs] = useState([
-    { title: 'Logement', value: '' },
-    { title: 'Moyen de locomotion', value: '' },
-    { title: 'Prix du moyen de locomotion', value: '' }
-  ]);
-
+  const {trip} = route.params
+  const [loading, setLoading] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [overviewElements, setOverviewElements] = useState([]);
   const spinValue = useRef(new Animated.Value(0)).current;
+ 
+  const defaultInputs = [
+    { type: 'input', label: 'Logement', value: '' },
+    { type: 'input', label: 'Moyen de locomotion', value: '' },
+    { type: 'input', label: 'Prix du moyen de locomotion', value: '' }
+  ]
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        const overviewCollection = collection(firestore, 'trips', trip.id, 'overview');
+        const overviewSnapshot = await getDocs(overviewCollection);
+
+        if (overviewSnapshot.empty) {
+          await addData();
+        } else {
+          const overviewData = [];
+          overviewSnapshot.forEach((doc) => {
+            overviewData.push(doc.data());
+          });
+          setOverviewElements(overviewData);
+        }
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    }
+
+    const addData = async () => {
+      try{
+        const overviewCollection = collection(firestore, 'trips', trip.id, 'overview');
+       
+          const addedElements = [];
+          
+          for (const input of defaultInputs) {
+
+            const newDocRef = doc(overviewCollection);
+            const docId = newDocRef.id;
+            
+            const newElement = {
+              id: docId,
+              type: input.type,
+              label: input.label,
+              value: input.value,
+            };
+            
+            await setDoc(newDocRef, newElement);
+            addedElements.push(newElement);
+          }
+          
+          setOverviewElements(addedElements);
+        
+        
+      } catch(error) {
+        console.error('Error add data:', error);
+      }
+    }
+    setLoading(true)
+    fetchData().then(() => setLoading(false));
+  }, [])
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
@@ -28,66 +89,234 @@ const ApercuContent = ({ trip }) => {
 
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "45deg"],
+    outputRange: ['0deg', '45deg'],
   });
 
-  const handleInputChange = (text, index) => {
-    const newInputs = [...inputs];
-    newInputs[index].value = text;
-    setInputs(newInputs);
+  const addElemement = async (type) => {
+    const overviewCollection = collection(firestore, 'trips', trip.id, 'overview');
+    if(type === 'input'){
+
+      const newDocRef = doc(overviewCollection);
+      const docId = newDocRef.id;
+
+      const newElement = {
+        id: docId,
+        type: type,
+        label: 'Nouvel input',
+        value: '',
+      };
+      
+      await setDoc(newDocRef, newElement);
+
+      setOverviewElements((prevElements) => [...prevElements, newElement]);
+
+
+    }else if(type === 'todo'){
+
+      const newDocRef = doc(overviewCollection);
+      const docId = newDocRef.id;
+
+      const newElement = {
+        id: docId,
+        type: type,
+        label: 'Nouvelle TodoList',
+        tasks: [{ id: 1, text: '', completed: false }],
+      };
+      
+      await setDoc(newDocRef, newElement);
+
+      setOverviewElements((prevElements) => [...prevElements, newElement]);
+
+    }
+  }
+
+  const handleElementChange = async (updatedElement) => {
+    const updatedElements = overviewElements.map(element =>
+        element.id === updatedElement.id ? updatedElement : element
+    );
+
+    setOverviewElements(updatedElements);
+    try{
+      const overviewDocRef = doc(firestore, 'trips', trip.id, 'overview', updatedElement.id);
+      await updateDoc(overviewDocRef, updatedElement);
+    } catch (error){
+      console.error('Error update data:', error);
+    }
+    
   };
 
-  const handleTitleChange = (text, index) => {
-    const newInputs = [...inputs];
-    newInputs[index].title = text;
-    setInputs(newInputs);
+  const removeElement = async (itemId) => {
+    const updatedElements = overviewElements.filter(element => element.id !== itemId);
+    setOverviewElements(updatedElements);
+
+    try{
+      const overviewCollection = collection(firestore, 'trips', trip.id, 'overview');
+      const q = query(overviewCollection, where('id', '==', itemId));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        alert('Erreur', 'Aucun membre trouvé avec cet ID.');
+        return;
+      }else{
+        querySnapshot.forEach(async (docSnapshot) => {
+          await deleteDoc(docSnapshot.ref)
+        })
+      }
+    }catch(error){
+      console.error('error remove data: ', error)
+    }
   };
 
-  const handleAddInput = () => {
-    setInputs([...inputs, { title: "New Item", value: "" }]);
+  const renderOptions = () => (
+    <View style={stylesApercuContent.optionsContainer}>
+      <TouchableOpacity
+        onPress={() => addElemement('input')}
+        style={stylesApercuContent.option}
+      >
+        <Text style={stylesApercuContent.optionText}>Option 1</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => addElemement('todo')}
+        style={stylesApercuContent.option}
+      >
+        <Text style={stylesApercuContent.optionText}>Nouvelle liste</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+
+  const renderElement = ({ item }) => {
+    if(item.type === 'input'){
+      return (
+        <View>
+          <Input 
+            item={item} 
+            handleElementChange={handleElementChange} 
+          />
+          <TouchableOpacity style={stylesApercuContent.deleteButton} onPress={() => removeElement(item.id)}>
+            <Text style={stylesApercuContent.deleteButtonText}>Supprimer</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    } else if (item.type === 'todo'){
+      return (
+        <View>
+            <TodoList element={item} onElementChange={handleElementChange} />
+            <TouchableOpacity style={stylesApercuContent.deleteButton} onPress={() => removeElement(item.id)}>
+              <Text style={stylesApercuContent.deleteButtonText}>Supprimer</Text>
+            </TouchableOpacity>
+        </View>
+      );
+    }
+      
+    return null;
   };
 
-  const renderOptions = () => {
+  if (loading) {
     return (
-      <View style={stylesApercuContent.optionsContainer}>
-        <TouchableOpacity style={stylesApercuContent.option}>
-          <Text style={stylesApercuContent.optionText}>Option 1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={stylesApercuContent.option}>
-          <Text style={stylesApercuContent.optionText}>Nouvelle liste</Text>
-        </TouchableOpacity>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
       </View>
     );
-  };
+  }
 
   return (
-    <View>
-       <Text>Date du voyage: {trip.dateDebut} à {trip.dateFin}</Text>
-        <Text>Destination: {trip.nom}</Text>
-      {inputs.map((input, index) => (
-        <View key={index} style={stylesApercuContent.inputContainer}>
-          {/* <TextInput
-            style={stylesApercuContent.titleInput}
-            placeholder="Ajouter un titre"
-            value={input.title}
-            onChangeText={(text) => handleTitleChange(text, index)}
-          />
-          <TextInput
-            style={stylesApercuContent.input}
-            placeholder="Value"
-            value={input.value}
-            onChangeText={(text) => handleInputChange(text, index)}
-          /> */}
-        </View>
-      ))}
-      <TouchableOpacity style={stylesApercuContent.addButton} onPress={toggleOptions}>
-        <Animated.View style={{ transform: [{ rotate: spin }] }}>
-          <Icon name={"plus"} size={24} color="white" />
-        </Animated.View>
-      </TouchableOpacity>
+    <View 
+      style={{ 
+        paddingTop: 10,
+        backgroundColor: "#FEF5EE",
+        flex: 1 
+      }}
+    > 
+      <Text>Date du voyage: {trip.dateDebut} à {trip.dateFin}</Text>
+      <Text>Destination: {trip.nom}</Text>
+
+      <FlatList
+        data={overviewElements}
+        keyExtractor={(item) => item.id}
+        renderItem={renderElement}
+      />
+
+      
+    <TouchableOpacity style={styles.addButton} onPress={toggleOptions}>
+      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+        <Icon name={"plus"} size={24} color="white" />
+      </Animated.View>
+    </TouchableOpacity>
       {showOptions && renderOptions()}
     </View>
+    
   );
 };
 
 export default ApercuContent;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: '#6E4B6B',
+    gap: -5
+  },
+  tabButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  selectedTabButton: {
+    borderBottomWidth: 2,
+    borderBottomColor: 'blue',
+  },
+  tabText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backgroundImage: {
+    width: 414,
+    height: 189,
+    marginBottom: 10
+  },
+  backButton: {
+    width: 40,
+    height: 34,
+  },
+  addButton: {
+    backgroundColor: '#6E4B6B',
+    borderRadius: 50,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    elevation: 5,
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    width: 150,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 3,
+  },
+  option: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  optionText: {
+    color: 'black',
+    fontSize: 16,
+  },
+});

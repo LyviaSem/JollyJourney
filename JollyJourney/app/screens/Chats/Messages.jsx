@@ -6,7 +6,7 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { useUser } from '../../../context/UserContext';
 import { images } from '../../theme/theme';
 
-const Messages = ({ route, navigation: {goBack, navigate}}) => {
+const Messages = ({ route, navigation}) => {
 
   const {group} =route.params
 
@@ -15,18 +15,51 @@ const Messages = ({ route, navigation: {goBack, navigate}}) => {
   const [messages, setMessages] = useState([]);
 
   useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () =>(
+        <TouchableOpacity
+          onPress={() => navigation.navigate('GroupDetails', {group: group})}
+        >
+          <View
+            style={{flexDirection: 'row'}}
+          >
+          <Image
+            source={group.info.imageURL}
+            style={{ width: 20, height: 20 }} 
+          />
+          <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: 'bold', padding: 10 }}>
+            {group.info.name}
+          </Text>
+          </View>
+        </TouchableOpacity>
+      ),
+      // headerLeft: () => (
+      //   <TouchableOpacity 
+      //     onPress={() => navigation.goBack()}
+      //     // style={{ top: 20, left: 20 }}
+      //   >
+      //     <Image
+      //       source={images.planeBtn}
+      //       style={{ width: 40, height: 34 }} 
+      //     />
+      //   </TouchableOpacity>
+      // ),
+    });
+  }, [navigation]);
+
+  useLayoutEffect(() => {
     const fetchMessages = async () => {
       try {
-        const chatCollectionRef = collection(firestore, 'chats'); // Référence à la collection "chats"
-        const qWhere = query(chatCollectionRef, where('groupId', '==', group.id)); // Requête pour le filtre where
-        const qOrderBy = query(qWhere, orderBy('createdAt', 'desc')); // Requête pour l'ordre orderBy
+        const chatCollectionRef = collection(firestore, 'chats'); 
+        const qWhere = query(chatCollectionRef, where('groupId', '==', group.info.id)); 
+        const qOrderBy = query(qWhere, orderBy('createdAt', 'desc')); 
         const querySnapshot = await getDocs(qOrderBy);
 
         const loadedMessages = querySnapshot.docs.map(doc => {
           const message = doc.data();
           return {
             ...message,
-            createdAt: message.createdAt.toDate() // Convertir la date Firestore en objet Date JavaScript
+            createdAt: message.createdAt.toDate()
           };
         });
 
@@ -36,7 +69,7 @@ const Messages = ({ route, navigation: {goBack, navigate}}) => {
       }
     };
 
-    fetchMessages(); // Appel de la fonction
+    fetchMessages();
 }, []);
 
 
@@ -48,37 +81,39 @@ const Messages = ({ route, navigation: {goBack, navigate}}) => {
       _id,
       createdAt,
       text,
-      groupId: group.id,
+      groupId: group.info.id,
       user
     });
   }, []);
 
   return (
     <View style={{ flex: 1, paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 }}>
-      <View style={{ flexDirection: 'row', marginTop: 20 }}>
+      {/* <View style={{ flexDirection: 'row', marginTop: 20 }}>
   <TouchableOpacity 
-    onPress={() => goBack()}
+    onPress={() => navigation.goBack()}
     style={{ top: 20, left: 20 }}
   >
     <Image
       source={images.planeBtn}
-      style={{ width: 40, height: 34 }} // Assurez-vous de définir les dimensions de l'image
+      style={{ width: 40, height: 34 }} 
     />
   </TouchableOpacity>
   <TouchableOpacity
-    onPress={() => navigate('GroupDetails', {group: group})}
+    onPress={() => navigation.navigate('GroupDetails', {group: group})}
   >
     <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: 'bold', padding: 10 }}>
-      {group.name}
+      {group.info.name}
     </Text>
   </TouchableOpacity>
-</View>
+</View> */}
       <GiftedChat
         messages={messages}
         onSend={messages => onSend(messages)}
+        renderUsernameOnMessage = {true}
         user={{
           _id: user.email,
-          avatar: user.imageURL ? user.imageURL : images.defaultProfile
+          avatar: user.imageURL || images.defaultProfile,
+          name: user.pseudo
         }}
       />
     </View>

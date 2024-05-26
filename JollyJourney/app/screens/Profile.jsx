@@ -17,6 +17,7 @@ import Cards from "../component/Card/Cards";
 import { images } from "../theme/theme";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PicModal from "../component/PicModal";
+import { firestore } from "../../FirebaseConfig";
 
 
 const Profil = () => {
@@ -44,11 +45,9 @@ const Profil = () => {
     switch(field) {
       case 'pseudo':
         try {
-          const firestore = getFirestore();
           const { uid } = user;
           const userDocRef = doc(firestore, "users", uid);
           await updateDoc(userDocRef, { pseudo: newPseudo });
-          console.log('Pseudo mis à jour avec succès dans Firebase');
         } catch (error) {
           console.error('Erreur lors de la mise à jour du pseudo dans Firebase', error);
         }

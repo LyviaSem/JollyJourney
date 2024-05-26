@@ -48,10 +48,8 @@ const Inscription = ({ navigation }) => {
         email: email,
       });
 
-      console.log(response);
       alert("Consultez vos mails !");
     } catch (error) {
-      console.log(error);
       alert("L'inscription a échoué : " + error.message);
     } finally {
       setLoading(false);

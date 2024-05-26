@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import React from 'react';
 
 import Explore from '../app/screens/Explore/Explore';
@@ -13,9 +12,20 @@ import Cities from '../app/screens/Explore/Cities';
 import GroupSelectMembers from '../app/screens/Groups/GroupSelectMembers';
 import GroupTrips from '../app/screens/Groups/GroupTrips';
 import GroupInfo from '../app/screens/Groups/GroupInfo';
-import Trip from '../app/screens/Travel/Trip';
-import Messages from '../app/screens/Chats/Messages';
+import GroupDetails from '../app/screens/Groups/GroupDetails';
+import TopBarNavigation from './TopBarNavigation';
 import { images } from '../app/theme/theme';
+
+function ApercuHeader() {
+  return (
+    <Image
+      style= {{width: '100%',
+        height: 189,}}
+      source={images.defaultImage}
+    />
+  );
+}
+
 
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +34,7 @@ const ExploreStack = createNativeStackNavigator();
 const GroupsStack = createNativeStackNavigator();
 const TravelStack = createNativeStackNavigator();
 const ChatStack = createNativeStackNavigator();
+
 
 function ExploreStackScreen() {
   return (
@@ -41,7 +52,11 @@ function GroupsStackScreen() {
       <GroupsStack.Screen name="GroupSelectMembers" component={GroupSelectMembers} options={{ headerShown: false }} />
       <GroupsStack.Screen name="GroupInfo" component={GroupInfo} options={{ headerShown: false }} />
       <GroupsStack.Screen name="GroupTrips" component={GroupTrips} options={{ headerShown: false }} />
-      <GroupsStack.Screen name="Trip" component={Trip} options={{ headerShown: false }} />
+      <GroupsStack.Screen
+        name="Trip"
+        component={TopBarNavigation}
+        options={{ headerBackground: (props) => <ApercuHeader {...props} />, headerTitle: '' }}
+      />
     </GroupsStack.Navigator>
   );
 }
@@ -50,7 +65,11 @@ function TravelStackScreen() {
   return (
     <TravelStack.Navigator>
       <TravelStack.Screen name="Travels" component={Travels} options={{ headerShown: false }} />
-      <TravelStack.Screen name="Trip" component={Trip} options={{ headerShown: false }} />
+      <TravelStack.Screen
+        name="Trip"
+        component={TopBarNavigation}
+        options={{ headerBackground: (props) => <ApercuHeader {...props} />, headerTitle: '' }}
+      />
     </TravelStack.Navigator>
   );
 }
@@ -59,7 +78,7 @@ function ChatStackScreen() {
   return (
     <ChatStack.Navigator>
       <ChatStack.Screen name="Contacts" component={Contacts} options={{ headerShown: false }} />
-      <ChatStack.Screen name="Message" component={Messages} options={{ headerShown: false }} />
+      <ChatStack.Screen name="GroupsDetails" component={GroupDetails} options={{ headerShown: false }} />
     </ChatStack.Navigator>
   );
 }
@@ -98,7 +117,7 @@ const TabNavigator = () =>{
                 />
             )
           }} />
-          <Tab.Screen name="Messages" component={Contacts} options={{
+          <Tab.Screen name="Messages" component={ChatStackScreen} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
                     source={images.chat}

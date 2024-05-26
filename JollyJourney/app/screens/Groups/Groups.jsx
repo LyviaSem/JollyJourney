@@ -7,18 +7,21 @@ import {
   StatusBar,
   StyleSheet,
   ActivityIndicator,
-  Platform
+  Platform,
+  SafeAreaView
 } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import Cards from "../../component/Card/Cards";
 import { images } from "../../theme/theme";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const Groups = ({navigation }) => {
 
   const { userGroups } = useUser();
 
   const [loading, setLoading] = useState(false);
+  const tabBarHeight = useBottomTabBarHeight();
 
 
   if (loading) {
@@ -29,12 +32,20 @@ const Groups = ({navigation }) => {
     );
   }
 
-  const renderGroupItem = ({ item }) => (
-    <Cards behaviorType="type2" name={item.name} image={item.imageURL? { uri: item.imageURL } : images.defaultProfile} onPressProps={{ routeName: "GroupTrips", additionalProps: {group: item, groupName: item.name, members: item.members, id: item.id, pic: item.imageURL }}}/>
-  );
+  const renderGroupItem = ({ item }) => {
+  
+    return (
+      <Cards 
+        behaviorType="type2" 
+        name={item.info.name} 
+        image={item.info.imageURL ? { uri: item.info.imageURL } : images.defaultProfile} 
+        onPressProps={{ routeName: "GroupTrips", additionalProps: {group: item}}}
+      />
+    );
+  };
 
   return (
-    <View
+    <SafeAreaView
       style={{
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         backgroundColor: "#FEF5EE",
@@ -57,8 +68,9 @@ const Groups = ({navigation }) => {
           <View style={{ alignItems: 'center', marginTop: 30 }}>
             <FlatList
               data={userGroups}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.info.id}
               renderItem={renderGroupItem}
+              contentContainerStyle={{ paddingBottom: tabBarHeight }}
             />
           </View>
         </>
@@ -77,7 +89,7 @@ const Groups = ({navigation }) => {
       
 
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

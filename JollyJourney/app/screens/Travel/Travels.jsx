@@ -7,7 +7,8 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
-  Platform
+  Platform,
+  SafeAreaView
 } from "react-native";
 import {
   collection,
@@ -18,16 +19,18 @@ import {
 import { useUser } from "../../../context/UserContext";
 import City from "../../component/City";
 import { firestore } from '../../../FirebaseConfig';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 function Travels({navigation}) {
   const { userGroups } = useUser();
 
   const [allTrips, setAllTrips] = useState([]);
   const [loading, setLoading] = useState(false);
+  const tabBarHeight = useBottomTabBarHeight();
 
   const fetchUserTravels = async () => {
     try {
-      const groupIds = userGroups.map(group => group.id);
+      const groupIds = userGroups.map(group => group.info.id);
       
       if(!groupIds.empty){
 
@@ -68,11 +71,12 @@ function Travels({navigation}) {
   )
 
   return (
-    <ScrollView
+    <SafeAreaView
       style={{
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         backgroundColor: "#FEF5EE",
         flex: 1,
+        marginBottom :10,
       }}
     >
       <View>
@@ -95,6 +99,7 @@ function Travels({navigation}) {
               data={allTrips}
               keyExtractor={(item) => item.id}
               renderItem={renderTripsItem}
+              //contentContainerStyle={{ paddingBottom: tabBarHeight + 50 }}
             />
           </View>
         </>
@@ -109,7 +114,7 @@ function Travels({navigation}) {
         </View>
       )}
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 

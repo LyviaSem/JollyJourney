@@ -1,15 +1,14 @@
 import React from 'react';
 import { useUser } from '../../../context/UserContext';
-import { View, StyleSheet, StatusBar, FlatList, Platform} from 'react-native';
+import { View, Text, StyleSheet, StatusBar, FlatList, Platform} from 'react-native';
 import Cards from '../../component/Card/Cards'; 
 import { images } from "../../theme/theme";
 
 const Contacts = ({}) => {
   const { userGroups } = useUser();
-  console.log(userGroups)
 
 const renderGroupItem = ({ item }) => (
-  <Cards behaviorType="type2" name={item.name} image={images.defaultProfile} onPressProps={{ routeName: "Message", additionalProps: { group: item }}}/>
+  <Cards behaviorType="type2" name={item.info.name} image={images.defaultProfile} onPressProps={{ routeName: "Message", additionalProps: { group: item }}}/>
 );
 
   return (
@@ -20,10 +19,11 @@ const renderGroupItem = ({ item }) => (
         flex: 1,
       }}
     >
+      <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes contacts</Text>
       <View style={{ alignItems: 'center', marginTop: 30 }}>
             <FlatList
               data={userGroups}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.info.id}
               renderItem={renderGroupItem}
             />
           </View>

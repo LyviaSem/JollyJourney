@@ -1,7 +1,25 @@
 import { StyleSheet } from 'react-native';
 
 export const stylesApercuContent = StyleSheet.create({
-    
+
+  taskContainer: {
+    alignItems: 'center',
+  },
+  taskInput: {
+    flex: 1,
+    height: 40,
+    width: 150,
+  },
+  deleteButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: 'red',
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   inputContainer: {
     marginBottom: 10,
   },
@@ -20,20 +38,22 @@ export const stylesApercuContent = StyleSheet.create({
     backgroundColor: 'white',
   },
   addButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
     backgroundColor: '#6E4B6B',
     borderRadius: 50,
     width: 50,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute', // ajouté
+    bottom: 20, // ajouté
+    right: 20, // ajouté
+    elevation: 5,
   },
   optionsContainer: {
-    position: 'absolute',
-    bottom: 80,
-    right: 20,
+    position: 'absolute', // ajouté
+    bottom: 80, // modifié pour être plus proche du bouton
+    right: 20, // ajouté pour l'aligner avec le bouton
+    width: 150, // élargi pour plus de lisibilité
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 10,
@@ -46,9 +66,5 @@ export const stylesApercuContent = StyleSheet.create({
   optionText: {
     color: 'black',
     fontSize: 16,
-  },
-  container: {
-    flex: 1,
-    position: 'relative',
   },
 });

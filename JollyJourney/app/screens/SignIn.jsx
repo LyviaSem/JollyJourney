@@ -57,7 +57,6 @@ const SignIn = ({ navigation }) => {
       await getUserDetailsFromFirestore(response.user.uid);
       alert("Bienvenue, " + email + " !");
     } catch (error) {
-      console.log(error);
       alert("La connexion a échoué : " + error.message);
     } finally {
       setLoading(false);

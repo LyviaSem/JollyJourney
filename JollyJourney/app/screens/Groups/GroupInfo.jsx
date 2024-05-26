@@ -10,14 +10,14 @@ import { useUser } from '../../../context/UserContext';
 
 const GroupInfo = ({route, navigation}) => {
 
-    const {selectedUsers, creatorId, setSelectedUsers} = route.params;
+    const {creatorId} = route.params;
 
     const [nomDuGroupe, setNomDuGroupe] = useState("");
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [imageUri, setImageUri] = useState();
-    const { user } = useUser();
+    const { user, selectedUsers, setSelectedUsers } = useUser();
 
     const isAdmin = (member) => {
       return member.uid === user.uid
@@ -45,6 +45,8 @@ const GroupInfo = ({route, navigation}) => {
           const groupId = newGroupDocRef.id;
     
           await updateDoc(newGroupDocRef, { id: groupId });
+
+          const memberData = [];
     
           for (const member of selectedUsers) {
             const membreCollection = collection(firestore, 'groups', groupId, 'members');
@@ -53,16 +55,27 @@ const GroupInfo = ({route, navigation}) => {
               userId: member.uid,
               role: isAdmin(member) ? "admin" : "member"
             });
+
+            memberData.push({
+              userId: member.uid,
+              role: isAdmin(member) ? "admin" : "member"
+            });
           }
 
           const docSnapshot = await getDoc(newGroupDocRef);
 
-          // Vérifier si le document existe
           if (docSnapshot.exists()) {
-            // Extraire les données du document
             const groupData = docSnapshot.data();
-            setSelectedUsers([])
-            navigation.navigate('GroupTrips', { group: groupData});
+
+            const groupObject = {
+              info: {
+                ...groupData,
+                id: groupId,
+              },
+              members: memberData,
+            };
+            setSelectedUsers([]);
+            navigation.navigate('GroupTrips', { group: groupObject});
           } 
           
           
@@ -114,7 +127,6 @@ const GroupInfo = ({route, navigation}) => {
           removeImage={removeImage}
           imageUri={setImageUri}
         />
-        {console.log(imageUri)}
 
             <TouchableOpacity
         style={[styles.button, styles.Button, styles.arrowButton]}
@@ -129,7 +141,6 @@ const GroupInfo = ({route, navigation}) => {
 
               <TouchableOpacity
                 style={{ padding: 10, borderRadius: 5, width: "45%", alignItems: "center", backgroundColor: "red" }}
-                //onPress={closeModal}
               >
                 <Text style={{ color: "white", fontWeight: "bold" }}>Annuler</Text>
               </TouchableOpacity>
