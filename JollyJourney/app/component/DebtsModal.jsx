@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, Modal, Button } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Modal, Button, ActivityIndicator } from 'react-native';
 import { getUserInfo } from "../services/firebaseFunction";
 
 const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
   const [debtData, setDebtData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchDebts = async () => {
+      setLoading(true);
       let debtList = [];
       for (const debtorId in debts) {
         for (const creditorId in debts[debtorId]) {
@@ -20,6 +22,7 @@ const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
         }
       }
       setDebtData(debtList);
+      setLoading(false);
     };
 
     if (visible) {
@@ -44,11 +47,15 @@ const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>Dettes</Text>
-          <FlatList
-            data={debtData}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <FlatList
+              data={debtData}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          )}
           <Button title="Fermer" onPress={() => setDebtsModalVisible(false)} />
         </View>
       </View>
