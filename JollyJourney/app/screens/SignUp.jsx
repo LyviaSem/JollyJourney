@@ -41,14 +41,12 @@ const Inscription = ({ navigation }) => {
         email: email,
       });
 
-      // pour le context
       updateUser({
         uid: userID,
         pseudo: pseudo,
         email: email,
       });
 
-      alert("Consultez vos mails !");
     } catch (error) {
       alert("L'inscription a échoué : " + error.message);
     } finally {

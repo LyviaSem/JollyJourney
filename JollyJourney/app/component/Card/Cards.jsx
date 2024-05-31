@@ -13,18 +13,15 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
   const ChildComponent = behaviorType === 'type1' ? CardChildrenProfil : CardChildren;
 
   const handlePress = () => {
-    // Si onPressProps est une fonction, appelez-la
     if (typeof onPressProps === 'function' && type) {
       onPressProps(type);
     } 
     else if (typeof onPressProps === 'function'){
       onPressProps();
     }
-    // Si onPressProps est une chaîne de caractères, naviguez vers la route correspondante
     else if (typeof onPressProps === 'string') {
       navigation.navigate(onPressProps);
     } 
-    // Sinon, si onPressProps est un objet, naviguez vers la route spécifiée avec les props supplémentaires
     else if (typeof onPressProps === 'object' && onPressProps.routeName) {
       const { routeName, additionalProps } = onPressProps;
       navigation.navigate(routeName, additionalProps);
@@ -44,7 +41,7 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
         <TouchableOpacity 
           onPress={() => setIsEditing({...isEditing, [type]: false})}
         >
-          <Icon name="close" size={24} color="red" />
+          <Icon name="close" size={24} color="gray" />
         </TouchableOpacity>
       </View>
     );

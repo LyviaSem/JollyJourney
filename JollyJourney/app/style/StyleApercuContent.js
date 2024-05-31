@@ -10,17 +10,13 @@ export const stylesApercuContent = StyleSheet.create({
     height: 40,
     width: 150,
   },
-  deleteButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: 'red',
-  },
   deleteButtonText: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   inputContainer: {
+    justifyContent:"center",
     marginBottom: 10,
   },
   titleInput: {
@@ -34,7 +30,7 @@ export const stylesApercuContent = StyleSheet.create({
     borderColor: '#6E4B6B',
     borderRadius: 5,
     padding: 10,
-    width: '100%',
+    width: "91%",
     backgroundColor: 'white',
   },
   addButton: {

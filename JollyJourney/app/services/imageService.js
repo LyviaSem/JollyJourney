@@ -53,12 +53,12 @@ const uploadImageFirestorage = async (uri, setModalVisible, collection, docId, s
                const docRef = doc(firestore, collection, docId);
                await updateDoc(docRef, { imageURL: downloadURL });
 
-              if(collection === "users" && updateUser){
-                updateUser(prevUser => ({
-                    ...prevUser,
-                    imageURL: downloadURL
-                }));
-            }
+                if(collection === "users" && updateUser){
+                    updateUser(prevUser => ({
+                        ...prevUser,
+                        imageURL: downloadURL
+                    }));
+                }
 
             } else {
               if(setImage){

@@ -1,4 +1,4 @@
-import { collection, query, getDocs, where, getDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, getDocs, where, getDoc, doc, deleteDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { firestore } from '../../FirebaseConfig'; 
 
 export const fetchUserGroupsFromFirebase = async (userId) => {
@@ -38,6 +38,7 @@ export const getUserInfo = async (userId) => {
     const userDoc = await getDoc(doc(firestore, "users", userId));
     if (userDoc.exists()) {
         const userData = userDoc.data();
+        console.log('userData',userData)
         return {
             pseudo: userData.pseudo,
             imageURL: userData.imageURL || null,
@@ -72,6 +73,34 @@ export const deleteMembers = async (groupId, userId, updateUserGroups, navigate,
     } catch (error) {
         console.error('Erreur de suppression du membre: ', error);
         alert('Erreur', 'La suppression du membre a échoué.');
+    }
+}
+
+export const addExpense = async (tripId, label, amount, userId, participant, setIsVisible, setExpenses, setTitle, setAmount, userPseudo) => {
+    try{
+        const expensesCollection = collection(firestore, 'trips', tripId, 'expenses');
+        const newExpenseDocRef = doc(expensesCollection);
+        const docId = newExpenseDocRef.id;
+
+        const newExpense = {
+            id: docId,
+            tripId: tripId,
+            paidById: userId,
+            paidByPseudo: userPseudo,
+            label: label,
+            amount: amount,
+            participants: participant,
+            date: serverTimestamp()
+        }
+
+        await setDoc(newExpenseDocRef, newExpense);
+        setExpenses((prev) => [...prev, newExpense]);
+        setTitle('');
+        setAmount('');
+        setIsVisible(false)
+
+    } catch(error){
+        console.log("error add expens: ", error)
     }
 }
 

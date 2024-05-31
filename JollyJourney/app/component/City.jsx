@@ -8,11 +8,9 @@ const City = ({picture, name, onPressProps, description }) => {
   const navigation = useNavigation();
 
   const handlePress = () => {
-    // Si onPressProps est une fonction, appelez-la
     if (typeof onPressProps === 'string'){
       navigation.navigate(onPressProps);
     }
-    // Sinon, si onPressProps est un objet, naviguez vers la route spécifiée avec les props supplémentaires
     else if (typeof onPressProps === 'object' && onPressProps.routeName) {
       const { routeName, additionalProps } = onPressProps;
       navigation.navigate(routeName, additionalProps);

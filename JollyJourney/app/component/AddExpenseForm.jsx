@@ -1,111 +1,292 @@
+import React, { useState, useEffect } from "react";
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+  TextInput,
+  StyleSheet,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Dropdown from "./DropDown";
+import { addExpense } from "../services/firebaseFunction";
+import { useUser } from "../../context/UserContext";
+import { colors } from "../theme/theme";
 
-import React, { useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View, Modal, TextInput, StyleSheet, Dimensions } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Dropdown from './DropDown';
+const AddExpenseForm = ({
+  group,
+  isVisible,
+  setIsVisible,
+  trip,
+  setExpenses,
+  selectedExpense,
+}) => {
+  const { user } = useUser();
 
-const AddExpenseForm = ({group, isVisible, setIsVisible }) => {
+  const [checkedItems, setCheckedItems] = useState([]);
+  const [selectAll, setSelectAll] = useState(true);
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState("");
+  const getDefaultItem = () => {
+    if (!user || !group) return null;
+    return group.find((item) => item.pseudo === user.pseudo) || group[0];
+  };
 
-    const [checkedItems, setCheckedItems] = useState({});
-    const [title, setTitle] = useState('');
-    const [amount, setAmount] = useState('');
+  const [selectedItem, setSelectedItem] = useState(getDefaultItem);
 
-    const toggleCheckBox = (itemId) => {
-        setCheckedItems(prevState => ({
-          ...prevState,
-          [itemId]: !prevState[itemId]
-        }));
-      };
-    
+  useEffect(() => {
+    const allIds = group.map((item) => item.id);
+    setCheckedItems(allIds);
+  }, [isVisible]);
 
+  useEffect(() => {
+    if (selectedExpense) {
+      setTitle(selectedExpense.label);
+      setAmount(selectedExpense.amount.toString());
+      setSelectedItem(
+        group.find((item) => item.id === selectedExpense.paidById)
+      );
+      setCheckedItems(selectedExpense.participants);
+    }
+  }, [selectedExpense]);
 
-return(
+  const toggleCheckBox = (id) => {
+    setCheckedItems((prevCheckedItems) => {
+      if (prevCheckedItems.includes(id)) {
+        return prevCheckedItems.filter((itemId) => itemId !== id);
+      } else {
+        return [...prevCheckedItems, id];
+      }
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectAll) {
+      setCheckedItems([]);
+    } else {
+      const allItemIds = group.map((item) => item.id);
+      setCheckedItems(allItemIds);
+    }
+    setSelectAll((prevState) => !prevState);
+  };
+
+  const handleSelectItem = (item) => {
+    setSelectedItem(item);
+  };
+
+  const handleAmountChange = (text, setAmount) => {
+    let newText = text.replace(/[^0-9.]/g, "");
+    const pointCount = (newText.match(/\./g) || []).length;
+    if (pointCount > 1) {
+      const indexOfFirstPoint = newText.indexOf(".");
+      newText =
+        newText.slice(0, indexOfFirstPoint + 1) +
+        newText.slice(indexOfFirstPoint + 1).replace(/\./g, "");
+    }
+    setAmount(newText);
+  };
+
+  const handleAmountBlur = (amount, setAmount) => {
+    const parts = amount.split(".");
+    if (parts.length === 2 && parts[1].length === 1) {
+      setAmount(`${parts[0]}.${parts[1]}0`);
+    }
+  };
+
+  return (
     <Modal
-        visible={isVisible}
-        onBackdropPress={() => setIsVisible(false)}
-        transparent={true}
+      visible={isVisible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setIsVisible(false)}
     >
-        <View style={styles.contentPosition}>
+      <View style={styles.contentPosition}>
         <View style={styles.modalContent}>
-        <TextInput
-           placeholder="Titre"
-           value={title}
-           onChangeText={setTitle}
-           style={{ marginBottom: 10, paddingHorizontal: 10, height: 40, borderColor: 'gray', borderWidth: 1 }}
-        />
+          <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:10}}>
+            <TouchableOpacity
+              onPress={() => {
+                if (title && amount && checkedItems.length > 0) {
+                  addExpense(
+                    trip.id,
+                    title,
+                    amount,
+                    selectedItem.id,
+                    checkedItems,
+                    setIsVisible,
+                    setExpenses,
+                    setTitle,
+                    setAmount,
+                    selectedItem.pseudo
+                  );
+                } else {
+                  alert("Veuillez remplir tous les champs.");
+                }
+              }}
+            >
+              <Text> Enregistrer </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsVisible(false)}>
+              <Icon name={"close"} size={24} color={"gray"} />
+            </TouchableOpacity>
+          </View>
+          <TextInput
+            placeholder="Titre"
+            value={title}
+            onChangeText={setTitle}
+            style={styles.input}
+          />
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+          <View style={styles.amountContainer}>
             <TextInput
               placeholder="Montant"
               value={amount}
-              onChangeText={text => setAmount(text.replace(/[^0-9]/g, ''))}
-              keyboardType="numeric"
-              style={{ flex: 1, marginRight: 10, paddingHorizontal: 10, height: 40, borderColor: 'gray', borderWidth: 1 }}
+              onChangeText={(text) => handleAmountChange(text, setAmount)}
+              onBlur={() => handleAmountBlur(amount, setAmount)}
+              keyboardType="decimal-pad"
+              style={styles.amountInput}
             />
-            <Text>Euro</Text>
-        </View>
-       
-        <Dropdown group= {group} />
-        <FlatList
-            data={group}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.currencySymbol}>€</Text>
+          </View>
+
+          <Dropdown group={group} onSelectItem={handleSelectItem} />
+
+          <TouchableOpacity
+            onPress={() => toggleSelectAll()}
+            style={{ flexDirection: "row", gap:10, alignItems:"center" }}
+          >
+            <Icon
+              name={selectAll ? "checkbox-marked" : "checkbox-blank-outline"}
+              size={24}
+              color={selectAll ? colors.purple : colors.yellow}
+            />
+            <Text>Pour qui ?</Text>
+          </TouchableOpacity>
+
+          <View style={{ flex: 1 }}>
+            <FlatList
+              data={group}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.checkboxContainer}>
                   <TouchableOpacity
-                    style={{
-                      width: 24,
-                      height: 24,
-                    
-                      marginRight: 10,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
+                    key={item.id}
+                    style={styles.checkbox}
                     onPress={() => toggleCheckBox(item.id)}
                   >
                     <Icon
-                      name={checkedItems[item.id] ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                      name={
+                        checkedItems.includes(item.id)
+                          ? "checkbox-marked"
+                          : "checkbox-blank-outline"
+                      }
                       size={24}
-                      color={checkedItems[item.id] ? 'green' : 'black'}
+                      color={checkedItems.includes(item.id) ? colors.purple : colors.yellow}
                     />
                   </TouchableOpacity>
                   <Text>{item.pseudo}</Text>
                 </View>
-            )}
-        />
+              )}
+            />
+          </View>
 
-        <TouchableOpacity
-          onPress={() => setIsVisible(false)}
-        >
-          <Text> exit</Text>
-        </TouchableOpacity>
+          {/* {selectedExpense ? (
+            <TouchableOpacity
+              onPress={() => {
+                // Logique de suppression ici
+                deleteExpense(selectedExpense.id);
+                setIsVisible(false);
+              }}
+            >
+              <Text> Supprimer </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                if (title && amount && checkedItems.length > 0) {
+                  addExpense(
+                    trip.id,
+                    title,
+                    amount,
+                    selectedItem.id,
+                    checkedItems,
+                    setIsVisible,
+                    setExpenses,
+                    setTitle,
+                    setAmount,
+                    selectedItem.pseudo
+                  );
+                } else {
+                  alert("Veuillez remplir tous les champs.");
+                }
+              }}
+            >
+              <Text style={styles.btnSave}> Enregistrer </Text>
+            </TouchableOpacity>
+          )} */}
         </View>
-        </View>
-
-      </Modal>
-)
-
-
-}
+      </View>
+    </Modal>
+  );
+};
 
 export default AddExpenseForm;
 
 const styles = StyleSheet.create({
+  contentPosition: {
+    flexGrow: 1,
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    height: "50%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+  },
+  input: {
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    height: 40,
+    borderColor: "gray",
+    borderBottomWidth: 1,
+  },
+  amountContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderColor: "gray",
+    paddingHorizontal: 10,
+  },
+  amountInput: {
+    flex: 1,
+    height: 40,
+    paddingRight: 10,
+  },
+  currencySymbol: {
+    fontSize: 18,
+    marginLeft: 5,
+  },
+  selectAllContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
 
-    contentPosition:{
-        flex: 1,
-        justifyContent: 'flex-end'
-    },
-
-    modal: {
-        marginBottom: 0
-    },
-    
-    modalContent: {
-        height: Dimensions.get('window').height * 0.50,
-        backgroundColor: 'white',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        padding: 20,
-        marginBottom: 0
-    },
-})
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

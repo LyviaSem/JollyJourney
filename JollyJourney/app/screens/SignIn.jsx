@@ -32,7 +32,6 @@ const SignIn = ({ navigation }) => {
       if (userDocSnapshot.exists()) {
         const userData = userDocSnapshot.data();
 
-        // Mise à jour du contexte utilisateur avec les détails récupérés
         updateUser({
           uid: uid,
           pseudo: userData.pseudo || "",
@@ -55,7 +54,6 @@ const SignIn = ({ navigation }) => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       await getUserDetailsFromFirestore(response.user.uid);
-      alert("Bienvenue, " + email + " !");
     } catch (error) {
       alert("La connexion a échoué : " + error.message);
     } finally {

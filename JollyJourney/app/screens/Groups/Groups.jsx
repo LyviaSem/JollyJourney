@@ -65,12 +65,11 @@ const Groups = ({navigation }) => {
             </View>
             </View>
 
-          <View style={{ alignItems: 'center', marginTop: 30 }}>
+          <View style={{ alignItems: 'center', marginTop: 30, flex:1 }}>
             <FlatList
               data={userGroups}
               keyExtractor={(item) => item.info.id}
               renderItem={renderGroupItem}
-              contentContainerStyle={{ paddingBottom: tabBarHeight }}
             />
           </View>
         </>

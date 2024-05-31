@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useUser } from '../../context/UserContext';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Dropdown = ({ group }) => {
+const Dropdown = ({ group, onSelectItem }) => {
   const { user } = useUser();
 
   const getDefaultItem = () => {
@@ -13,8 +14,15 @@ const Dropdown = ({ group }) => {
   const [selectedItem, setSelectedItem] = useState(getDefaultItem); 
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
+  useEffect(() => {
+    if (selectedItem) {
+      onSelectItem(selectedItem);
+    }
+  }, [selectedItem, onSelectItem]);
+
   const handleSelect = (item) => {
     setSelectedItem(item);
+    onSelectItem(item)
     setIsDropdownVisible(false);
   };
 
@@ -34,6 +42,7 @@ const Dropdown = ({ group }) => {
         style={styles.selectedItem}
       >
         <Text style={styles.selectedItemText}>{selectedItem.pseudo}</Text>
+        <Icon name={isDropdownVisible ? 'chevron-down' : 'chevron-right'} size={24} color="black" />
       </TouchableOpacity>
 
       {isDropdownVisible && (
@@ -50,14 +59,15 @@ const Dropdown = ({ group }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '80%',
-    marginTop: 20,
+    marginBottom: 30
   },
   selectedItem: {
     padding: 10,
     backgroundColor: 'white',
     borderColor: 'gray',
-    borderWidth: 1,
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
   selectedItemText: {
     fontSize: 16,
@@ -65,8 +75,11 @@ const styles = StyleSheet.create({
   dropdown: {
     borderColor: 'gray',
     borderWidth: 1,
-    maxHeight: 200, // Limite la hauteur du dropdown
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    maxHeight: 200,
     backgroundColor: 'white',
+    padding: 10
   },
   item: {
     padding: 10,

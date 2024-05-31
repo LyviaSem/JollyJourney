@@ -100,7 +100,7 @@ const ItineraireContent = ({route}) => {
 
   const renderJours = ({item}) => {
     return(
-      <View style={{marginTop: 10}}>
+      <View style={{marginTop: 10, justifyContent:'center', alignItems: 'center'}}>
       <TodoList 
         element={item} 
         onElementChange={handleElementChange} 
@@ -115,10 +115,11 @@ const ItineraireContent = ({route}) => {
       style={{ 
         paddingTop: 10,
         backgroundColor: "#FEF5EE",
-        flex: 1 
+        flex: 1, 
+        justifyContent:"center",
       }}
     >
-      <Text>Itinéraire du voyage :</Text>
+      <Text style={{textAlign:"center", fontWeight:"bold", marginBottom:10}}>Liste des activités :</Text>
       <FlatList
         data={elements}
         keyExtractor={(item) => item.id}
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
   },

@@ -33,17 +33,6 @@ const Messages = ({ route, navigation}) => {
           </View>
         </TouchableOpacity>
       ),
-      // headerLeft: () => (
-      //   <TouchableOpacity 
-      //     onPress={() => navigation.goBack()}
-      //     // style={{ top: 20, left: 20 }}
-      //   >
-      //     <Image
-      //       source={images.planeBtn}
-      //       style={{ width: 40, height: 34 }} 
-      //     />
-      //   </TouchableOpacity>
-      // ),
     });
   }, [navigation]);
 

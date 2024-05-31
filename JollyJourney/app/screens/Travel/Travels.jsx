@@ -21,15 +21,16 @@ import City from "../../component/City";
 import { firestore } from '../../../FirebaseConfig';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
-function Travels({navigation}) {
+function Travels({}) {
   const { userGroups } = useUser();
 
   const [allTrips, setAllTrips] = useState([]);
   const [loading, setLoading] = useState(false);
   const tabBarHeight = useBottomTabBarHeight();
-
+  console.log(allTrips)
   const fetchUserTravels = async () => {
     try {
+      setLoading(true)
       const groupIds = userGroups.map(group => group.info.id);
       
       if(!groupIds.empty){
@@ -83,18 +84,8 @@ function Travels({navigation}) {
         <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes voyages</Text>
       {allTrips.length > 0 ? (
         <>
-            <View style={{ position: 'absolute', top: 10, right: 10, padding: 10 }}>
-              {/* <TouchableOpacity
-                onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
-              >
-                <Image
-                  source={require('../../../assets/plus.png')}
-                  style={{ width: 30, height: 30 }}
-                />
-              </TouchableOpacity> */}
-            </View>
 
-          <View style={{ alignItems: 'center', marginTop: 30 }}>
+          <View style={{ alignItems: 'center', marginTop: 30,}}>
             <FlatList
               data={allTrips}
               keyExtractor={(item) => item.id}
@@ -105,12 +96,7 @@ function Travels({navigation}) {
         </>
       ) : (
         <View style={{ alignItems: "center", }}>
-          {/* <TouchableOpacity
-            style={[styles.button, styles.Button]}
-            onPress={() => navigation.navigate("CreateGroup", { onGroupCreated: updateGroups })}
-          > */}
             <Text style={styles.buttonText}>Tu n'a pas de voyage progamé</Text>
-          {/* </TouchableOpacity> */}
         </View>
       )}
       </View>
@@ -158,7 +144,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#FFFFFF",
+    color: "black",
     fontWeight: "bold",
   },
   backButton: {
