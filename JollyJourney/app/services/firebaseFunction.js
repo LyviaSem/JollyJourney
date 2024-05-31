@@ -17,7 +17,6 @@ export const fetchUserGroupsFromFirebase = async (userId) => {
             const members = await getDocs(membersCollection)
 
             if (!membersDocs.empty) {
-                // L'utilisateur est membre de ce groupe
                 const groupData = groupDoc.data();
                 const group = { info: groupData, members: [] };
 
@@ -69,7 +68,6 @@ export const deleteMembers = async (groupId, userId, updateUserGroups, navigate,
         
          updateUserGroups(uid)
          navigate('Contacts')
-        alert('Succès', 'Le membre a été supprimé avec succès.');
     } catch (error) {
         console.error('Erreur de suppression du membre: ', error);
         alert('Erreur', 'La suppression du membre a échoué.');

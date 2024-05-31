@@ -17,6 +17,7 @@ import AddExpenseForm from "../../component/AddExpenseForm";
 import { calculateTotalExpenses } from "../../services/CalculService";
 import { calculateDebts } from "../../services/CalculService";
 import DebtsModal from "../../component/DebtsModal";
+import Btn from "../../component/Btn"
 
 const Expenses = ({ route, navigation }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);

@@ -14,17 +14,12 @@ import { useUser } from "../../../context/UserContext";
 import Cards from "../../component/Card/Cards";
 import { images } from "../../theme/theme";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const Groups = ({navigation }) => {
 
-  const { userGroups } = useUser();
+  const { userGroups, loadingGroups } = useUser();
 
-  const [loading, setLoading] = useState(false);
-  const tabBarHeight = useBottomTabBarHeight();
-
-
-  if (loading) {
+  if (loadingGroups) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />

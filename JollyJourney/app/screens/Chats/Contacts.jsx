@@ -1,15 +1,36 @@
-import React from 'react';
-import { useUser } from '../../../context/UserContext';
-import { View, Text, StyleSheet, StatusBar, FlatList, Platform} from 'react-native';
-import Cards from '../../component/Card/Cards'; 
+import React from "react";
+import { useUser } from "../../../context/UserContext";
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  FlatList,
+  Platform,
+  ActivityIndicator
+} from "react-native";
+import Cards from "../../component/Card/Cards";
 import { images } from "../../theme/theme";
 
 const Contacts = ({}) => {
-  const { userGroups } = useUser();
+  const { userGroups, loadingGroups } = useUser();
 
-const renderGroupItem = ({ item }) => (
-  <Cards behaviorType="type2" name={item.info.name} image={images.defaultProfile} onPressProps={{ routeName: "Message", additionalProps: { group: item }}}/>
-);
+  if (loadingGroups) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  const renderGroupItem = ({ item }) => (
+    <Cards
+      behaviorType="type2"
+      name={item.info.name}
+      image={item.info.imageURL ? { uri: item.info.imageURL } : images.defaultProfile} 
+      onPressProps={{ routeName: "Message", additionalProps: { group: item } }}
+    />
+  );
 
   return (
     <View
@@ -19,17 +40,26 @@ const renderGroupItem = ({ item }) => (
         flex: 1,
       }}
     >
-      <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes contacts</Text>
-      <View style={{ alignItems: 'center', marginTop: 30 }}>
-            <FlatList
-              data={userGroups}
-              keyExtractor={(item) => item.info.id}
-              renderItem={renderGroupItem}
-            />
-          </View>
+      <Text
+        style={{
+          fontWeight: "bold",
+          fontSize: 20,
+          marginTop: 91,
+          alignSelf: "center",
+        }}
+      >
+        Mes contacts
+      </Text>
+      <View style={{ alignItems: "center", marginTop: 30 }}>
+        <FlatList
+          data={userGroups}
+          keyExtractor={(item) => item.info.id}
+          renderItem={renderGroupItem}
+        />
+      </View>
     </View>
-  )
-}
+  );
+};
 
 export default Contacts;
 

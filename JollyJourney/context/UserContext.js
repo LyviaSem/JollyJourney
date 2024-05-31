@@ -9,6 +9,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userGroups, setUserGroups] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [loadingGroups, setLoadingGroups] = useState(false);
 
   const updateUser = (userData) => {
     setUser(userData);
@@ -16,8 +17,10 @@ export const UserProvider = ({ children }) => {
 
   const updateUserGroups = async (userId) => {
     try {
+      setLoadingGroups(true)
       const groups = await fetchUserGroupsFromFirebase(userId);
       setUserGroups(groups);
+      setLoadingGroups(false)
     } catch (error) {
       console.error("Erreur lors de la récupération des groupes :", error);
     }
@@ -36,7 +39,7 @@ export const UserProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <UserContext.Provider value={{ user, updateUser, userGroups, updateUserGroups, selectedUsers, setSelectedUsers }}>
+    <UserContext.Provider value={{ user, updateUser, userGroups, updateUserGroups, selectedUsers, setSelectedUsers, loadingGroups }}>
       {children}
     </UserContext.Provider>
   );

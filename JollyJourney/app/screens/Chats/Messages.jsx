@@ -20,17 +20,9 @@ const Messages = ({ route, navigation}) => {
         <TouchableOpacity
           onPress={() => navigation.navigate('GroupDetails', {group: group})}
         >
-          <View
-            style={{flexDirection: 'row'}}
-          >
-          <Image
-            source={group.info.imageURL}
-            style={{ width: 20, height: 20 }} 
-          />
           <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: 'bold', padding: 10 }}>
             {group.info.name}
           </Text>
-          </View>
         </TouchableOpacity>
       ),
     });
@@ -77,24 +69,6 @@ const Messages = ({ route, navigation}) => {
 
   return (
     <View style={{ flex: 1, paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 }}>
-      {/* <View style={{ flexDirection: 'row', marginTop: 20 }}>
-  <TouchableOpacity 
-    onPress={() => navigation.goBack()}
-    style={{ top: 20, left: 20 }}
-  >
-    <Image
-      source={images.planeBtn}
-      style={{ width: 40, height: 34 }} 
-    />
-  </TouchableOpacity>
-  <TouchableOpacity
-    onPress={() => navigation.navigate('GroupDetails', {group: group})}
-  >
-    <Text style={{ flex: 1, textAlign: 'center', fontSize: 18, fontWeight: 'bold', padding: 10 }}>
-      {group.info.name}
-    </Text>
-  </TouchableOpacity>
-</View> */}
       <GiftedChat
         messages={messages}
         onSend={messages => onSend(messages)}
