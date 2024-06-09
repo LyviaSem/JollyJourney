@@ -20,9 +20,7 @@ export const stylesSearchBar = StyleSheet.create({
     },
     searchButton: {
       backgroundColor: '#FFB703',
-      borderRadius: 28.5, // Garder le même rayon de bordure que le conteneur de recherche
-      padding: 15,
+      borderRadius: 28.5,
       right: 0
-      //marginLeft: -0, // Décaler le bouton vers la gauche pour l'intégrer visuellement dans la barre de recherche
     },
   });

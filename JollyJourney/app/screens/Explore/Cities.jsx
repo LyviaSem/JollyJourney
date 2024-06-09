@@ -9,7 +9,7 @@ import {
   Platform
 } from "react-native";
 import React from "react";
-import { images } from "../../theme/theme";
+import { IMAGES } from "../../theme/theme";
 
 const Cities = ({ route, navigation: { goBack } }) => {
   const { city } = route.params;
@@ -32,7 +32,7 @@ const Cities = ({ route, navigation: { goBack } }) => {
           style={{ top: 20, left: 20 }}
         >
           <Image
-            source={images.planeBtn}
+            source={IMAGES.planeBtn}
             style={[styles.backButton]}
           />
         </TouchableOpacity>

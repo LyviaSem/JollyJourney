@@ -19,15 +19,12 @@ import {
 import { useUser } from "../../../context/UserContext";
 import City from "../../component/City";
 import { firestore } from '../../../FirebaseConfig';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 function Travels({}) {
   const { userGroups } = useUser();
 
   const [allTrips, setAllTrips] = useState([]);
   const [loading, setLoading] = useState(false);
-  const tabBarHeight = useBottomTabBarHeight();
-  console.log(allTrips)
   const fetchUserTravels = async () => {
     try {
       setLoading(true)

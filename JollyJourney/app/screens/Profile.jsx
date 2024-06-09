@@ -14,7 +14,7 @@ import { sendPasswordResetEmail, updateEmail } from "firebase/auth";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import { uploadImage, removeImage } from "../services/imageService";
 import Cards from "../component/Card/Cards";
-import { images } from "../theme/theme";
+import { IMAGES } from "../theme/theme";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PicModal from "../component/PicModal";
 import { firestore } from "../../FirebaseConfig";
@@ -75,7 +75,7 @@ const Profil = () => {
 
         <TouchableOpacity style={styles.profilImageContainer}>
           <Image
-            source={user.imageURL ? { uri: user.imageURL } : images.defaultProfile}
+            source={user.imageURL ? { uri: user.imageURL } : IMAGES.defaultProfile}
             style={styles.profilImage}
           />
 

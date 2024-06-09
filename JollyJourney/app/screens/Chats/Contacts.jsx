@@ -10,7 +10,7 @@ import {
   ActivityIndicator
 } from "react-native";
 import Cards from "../../component/Card/Cards";
-import { images } from "../../theme/theme";
+import { IMAGES } from "../../theme/theme";
 
 const Contacts = ({}) => {
   const { userGroups, loadingGroups } = useUser();
@@ -27,7 +27,7 @@ const Contacts = ({}) => {
     <Cards
       behaviorType="type2"
       name={item.info.name}
-      image={item.info.imageURL ? { uri: item.info.imageURL } : images.defaultProfile} 
+      image={item.info.imageURL ? { uri: item.info.imageURL } : IMAGES.defaultProfile} 
       onPressProps={{ routeName: "Message", additionalProps: { group: item } }}
     />
   );

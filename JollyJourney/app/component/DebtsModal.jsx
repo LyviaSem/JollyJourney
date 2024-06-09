@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, Modal, Button, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Modal, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { getUserInfo } from "../services/firebaseFunction";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 
 const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
   const [debtData, setDebtData] = useState([]);
@@ -46,6 +48,13 @@ const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
+        <TouchableOpacity 
+        style={{ position: 'absolute',
+        top: 10,
+        right: 10,}}
+        onPress={() => setDebtsModalVisible(false)}>
+              <Icon name={"close"} size={24} color={"gray"} />
+            </TouchableOpacity>
           <Text style={styles.title}>Dettes</Text>
           {loading ? (
             <ActivityIndicator size="large" color="#0000ff" />
@@ -56,7 +65,6 @@ const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
               keyExtractor={(item, index) => index.toString()}
             />
           )}
-          <Button title="Fermer" onPress={() => setDebtsModalVisible(false)} />
         </View>
       </View>
     </Modal>

@@ -8,7 +8,7 @@ import {
   FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import {colors} from "../theme/theme"
+import { COLORS } from "../theme/theme"
 
 const TodoList = ({ element, onElementChange }) => {
   const [localTitle, setLocalTitle] = useState(element.label);
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     width: "90%",
     borderRadius:5,
     borderWidth:1,
-    borderColor: colors.purple
+    borderColor: COLORS.purple
   },
   dateContainer: {
     flexDirection: "row",

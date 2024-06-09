@@ -4,7 +4,7 @@ import { stylesCards } from '../../style/StyleCards';
 import CardChildren from './CardChildren';
 import CardChildrenProfil from './CardChildrenProfil';
 import { useNavigation } from '@react-navigation/native';
-import { images } from '../../theme/theme';
+import { IMAGES } from '../../theme/theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditing, newData, setNewData, type, handleSavePress, image, setIsEditing}) => {
@@ -56,7 +56,7 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
     buttonContent = (
       <TouchableOpacity onPress={handlePress}>
         <Image
-          source={images.planeBtn}
+          source={IMAGES.planeBtn}
           style={[stylesCards.backButton]}
         />
       </TouchableOpacity>

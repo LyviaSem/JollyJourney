@@ -4,8 +4,6 @@ import {
   TouchableOpacity,
   Animated,
   FlatList,
-  Platform,
-  StatusBar,
   StyleSheet,
 } from "react-native";
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
@@ -43,6 +41,7 @@ const ApercuContent = ({ route, navigation }) => {
     { type: "input", label: "Moyen de locomotion", value: "" },
     { type: "input", label: "Prix du moyen de locomotion", value: "" },
   ];
+
 
   useEffect(() => {
     const fetchData = async () => {

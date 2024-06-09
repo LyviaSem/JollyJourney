@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import Cards from "../../component/Card/Cards";
-import { images } from "../../theme/theme";
+import { IMAGES, COLORS } from "../../theme/theme";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Groups = ({navigation }) => {
@@ -33,7 +33,7 @@ const Groups = ({navigation }) => {
       <Cards 
         behaviorType="type2" 
         name={item.info.name} 
-        image={item.info.imageURL ? { uri: item.info.imageURL } : images.defaultProfile} 
+        image={item.info.imageURL ? { uri: item.info.imageURL } : IMAGES.defaultProfile} 
         onPressProps={{ routeName: "GroupTrips", additionalProps: {group: item}}}
       />
     );
@@ -55,7 +55,7 @@ const Groups = ({navigation }) => {
               <TouchableOpacity
                 onPress={() => navigation.navigate("GroupSelectMembers")}
               >
-                <Icon name={"plus"} size={30} color="black" />
+                <Icon name={"plus"} size={30} color={COLORS.purple} />
               </TouchableOpacity>
             </View>
             </View>

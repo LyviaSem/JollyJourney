@@ -3,7 +3,7 @@ import React, {useState, useRef, useEffect} from "react";
 import ApercuContent from './ApercuContent';
 import ItineraireContent from './ItineraireContent';
 import DepenseContent from './DepenseContent';
-import { images } from "../../theme/theme";
+import { IMAGES } from "../../theme/theme";
 import { firestore } from "../../../FirebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 
@@ -140,7 +140,7 @@ const Trip = ({route, navigation: { goBack } }) => {
     }}>
 
       <ImageBackground
-        source={trip.imageURL? { uri: trip.imageURL } : images.defaultImage}
+        source={trip.imageURL? { uri: trip.imageURL } : IMAGES.defaultImage}
         style={[styles.backgroundImage]}
       >
         <TouchableOpacity
@@ -149,7 +149,7 @@ const Trip = ({route, navigation: { goBack } }) => {
         style={{ top: 20, left: 20 }}
         >
         <Image
-          source={images.planeBtn}
+          source={IMAGES.planeBtn}
           style={[styles.backButton]}
         />
         </TouchableOpacity>

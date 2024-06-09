@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, View, Text, Button, StyleSheet } from "react-native";
+import { Modal, View, Text, StyleSheet } from "react-native";
 import Btn from "../Btn";
 
 const CustomModal = ({ visible, onClose, message, onConfirm }) => {

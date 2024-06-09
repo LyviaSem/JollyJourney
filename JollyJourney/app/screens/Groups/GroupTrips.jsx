@@ -14,14 +14,13 @@ import {
 import React, { useState, useLayoutEffect } from "react";
 import { collection, where, query, onSnapshot } from "@firebase/firestore";
 import Cards from "../../component/Card/Cards";
-import { images } from "../../theme/theme";
+import { IMAGES } from "../../theme/theme";
 import { firestore } from "../../../FirebaseConfig";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RenderOptions from "../../component/RenderOptions";
 
 const GroupTrips = ({ route, navigation }) => {
   const { group } = route.params;
-  console.log("image group", group);
 
   const [groupTrips, setGroupTrips] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -75,7 +74,7 @@ const GroupTrips = ({ route, navigation }) => {
     <Cards
       behaviorType="type2"
       name={item.nom}
-      image={item.imageURL ? { uri: item.imageURL } : images.defaultProfile}
+      image={item.imageURL ? { uri: item.imageURL } : IMAGES.defaultProfile}
       onPressProps={{ routeName: "Trip", additionalProps: { trip: item } }}
     />
   );
@@ -94,7 +93,7 @@ const GroupTrips = ({ route, navigation }) => {
           source={
             group.info.imageURL
               ? { uri: group.info.imageURL }
-              : images.defaultImage
+              : IMAGES.defaultImage
           }
           style={styles.backgroundImage}
         >
@@ -103,7 +102,7 @@ const GroupTrips = ({ route, navigation }) => {
             onPress={() => navigation.navigate("Groups")}
             style={{ top: 25, left: 20 }}
           >
-            <Image source={images.planeBtn} style={styles.backButton} />
+            <Image source={IMAGES.planeBtn} style={styles.backButton} />
           </TouchableOpacity>
         </ImageBackground>
 

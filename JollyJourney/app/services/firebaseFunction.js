@@ -1,4 +1,4 @@
-import { collection, query, getDocs, where, getDoc, doc, deleteDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, query, getDocs, where, getDoc, doc, deleteDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from '../../FirebaseConfig'; 
 
 export const fetchUserGroupsFromFirebase = async (userId) => {
@@ -37,7 +37,6 @@ export const getUserInfo = async (userId) => {
     const userDoc = await getDoc(doc(firestore, "users", userId));
     if (userDoc.exists()) {
         const userData = userDoc.data();
-        console.log('userData',userData)
         return {
             pseudo: userData.pseudo,
             imageURL: userData.imageURL || null,
@@ -74,7 +73,7 @@ export const deleteMembers = async (groupId, userId, updateUserGroups, navigate,
     }
 }
 
-export const addExpense = async (tripId, label, amount, userId, participant, setIsVisible, setExpenses, setTitle, setAmount, userPseudo) => {
+export const addExpense = async (tripId, label, amount, userId, participant, setIsVisible, setExpenses, setTitle, setAmount, userPseudo, resetForm) => {
     try{
         const expensesCollection = collection(firestore, 'trips', tripId, 'expenses');
         const newExpenseDocRef = doc(expensesCollection);
@@ -93,12 +92,49 @@ export const addExpense = async (tripId, label, amount, userId, participant, set
 
         await setDoc(newExpenseDocRef, newExpense);
         setExpenses((prev) => [...prev, newExpense]);
-        setTitle('');
-        setAmount('');
-        setIsVisible(false)
+        setIsVisible(false);
+        resetForm()
 
     } catch(error){
-        console.log("error add expens: ", error)
+        console.error("error add expens: ", error)
+    }
+}
+
+export const deleteExpense = async (tripId, expenseId, setExpenses, expenses) => {
+    try{
+        const expenseRef = collection(firestore, 'trips', tripId, 'expenses')
+        const q = query(expenseRef, where('id', '==', expenseId));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            alert('Erreur', 'Aucun membre trouvé avec cet ID.');
+            return;
+        }
+    
+        querySnapshot.forEach(async (docSnapshot) => {
+            await deleteDoc(docSnapshot.ref);
+        });
+
+        const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
+        setExpenses(updatedExpenses);
+
+    } catch(error){
+        console.error("error on delete expense", error)
+    }
+}
+
+export const updateExpense = async (expenseId, updateElement, setIsVisible, tripId, setExpenses) => {
+    try{
+        const expensesDocRef = doc(firestore, 'trips', tripId, 'expenses', expenseId);
+        await updateDoc(expensesDocRef, updateElement)
+        setExpenses(prevExpenses =>
+            prevExpenses.map(expense =>
+              expense.id === expenseId ? { ...expense, ...updateElement } : expense
+            )
+        );
+        setIsVisible(false)
+    } catch(error){
+        console.error('Error update data:', error)
     }
 }
 

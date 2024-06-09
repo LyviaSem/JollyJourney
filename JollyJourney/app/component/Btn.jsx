@@ -1,8 +1,9 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { COLORS } from "../theme/theme";
 
-const CustomButton = ({
+const Btn = ({
   name,
   action,
   iconName,
@@ -25,7 +26,7 @@ const CustomButton = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#6E4B6B",
+    backgroundColor: COLORS.purple,
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
@@ -35,11 +36,11 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   buttonText: {
-    color: "#fff",
+    color: COLORS.white,
   },
   iconContainer: {
     marginRight: 10,
   },
 });
 
-export default CustomButton;
+export default Btn;

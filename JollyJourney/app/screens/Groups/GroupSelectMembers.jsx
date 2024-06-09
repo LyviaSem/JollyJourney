@@ -19,12 +19,11 @@ import { useUser } from "../../../context/UserContext";
 import filter from "lodash.filter";
 import Cards from "../../component/Card/Cards";
 import SearchBar from "../../component/SearchBar";
-import { images } from "../../theme/theme";
+import { IMAGES } from "../../theme/theme";
 
 const GroupSelectMembers = ({navigation}) => {
 
   const { user, selectedUsers, setSelectedUsers } = useUser();
-  console.log( 'selectedUsers', selectedUsers)
 
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -90,9 +89,8 @@ const GroupSelectMembers = ({navigation}) => {
   };
 
   const renderItem = ({ item }) => {
-    // console.log('item',selectedUsers.includes(item));
     return (
-      <Cards behaviorType="toggle" name={item.pseudo} image={item.imageURL ? { uri: item.imageURL } : images.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
+      <Cards behaviorType="toggle" name={item.pseudo} image={item.imageURL ? { uri: item.imageURL } : IMAGES.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
     );
   };
 
@@ -139,7 +137,7 @@ const GroupSelectMembers = ({navigation}) => {
         }}
       >
         <Image
-          source={images.whitePlaneBtn}
+          source={IMAGES.whitePlaneBtn}
           style={styles.arrowImage}
         />
       </TouchableOpacity>

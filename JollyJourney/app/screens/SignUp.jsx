@@ -13,7 +13,9 @@ import { FIREBASE_AUTH, firestore } from "../../FirebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useUser } from "../../context/UserContext";
 import { collection, doc, setDoc } from "firebase/firestore";
-import { images } from "../theme/theme";
+import { IMAGES } from "../theme/theme";
+import Btn from "../component/Btn";
+import { signInStyle } from "../style/StyleSignIn";
 
 const Inscription = ({ navigation }) => {
   const { updateUser } = useUser();
@@ -67,7 +69,7 @@ const Inscription = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={images.logo}
+            source={IMAGES.logo}
             style={styles.logo}
           />
         </View>
@@ -97,12 +99,12 @@ const Inscription = ({ navigation }) => {
           autoCapitalize="none"
           onChangeText={(text) => setPassword(text)}
         />
-        <TouchableOpacity
-          style={[styles.button, styles.registerButton]}
-          onPress={signUp}
-        >
-          <Text style={styles.buttonText}>Inscription</Text>
-        </TouchableOpacity>
+        <Btn
+            name="Inscription"
+            action={signUp}
+            textStyle={signInStyle.buttonTextStyle}
+           buttonStyle={signInStyle.buttonStyle}
+        />
         <TouchableOpacity
           style={styles.switchButton}
           onPress={() => navigation.navigate("SignIn")}

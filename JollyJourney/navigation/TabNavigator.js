@@ -14,14 +14,14 @@ import GroupTrips from '../app/screens/Groups/GroupTrips';
 import GroupInfo from '../app/screens/Groups/GroupInfo';
 import GroupDetails from '../app/screens/Groups/GroupDetails';
 import TopBarNavigation from './TopBarNavigation';
-import { images } from '../app/theme/theme';
+import { IMAGES } from '../app/theme/theme';
 
 function ApercuHeader() {
   return (
     <Image
       style= {{width: '100%',
         height: 189,}}
-      source={images.defaultImage}
+      source={IMAGES.defaultImage}
     />
   );
 }
@@ -94,7 +94,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Explorer" component={ExploreStackScreen} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={images.globe}
+                    source={IMAGES.globe}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
@@ -104,7 +104,7 @@ const TabNavigator = () =>{
 
               // <Icon name={"account-group-outline"} size={30} color="white"  />
                 <Image 
-                    source={images.group}
+                    source={IMAGES.group}
                     style={{ tintColor: color, width: size * 1.5, height: size * 1.2 }}
                 />
             )
@@ -112,7 +112,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Voyages" component={TravelStackScreen} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={images.travel}
+                    source={IMAGES.travel}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
@@ -120,7 +120,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Messages" component={ChatStackScreen} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={images.chat}
+                    source={IMAGES.chat}
                     style={{ tintColor: color, width: size * 1.2, height: size * 1.2 }}
                 />
             )
@@ -128,7 +128,7 @@ const TabNavigator = () =>{
           <Tab.Screen name="Profil" component={Profile} options={{
             tabBarIcon:({color, size}) => (
                 <Image 
-                    source={images.profil}
+                    source={IMAGES.profil}
                     style={{ tintColor: color, width: size * 1.6, height: size * 1.2 }}
                 />
             )

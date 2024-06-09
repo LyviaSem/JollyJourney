@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { getUserInfo, deleteMembers } from "../../services/firebaseFunction";
 import { useUser } from "../../../context/UserContext";
-import { images } from "../../theme/theme";
+import { IMAGES } from "../../theme/theme";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import CustomModal from "../../component/Card/DeleteMemberModal";
 import ChangePic from "../../component/ChangePic";
@@ -89,12 +89,12 @@ const GroupDetails = ({ route, navigation: { goBack, navigate } }) => {
         onPress={() => goBack()}
         style={{ top: 55, position: "absolute", left: 30 }}
       >
-        <Image source={images.planeBtn} style={{ width: 40, height: 34 }} />
+        <Image source={IMAGES.planeBtn} style={{ width: 40, height: 34 }} />
       </TouchableOpacity>
       <View style={styles.groupProfilContainer}>
         <ChangePic
           image={imageUri}
-          defaultImage={images.defaultProfile}
+          defaultImage={IMAGES.defaultProfile}
           setModalVisible={setModalVisible}
           picStyle={{ marginBottom: 0 }}
         />
@@ -108,7 +108,6 @@ const GroupDetails = ({ route, navigation: { goBack, navigate } }) => {
         />
         <Text style={styles.groupName}>{group.info.name}</Text>
         <View style={styles.groupInfoContainer}>
-          {console.log(styles.groupInfoContainer)}
           <Text style={styles.memberCount}>
             Membres: {group.members.length}
           </Text>
@@ -141,7 +140,7 @@ const GroupDetails = ({ route, navigation: { goBack, navigate } }) => {
                   source={
                     item.imageURL
                       ? { uri: item.imageURL }
-                      : images.defaultProfile
+                      : IMAGES.defaultProfile
                   }
                   style={styles.profilImage}
                 />

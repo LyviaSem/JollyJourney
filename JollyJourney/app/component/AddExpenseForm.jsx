@@ -7,16 +7,14 @@ import {
   Modal,
   TextInput,
   StyleSheet,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Dropdown from "./DropDown";
 import { addExpense } from "../services/firebaseFunction";
 import { useUser } from "../../context/UserContext";
-import { colors } from "../theme/theme";
+import { COLORS } from "../theme/theme";
+import { deleteExpense } from "../services/firebaseFunction";
+import { updateExpense } from "../services/firebaseFunction";
 
 const AddExpenseForm = ({
   group,
@@ -25,6 +23,8 @@ const AddExpenseForm = ({
   trip,
   setExpenses,
   selectedExpense,
+  setSelectedExpense,
+  expenses
 }) => {
   const { user } = useUser();
 
@@ -55,13 +55,25 @@ const AddExpenseForm = ({
     }
   }, [selectedExpense]);
 
+  useEffect(() => {
+    updateSelectAllState();
+  }, [checkedItems]);
+
+  const updateSelectAllState = () => {
+    const allItemIds = group.map((item) => item.id);
+    if (checkedItems.length === allItemIds.length) {
+      setSelectAll(true);
+    } else {
+      setSelectAll(false);
+    }
+  };
+
   const toggleCheckBox = (id) => {
     setCheckedItems((prevCheckedItems) => {
-      if (prevCheckedItems.includes(id)) {
-        return prevCheckedItems.filter((itemId) => itemId !== id);
-      } else {
-        return [...prevCheckedItems, id];
-      }
+      const updatedCheckedItems = prevCheckedItems.includes(id)
+        ? prevCheckedItems.filter((itemId) => itemId !== id)
+        : [...prevCheckedItems, id];
+      return updatedCheckedItems;
     });
   };
 
@@ -98,6 +110,52 @@ const AddExpenseForm = ({
     }
   };
 
+  const onClose = () => {
+    setIsVisible(false);
+    resetForm();
+    if(selectedExpense){
+      setSelectedExpense(null)
+    }
+  }
+
+  const resetForm = () => {
+    setTitle("");
+    setAmount("");
+    setCheckedItems(group.map((item) => item.id));
+    setSelectedItem(getDefaultItem);
+    setSelectAll(true);
+  };
+
+  const handleSubmit = () => {
+    if(selectedExpense){
+      const updatedFields = {};
+      if (title !== selectedExpense.label) updatedFields.title = title;
+      if (amount !== selectedExpense.amount) updatedFields.amount = amount;
+      if (selectedItem.id !== selectedExpense.paidById) updatedFields.payer = payer;
+      if (checkedItems !== selectedExpense.participants) updatedFields.participants = participants;
+  
+      updateExpense(selectedExpense.id, updatedFields, setIsVisible, trip.id, setExpenses);
+    } else {
+      if (title && amount && checkedItems.length > 0) {
+        addExpense(
+          trip.id,
+          title,
+          amount,
+          selectedItem.id,
+          checkedItems,
+          setIsVisible,
+          setExpenses,
+          setTitle,
+          setAmount,
+          selectedItem.pseudo,
+          resetForm
+        );
+      } else {
+        alert("Veuillez remplir tous les champs.");
+      }
+    }
+  }
+
   return (
     <Modal
       visible={isVisible}
@@ -109,28 +167,11 @@ const AddExpenseForm = ({
         <View style={styles.modalContent}>
           <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:10}}>
             <TouchableOpacity
-              onPress={() => {
-                if (title && amount && checkedItems.length > 0) {
-                  addExpense(
-                    trip.id,
-                    title,
-                    amount,
-                    selectedItem.id,
-                    checkedItems,
-                    setIsVisible,
-                    setExpenses,
-                    setTitle,
-                    setAmount,
-                    selectedItem.pseudo
-                  );
-                } else {
-                  alert("Veuillez remplir tous les champs.");
-                }
-              }}
+              onPress={handleSubmit}
             >
               <Text> Enregistrer </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsVisible(false)}>
+            <TouchableOpacity onPress={onClose}>
               <Icon name={"close"} size={24} color={"gray"} />
             </TouchableOpacity>
           </View>
@@ -162,7 +203,7 @@ const AddExpenseForm = ({
             <Icon
               name={selectAll ? "checkbox-marked" : "checkbox-blank-outline"}
               size={24}
-              color={selectAll ? colors.purple : colors.yellow}
+              color={selectAll ? COLORS.purple : COLORS.yellow}
             />
             <Text>Pour qui ?</Text>
           </TouchableOpacity>
@@ -185,7 +226,7 @@ const AddExpenseForm = ({
                           : "checkbox-blank-outline"
                       }
                       size={24}
-                      color={checkedItems.includes(item.id) ? colors.purple : colors.yellow}
+                      color={checkedItems.includes(item.id) ? COLORS.purple : COLORS.yellow}
                     />
                   </TouchableOpacity>
                   <Text>{item.pseudo}</Text>
@@ -194,40 +235,16 @@ const AddExpenseForm = ({
             />
           </View>
 
-          {/* {selectedExpense ? (
+          {selectedExpense && (
             <TouchableOpacity
               onPress={() => {
-                // Logique de suppression ici
-                deleteExpense(selectedExpense.id);
+                deleteExpense(trip.id, selectedExpense.id, setExpenses, expenses);
                 setIsVisible(false);
               }}
             >
               <Text> Supprimer </Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={() => {
-                if (title && amount && checkedItems.length > 0) {
-                  addExpense(
-                    trip.id,
-                    title,
-                    amount,
-                    selectedItem.id,
-                    checkedItems,
-                    setIsVisible,
-                    setExpenses,
-                    setTitle,
-                    setAmount,
-                    selectedItem.pseudo
-                  );
-                } else {
-                  alert("Veuillez remplir tous les champs.");
-                }
-              }}
-            >
-              <Text style={styles.btnSave}> Enregistrer </Text>
-            </TouchableOpacity>
-          )} */}
+          )}
         </View>
       </View>
     </Modal>

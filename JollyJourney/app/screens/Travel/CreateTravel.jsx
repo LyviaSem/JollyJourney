@@ -16,7 +16,7 @@ import {
   addDoc,
   updateDoc,
 } from "@firebase/firestore";
-import { images } from "../../theme/theme";
+import { IMAGES } from "../../theme/theme";
 import PicModal from "../../component/PicModal";
 import { uploadImage, removeImage } from "../../services/imageService";
 
@@ -124,7 +124,7 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
               onPress={() => setModalVisible(true)}
             >
               <Image
-                source={imageUri ? { uri: imageUri } : images.defaultProfile}
+                source={imageUri ? { uri: imageUri } : IMAGES.defaultProfile}
                 style={styles.profilImage}
               />
             </TouchableOpacity>

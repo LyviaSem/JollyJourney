@@ -2,8 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import ApercuContent from '../app/screens/Travel/ApercuContent';
 import ItineraireContent from '../app/screens/Travel/ItineraireContent';
 import Expenses from '../app/screens/Travel/Expenses';
-
-
+import { COLORS } from '../app/theme/theme';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -12,7 +11,15 @@ const Tab = createMaterialTopTabNavigator();
 function TopBarNavigation({route}) {
     const {trip} = route.params;
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarIndicatorStyle:{
+          height:5,
+          borderRadius:5,
+          backgroundColor: COLORS.purple
+        }
+      }}
+    >
       <Tab.Screen
         name="Aperçu"
         component={ApercuContent}

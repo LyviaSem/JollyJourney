@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 const ChangePic = ({image, defaultImage, setModalVisible, picStyle}) => {
-  console.log(picStyle)
 
   return (
     <>

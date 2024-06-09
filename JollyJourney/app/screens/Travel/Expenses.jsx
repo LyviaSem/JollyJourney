@@ -17,7 +17,7 @@ import AddExpenseForm from "../../component/AddExpenseForm";
 import { calculateTotalExpenses } from "../../services/CalculService";
 import { calculateDebts } from "../../services/CalculService";
 import DebtsModal from "../../component/DebtsModal";
-import Btn from "../../component/Btn"
+import Btn from "../../component/Btn";
 
 const Expenses = ({ route, navigation }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -30,17 +30,15 @@ const Expenses = ({ route, navigation }) => {
   const [debts, setDebts] = useState([]);
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [debtsModalVisible, setDebtsModalVisible] = useState(false);
-  console.log("debts", debts);
-  console.log("expenses", expenses);
 
   const getGroupMembersById = (id) => {
     const membersPseudo = [];
     const group = userGroups.find((group) => group.info.id === id);
-    const currentUserId = user.uid; // Supposons que vous avez l'ID de l'utilisateur connecté ici
+    const currentUserId = user.uid;
 
     Promise.all(group.members.map((member) => getUserInfo(member.userId)))
       .then((memberInfos) => {
-        // Réorganiser les membres pour mettre l'utilisateur connecté en premier
+        
         const sortedMemberInfos = memberInfos.sort((a, b) => {
           if (a.id === currentUserId) return -1;
           if (b.id === currentUserId) return 1;
@@ -83,10 +81,7 @@ const Expenses = ({ route, navigation }) => {
             expenses.push(doc.data());
           });
 
-          // setTotalExpenses(total);
-
           setExpenses(expenses);
-          // setOtherReimbursements(otherDebts);
         }
       } catch (error) {
         console.error("Error fetching expenses: ", error);
@@ -98,6 +93,13 @@ const Expenses = ({ route, navigation }) => {
     setLoading(false);
   }, []);
 
+  const formatDate = (date) => {
+    const jsDate = new Date(date.seconds * 1000); // Conversion du timestamp Firestore en millisecondes
+    const day = jsDate.getDate().toString().padStart(2, '0');
+    const month = (jsDate.getMonth() + 1).toString().padStart(2, '0'); // Les mois commencent à 0
+    const year = jsDate.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   if (loading) {
     return (
@@ -111,12 +113,15 @@ const Expenses = ({ route, navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.totalExpensesText}>{totalExpenses}€</Text>
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={() => setDebtsModalVisible(true)}
-        >
-          <Text style={styles.headerButtonText}>Résumé des dettes</Text>
-        </TouchableOpacity>
+
+        <Btn
+          name="Résumé des dettes"
+          buttonStyle={{
+            marginTop: 20,
+            marginBottom: 0,
+          }}
+          action={() => setDebtsModalVisible(true)}
+        />
       </View>
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Dépenses</Text>
@@ -127,9 +132,17 @@ const Expenses = ({ route, navigation }) => {
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => openModal(item)}>
                 <View style={styles.expenseItem}>
-                  <Text>{item.paidByPseudo}</Text>
-                  <Text>{item.label}</Text>
-                  <Text>{item.amount}</Text>
+                  <View style={styles.leftColumn}>
+                    <Text style={styles.label}>{item.label}</Text>
+                    <Text style={styles.paidBy}>
+                      payé par{" "}
+                      <Text style={styles.pseudo}>{item.paidByPseudo}</Text>
+                    </Text>
+                  </View>
+                  <View style={styles.rightColumn}>
+                    <Text style={styles.amount}>{item.amount}€</Text>
+                    <Text style={styles.date}>{formatDate(item.date)}</Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             )}
@@ -137,14 +150,20 @@ const Expenses = ({ route, navigation }) => {
         ) : (
           <Text>pas encore de dépense pour ce voyage</Text>
         )}
-        <TouchableOpacity
-          onPress={() => setAddExpenseVisible(true)}
-          style={styles.addButton}
-        >
-          <Text style={styles.addButtonText}> Ajouter une dépense</Text>
-        </TouchableOpacity>
 
-        <DebtsModal visible={debtsModalVisible} setDebtsModalVisible={setDebtsModalVisible} debts={debts} />
+        <Btn
+          name="Ajouter une dépense"
+          buttonStyle={{
+            margin: 10,
+          }}
+          action={() => setAddExpenseVisible(true)}
+        />
+
+        <DebtsModal
+          visible={debtsModalVisible}
+          setDebtsModalVisible={setDebtsModalVisible}
+          debts={debts}
+        />
 
         <AddExpenseForm
           group={group}
@@ -153,6 +172,8 @@ const Expenses = ({ route, navigation }) => {
           trip={trip}
           setExpenses={setExpenses}
           selectedExpense={selectedExpense}
+          setSelectedExpense={setSelectedExpense}
+          expenses={expenses}
         />
       </View>
     </View>
@@ -198,17 +219,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  expenseItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 5,
-  },
   addButton: {
     padding: 10,
     backgroundColor: "#007bff",
     borderRadius: 5,
     alignItems: "center",
-    margin: 20, // espace autour du bouton
+    margin: 20,
   },
   addButtonText: {
     color: "#FFFFFF",
@@ -225,5 +241,43 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     padding: 20,
+  },
+  expenseItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginVertical: 5,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  leftColumn: {
+    flexDirection: "column",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  paidBy: {
+    fontSize: 14,
+    color: "#555",
+  },
+  pseudo: {
+    fontWeight: "bold",
+  },
+  rightColumn: {
+    flexDirection: "column",
+    alignItems: "flex-end",
+  },
+  amount: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  date: {
+    fontSize: 14,
+    color: "#555",
   },
 });
