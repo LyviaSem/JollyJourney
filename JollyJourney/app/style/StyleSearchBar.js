@@ -21,6 +21,7 @@ export const stylesSearchBar = StyleSheet.create({
     searchButton: {
       backgroundColor: '#FFB703',
       borderRadius: 28.5,
+      padding: 15,
       right: 0
     },
   });

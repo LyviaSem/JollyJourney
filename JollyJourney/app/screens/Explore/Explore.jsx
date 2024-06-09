@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   StatusBar,
-  ScrollView,
   FlatList,
   Platform,
   SafeAreaView,
@@ -10,12 +9,11 @@ import {
 import { getFirestore, collection, getDocs } from "@firebase/firestore";
 import City from "../../component/City";
 import SearchBar from "../../component/SearchBar";
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { exploreStyles } from "../../style/exploreStyles";
 
-function Explore({ navigation }) {
+function Explore() {
   const [searchQuery, setSearchQuery] = useState("");
   const [locations, setLocations] = useState([]);
-  const tabBarHeight = useBottomTabBarHeight();
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -52,28 +50,16 @@ function Explore({ navigation }) {
   );
 
   return (
-    <SafeAreaView
-      style={{
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-        backgroundColor: "#FEF5EE",
-        flex: 1,
-      }}
-    >
+    <SafeAreaView style={exploreStyles.container}>
+      <View style={exploreStyles.contentContainer}>
+        <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
 
-    <View
-      style={{alignItems: "center", justifyContent: "center"}}
-    >
-      <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
-
-      <FlatList
-        data={filteredLocations}
-        keyExtractor={(item) => item.id}
-        renderItem={renderCityItem}
-        contentContainerStyle={{ paddingBottom: tabBarHeight }}
-      />
-    </View>
-
-    
+        <FlatList
+          data={filteredLocations}
+          keyExtractor={(item) => item.id}
+          renderItem={renderCityItem}
+        />
+      </View>
     </SafeAreaView>
   );
 }

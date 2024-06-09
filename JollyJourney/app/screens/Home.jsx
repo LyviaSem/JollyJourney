@@ -12,8 +12,8 @@ const Home = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={homeStyles.container}>
-        <View style={homeStyles.logoContainer}>
-          <Image source={IMAGES.logo} style={homeStyles.logo} />
+        <View style={styles.logoContainer}>
+          <Image source={IMAGES.logo} style={styles.logo} />
         </View>
 
         <View style={homeStyles.buttonContainer}>

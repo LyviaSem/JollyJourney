@@ -65,12 +65,12 @@ const SignIn = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={signInStyle.logoContainer}>
-        <Image source={IMAGES.logo} style={signInStyle.logo} />
+      <View style={styles.logoContainer}>
+        <Image source={IMAGES.logo} style={styles.logo} />
       </View>
       <TextInput
         value={email}
-        style={signInStyle.input}
+        style={styles.input}
         placeholderTextColor={COLORS.purple}
         placeholder="Email"
         autoCapitalize="none"
@@ -79,7 +79,7 @@ const SignIn = ({ navigation }) => {
       <TextInput
         secureTextEntry={true}
         value={password}
-        style={signInStyle.input}
+        style={styles.input}
         placeholderTextColor={COLORS.purple}
         placeholder="Password"
         autoCapitalize="none"
@@ -102,10 +102,10 @@ const SignIn = ({ navigation }) => {
       </View>
 
       <TouchableOpacity
-        style={signInStyle.switchButton}
+        style={styles.switchButton}
         onPress={() => navigation.navigate("SignUp")}
       >
-        <Text style={signInStyle.switchButtonText}>
+        <Text style={styles.switchButtonText}>
           Pas encore inscrit ? S'inscrire
         </Text>
       </TouchableOpacity>
