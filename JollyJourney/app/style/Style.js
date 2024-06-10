@@ -1,5 +1,6 @@
 import { StyleSheet, Platform, StatusBar } from 'react-native';
 import { COLORS, DIMENSIONS } from '../theme/theme';
+import { textStyles } from './textStyles';
 
 const { screenWidth, screenHeight } = DIMENSIONS;
 
@@ -12,7 +13,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonTextStyle: {
-    fontFamily: "Inter-Bold"
+    ...textStyles.buttonText,
   },
   buttonStyle: {
     width: screenWidth * 0.4,
@@ -36,7 +37,7 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     padding: screenWidth * 0.03,
     backgroundColor: COLORS.white,
-    fontFamily: "Inter-Regular",
+    ...textStyles.text,
   },
   switchButton: {
     alignItems: "center",
@@ -45,6 +46,6 @@ export const styles = StyleSheet.create({
   switchButtonText: {
     color: COLORS.purple,
     fontSize: screenWidth * 0.04,
-    fontFamily: "Inter-Regular"
+    ...textStyles.text,
   },
 });
