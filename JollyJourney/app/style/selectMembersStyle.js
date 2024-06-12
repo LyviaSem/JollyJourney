@@ -1,6 +1,6 @@
 import { StyleSheet, Platform, StatusBar } from "react-native";
 import { textStyles } from "./textStyles";
-import { DIMENSIONS, COLORS } from "../theme/theme"; // Remplace par le chemin correct vers ton fichier theme
+import { DIMENSIONS, COLORS } from "../theme/theme"; 
 
 const { screenWidth, screenHeight } = DIMENSIONS;
 

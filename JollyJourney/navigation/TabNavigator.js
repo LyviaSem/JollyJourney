@@ -102,7 +102,6 @@ const TabNavigator = () =>{
           <Tab.Screen name="Groupes" component={GroupsStackScreen} options={{
             tabBarIcon:({color, size}) => (
 
-              // <Icon name={"account-group-outline"} size={30} color="white"  />
                 <Image 
                     source={IMAGES.group}
                     style={{ tintColor: color, width: size * 1.5, height: size * 1.2 }}

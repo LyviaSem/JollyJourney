@@ -1,17 +1,14 @@
 export const calculateTotalExpenses = (expenses, setTotalExpenses) => {
   const total = expenses.reduce((total, expense) => total + parseFloat(expense.amount), 0);
   
-  // Convert the total to a string with two decimal places
   const formattedTotal = total.toFixed(2);
   
-  // Set the total expenses
   setTotalExpenses(formattedTotal);
 };
 
 export const calculateDebts = (expenses, setDebts) => {
   const debts = {};
 
-  // Calcul initial des dettes
   expenses.forEach(expense => {
     const { amount, paidById, participants } = expense;
     const splitAmount = amount / participants.length;
@@ -29,7 +26,6 @@ export const calculateDebts = (expenses, setDebts) => {
     });
   });
 
-  // Rééquilibrage des dettes
   const balancedDebts = {};
 
   Object.keys(debts).forEach(debtor => {

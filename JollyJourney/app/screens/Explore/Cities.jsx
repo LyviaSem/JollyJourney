@@ -30,7 +30,6 @@ const Cities = ({ route, navigation: { goBack } }) => {
       >
         <TouchableOpacity
           onPress={() => goBack()}
-          //top 70 pour IOS
           style={citiesStyle.backButtonContainer}
         >
           <Image

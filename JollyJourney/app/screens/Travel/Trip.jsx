@@ -43,7 +43,6 @@ const Trip = ({route, navigation: { goBack } }) => {
     
       } catch (error) {
         console.error('Error fetching data: ', error);
-        // Gestion de l'erreur, comme afficher un message ou définir un état d'erreur
       } finally {
         setLoading(false)
       }
@@ -145,7 +144,6 @@ const Trip = ({route, navigation: { goBack } }) => {
       >
         <TouchableOpacity
         onPress={() => goBack()}
-        //top 70 pour IOS
         style={{ top: 20, left: 20 }}
         >
         <Image

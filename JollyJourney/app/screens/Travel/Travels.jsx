@@ -31,7 +31,6 @@ function Travels({}) {
       const groupIds = userGroups.map((group) => group.info.id);
 
       if (groupIds.length > 0) {
-        console.log("groupIds not empty");
 
         const unsubscribe = onSnapshot(
           query(
@@ -41,7 +40,6 @@ function Travels({}) {
           (snapshot) => {
             let trips = snapshot.docs.map((doc) => doc.data());
 
-            // Tri des voyages par date de début la plus proche
             trips.sort((a, b) => {
               const dateA = new Date(a.dateDebut);
               const dateB = new Date(b.dateDebut);

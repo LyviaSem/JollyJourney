@@ -77,21 +77,17 @@ const uploadImageFirestorage = async (uri, setModalVisible, collection, docId, s
 
 export const removeImage = async (user, setModalVisible, updateUser) => {
     try {
-        // Supprimer l'image de Firebase Storage
         await deleteImageFromStorage(user.imageURL);
         
-        // Supprimer l'URL de l'image de Firestore
         const userDocRef = doc(firestore, 'users', user.uid);
         await updateDoc(userDocRef, { imageURL: deleteField() });
         
-        // Mettre à jour l'état utilisateur localement
         updateUser({ ...user, imageURL: null });
 
-        // Masquer la modal
         setModalVisible(false);
     } catch (error) {
         console.error("Une erreur est survenue lors de la suppression de l'image :", error);
-        // Gérer l'erreur, afficher un message d'erreur, etc.
+
     }
 };
 
@@ -99,10 +95,8 @@ const deleteImageFromStorage = async (imageURL) => {
     try {
         const fileName = extractFileName(imageURL);
         
-        // Créer une référence au fichier dans Firebase Storage
         const fileRef = ref(storage, `images/${fileName}`);
         
-        // Supprimer le fichier de Firebase Storage
         await deleteObject(fileRef);
         
         console.log("Image supprimée de Firebase Storage avec succès");

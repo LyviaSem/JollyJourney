@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { fetchUserGroupsFromFirebase } from '../app/services/firebaseFunction'; // Assurez-vous d'importer votre fonction de récupération des groupes depuis Firebase
+import { fetchUserGroupsFromFirebase } from '../app/services/firebaseFunction';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../FirebaseConfig';
 
