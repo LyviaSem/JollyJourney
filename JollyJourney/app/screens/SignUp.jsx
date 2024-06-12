@@ -12,8 +12,8 @@ import { useUser } from "../../context/UserContext";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { IMAGES } from "../theme/theme";
 import Btn from "../component/Btn";
-import { signUpStyles } from "../style/signUpStyles";
-import { styles } from "../style/Style";
+import { signUpStyle } from "../style/signUpStyle";
+import { style } from "../style/Style";
 import { COLORS } from "../theme/theme";
 
 const SignUp = ({ navigation }) => {
@@ -55,15 +55,15 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={signUpStyles.container}>
-        <View style={styles.logoContainer}>
-          <Image source={IMAGES.logo} style={styles.logo} />
+    <View style={style.container}>
+      <View style={signUpStyle.container}>
+        <View style={style.logoContainer}>
+          <Image source={IMAGES.logo} style={style.logo} />
         </View>
 
         <TextInput
           value={pseudo}
-          style={styles.input}
+          style={style.input}
           placeholderTextColor={COLORS.purple}
           placeholder="Pseudo"
           autoCapitalize="none"
@@ -71,7 +71,7 @@ const SignUp = ({ navigation }) => {
         />
         <TextInput
           value={email}
-          style={styles.input}
+          style={style.input}
           placeholderTextColor={COLORS.purple}
           placeholder="Email"
           autoCapitalize="none"
@@ -80,7 +80,7 @@ const SignUp = ({ navigation }) => {
         <TextInput
           secureTextEntry={true}
           value={password}
-          style={styles.input}
+          style={style.input}
           placeholderTextColor={COLORS.purple}
           placeholder="Password"
           autoCapitalize="none"
@@ -89,14 +89,13 @@ const SignUp = ({ navigation }) => {
         <Btn
           name="Inscription"
           action={signUp}
-          textStyle={styles.buttonTextStyle}
-          buttonStyle={styles.buttonStyle}
+          buttonStyle={style.buttonStyle}
         />
         <TouchableOpacity
-          style={styles.switchButton}
+          style={style.switchButton}
           onPress={() => navigation.navigate("SignIn")}
         >
-          <Text style={styles.switchButtonText}>
+          <Text style={style.switchButtonText}>
             Déjà inscrit ? Se connecter
           </Text>
         </TouchableOpacity>

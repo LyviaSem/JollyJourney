@@ -1,10 +1,10 @@
 import React from 'react';
 import { ImageBackground, View, Text, TouchableOpacity } from 'react-native';
-import { stylesCity } from '../style/StyleCity';
+import { thumbnailStyle } from '../style/thumbnailStyle';
 import { useNavigation } from '@react-navigation/native';
 import { IMAGES } from '../theme/theme';
 
-const City = ({picture, name, onPressProps, description }) => {
+const Thumbnail = ({picture, name, onPressProps, description }) => {
   const navigation = useNavigation();
 
   const handlePress = () => {
@@ -22,17 +22,17 @@ const City = ({picture, name, onPressProps, description }) => {
           onPress={handlePress}
         >
           <View
-            style={stylesCity.container}
+            style={thumbnailStyle.container}
           >
             <ImageBackground
               source={picture? { uri: picture } : IMAGES.defaultImage}
               imageStyle={{ borderRadius: 10 }}
-              style={stylesCity.imageBackground}
+              style={thumbnailStyle.imageBackground}
             >
               <View
-                style={stylesCity.overlay}
+                style={thumbnailStyle.overlay}
               >
-                <Text style={stylesCity.name}>
+                <Text style={thumbnailStyle.name}>
                   {name}
                 </Text>
               </View>
@@ -42,4 +42,4 @@ const City = ({picture, name, onPressProps, description }) => {
   );
 };
 
-export default City;
+export default Thumbnail;

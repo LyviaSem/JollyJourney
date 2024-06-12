@@ -18,6 +18,8 @@ import { calculateTotalExpenses } from "../../services/CalculService";
 import { calculateDebts } from "../../services/CalculService";
 import DebtsModal from "../../component/DebtsModal";
 import Btn from "../../component/Btn";
+import { expenseStyle } from "../../style/expenseStyle";
+import { textStyles } from "../../style/textStyles";
 
 const Expenses = ({ route, navigation }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -94,9 +96,9 @@ const Expenses = ({ route, navigation }) => {
   }, []);
 
   const formatDate = (date) => {
-    const jsDate = new Date(date.seconds * 1000); // Conversion du timestamp Firestore en millisecondes
+    const jsDate = new Date(date.seconds * 1000);
     const day = jsDate.getDate().toString().padStart(2, '0');
-    const month = (jsDate.getMonth() + 1).toString().padStart(2, '0'); // Les mois commencent à 0
+    const month = (jsDate.getMonth() + 1).toString().padStart(2, '0');
     const year = jsDate.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -110,10 +112,10 @@ const Expenses = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.totalExpensesText}>{totalExpenses}€</Text>
-
+    <View style={expenseStyle.container}>
+      <View style={expenseStyle.header}>
+        <Text style={expenseStyle.totalExpensesText}>{totalExpenses}€</Text>
+  
         <Btn
           name="Résumé des dettes"
           buttonStyle={{
@@ -123,34 +125,34 @@ const Expenses = ({ route, navigation }) => {
           action={() => setDebtsModalVisible(true)}
         />
       </View>
-      <View style={styles.content}>
-        <Text style={styles.sectionTitle}>Dépenses</Text>
+      <View style={expenseStyle.content}>
+        <Text style={expenseStyle.sectionTitle}>Dépenses</Text>
         {expenses.length > 0 ? (
           <FlatList
             data={expenses}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => openModal(item)}>
-                <View style={styles.expenseItem}>
-                  <View style={styles.leftColumn}>
-                    <Text style={styles.label}>{item.label}</Text>
-                    <Text style={styles.paidBy}>
+                <View style={expenseStyle.expenseItem}>
+                  <View style={expenseStyle.leftColumn}>
+                    <Text style={expenseStyle.label}>{item.label}</Text>
+                    <Text style={expenseStyle.paidBy}>
                       payé par{" "}
-                      <Text style={styles.pseudo}>{item.paidByPseudo}</Text>
+                      <Text style={expenseStyle.pseudo}>{item.paidByPseudo}</Text>
                     </Text>
                   </View>
-                  <View style={styles.rightColumn}>
-                    <Text style={styles.amount}>{item.amount}€</Text>
-                    <Text style={styles.date}>{formatDate(item.date)}</Text>
+                  <View style={expenseStyle.rightColumn}>
+                    <Text style={expenseStyle.amount}>{item.amount}€</Text>
+                    <Text style={expenseStyle.date}>{formatDate(item.date)}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
             )}
           />
         ) : (
-          <Text>pas encore de dépense pour ce voyage</Text>
+          <Text style={textStyles.text}>pas encore de dépense pour ce voyage</Text>
         )}
-
+  
         <Btn
           name="Ajouter une dépense"
           buttonStyle={{
@@ -158,13 +160,13 @@ const Expenses = ({ route, navigation }) => {
           }}
           action={() => setAddExpenseVisible(true)}
         />
-
+  
         <DebtsModal
           visible={debtsModalVisible}
           setDebtsModalVisible={setDebtsModalVisible}
           debts={debts}
         />
-
+  
         <AddExpenseForm
           group={group}
           isVisible={addExpenseVisible}
@@ -177,107 +179,7 @@ const Expenses = ({ route, navigation }) => {
         />
       </View>
     </View>
-  );
+  );  
 };
 
 export default Expenses;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  header: {
-    backgroundColor: "#f0f0f0", // couleur de fond de l'en-tête
-    padding: 40,
-    alignItems: "center",
-  },
-  headerButton: {
-    backgroundColor: "#007bff",
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  headerButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  totalExpensesText: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  content: {
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    marginTop: -10, // pour couvrir une partie de l'en-tête
-    flex: 1, // pour prendre tout l'espace disponible
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  addButton: {
-    padding: 10,
-    backgroundColor: "#007bff",
-    borderRadius: 5,
-    alignItems: "center",
-    margin: 20,
-  },
-  addButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  modalDebtsPosition: {
-    flexGrow: 1,
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalDebtsContent: {
-    //height: Dimensions.get('window').height * 0.75,
-    height: "50%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-  },
-  expenseItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    marginVertical: 5,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  leftColumn: {
-    flexDirection: "column",
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  paidBy: {
-    fontSize: 14,
-    color: "#555",
-  },
-  pseudo: {
-    fontWeight: "bold",
-  },
-  rightColumn: {
-    flexDirection: "column",
-    alignItems: "flex-end",
-  },
-  amount: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000",
-  },
-  date: {
-    fontSize: 14,
-    color: "#555",
-  },
-});

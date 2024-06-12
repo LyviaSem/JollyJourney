@@ -19,6 +19,7 @@ import { firestore } from "../../../FirebaseConfig";
 import { GiftedChat } from "react-native-gifted-chat";
 import { useUser } from "../../../context/UserContext";
 import { IMAGES } from "../../theme/theme";
+import { textStyles } from "../../style/textStyles";
 
 const Messages = ({ route, navigation }) => {
   const { group } = route.params;
@@ -32,7 +33,7 @@ const Messages = ({ route, navigation }) => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{ paddingLeft: 10 }} // Ajoutez du padding pour espacer l'image du bord gauche
+          style={{ paddingLeft: 10 }}
         >
           <Image source={IMAGES.planeBtn} style={{ width: 30, height: 25 }} />
         </TouchableOpacity>
@@ -43,7 +44,7 @@ const Messages = ({ route, navigation }) => {
             onPress={() =>
               navigation.navigate("GroupDetails", { group: group })
             }
-            style={{ flexDirection: "row", alignItems: "center" }} // Alignement horizontal
+            style={{ flexDirection: "row", alignItems: "center" }}
           >
             <Image
               source={
@@ -55,14 +56,14 @@ const Messages = ({ route, navigation }) => {
                 width: 35,
                 height: 35,
                 borderRadius: 20,
-                marginRight: 10, // Espace entre l'image et le texte
+                marginRight: 10,
               }}
             />
             <Text
               style={{
                 fontSize: 18,
-                fontWeight: "bold",
                 padding: 10,
+                ...textStyles.title
               }}
             >
               {group.info.name}

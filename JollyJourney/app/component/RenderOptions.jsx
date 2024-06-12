@@ -1,5 +1,6 @@
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native'
-import React from 'react'
+import { Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { textStyles } from '../style/textStyles';
 
 const RenderOptions = ({ options }) => {
   const renderItem = ({ item }) => (
@@ -27,6 +28,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 14,
+    ...textStyles.text
   }
 });

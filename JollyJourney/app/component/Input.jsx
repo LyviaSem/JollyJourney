@@ -1,13 +1,13 @@
 import React from "react";
 import { View, TextInput, TouchableOpacity, Text } from "react-native";
-import { stylesApercuContent } from "../style/StyleApercuContent";
+import { overviewStyles } from "../style/overviewStyle";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Input = ({ item, handleElementChange, removeElement }) => {
   return (
     <View>
       <TextInput
-        style={stylesApercuContent.titleInput}
+        style={overviewStyles.titleInput}
         placeholder={`Title`}
         value={item.label}
         onChangeText={(text) => {
@@ -17,7 +17,7 @@ const Input = ({ item, handleElementChange, removeElement }) => {
       />
       <View style={{flexDirection:"row", alignItems:"center", gap:10, }}>
         <TextInput
-          style={stylesApercuContent.input}
+          style={overviewStyles.input}
           placeholder={`Value`}
           value={item.value}
           onChangeText={(text) => {

@@ -35,6 +35,12 @@
     "owner": "lyv_sg",
     "updates": {
       "url": "https://u.expo.dev/8cef5d4a-f2ea-462e-949a-736cfd8fb372"
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

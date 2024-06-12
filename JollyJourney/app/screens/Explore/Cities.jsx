@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import React from "react";
 import { IMAGES } from "../../theme/theme";
+import { citiesStyle } from "../../style/citiesStyle";
+import { textStyles } from "../../style/textStyles";
 
 const Cities = ({ route, navigation: { goBack } }) => {
   const { city } = route.params;
@@ -24,94 +26,23 @@ const Cities = ({ route, navigation: { goBack } }) => {
     >
       <ImageBackground
         source={{ uri: city.pic }}
-        style={[styles.backgroundImage]}
+        style={[citiesStyle.backgroundImage]}
       >
         <TouchableOpacity
           onPress={() => goBack()}
           //top 70 pour IOS
-          style={{ top: 20, left: 20 }}
+          style={citiesStyle.backButtonContainer}
         >
           <Image
             source={IMAGES.planeBtn}
-            style={[styles.backButton]}
+            style={[citiesStyle.backButton]}
           />
         </TouchableOpacity>
       </ImageBackground>
-      <Text style={[styles.text]}>{city.name}</Text>
-      <Text style={[styles.text]}>{city.description}</Text>
+      <Text style={[citiesStyle.text, citiesStyle.title]}>{city.name}</Text>
+      <Text style={[citiesStyle.text]}>{city.description}</Text>
     </View>
   );
 };
 
 export default Cities;
-
-const styles = StyleSheet.create({
-  backgroundImage: {
-    width: 414,
-    height: 276,
-  },
-  backButton: {
-    width: 40,
-    height: 34,
-  },
-  text: {
-    marginTop: 20,
-    paddingHorizontal: 10,
-  },
-  container: {
-    alignItems: "center",
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  logoText: {
-    color: "#FFB703",
-    marginTop: 10,
-    fontSize: 40,
-    fontWeight: "bold",
-  },
-  buttonContainer: {
-    marginTop: 50,
-    flexDirection: "row",
-  },
-  logo: {
-    width: 250,
-    height: 150,
-    resizeMode: "contain",
-  },
-  loginButton: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 150,
-    height: 70,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  registerButton: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 150,
-    height: 70,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  switchButton: {
-    margin: 10,
-    alignItems: "center",
-  },
-  switchButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-  },
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-});

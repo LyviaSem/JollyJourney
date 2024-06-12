@@ -1,8 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { styles } from './Style';
 import { DIMENSIONS } from '../theme/theme';
 
-const { screenWidth, screenHeight } = DIMENSIONS;
+const { screenHeight } = DIMENSIONS;
 
 export const homeStyles = StyleSheet.create({
   container: {
@@ -15,10 +14,5 @@ export const homeStyles = StyleSheet.create({
   buttonContainer: {
     marginTop: screenHeight * 0.05,
     flexDirection: "row",
-  },
-  logo: {
-    ...styles.logo,
-    width: screenWidth * 0.6,
-    height: screenHeight * 0.2,
   }
 });

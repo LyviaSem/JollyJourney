@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, TextInput } from 'react-native';
-import { stylesSearchBar } from '../style/StyleSearchBar';
+import { searchBarStyle } from '../style/searchBarStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
@@ -8,16 +8,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const SearchBar = ({ searchQuery, handleSearch}) => {
 
   return (
-    <View style={stylesSearchBar.searchContainer}>
+    <View style={searchBarStyle.searchContainer}>
       <TextInput
         placeholder="search"
         clearButtonMode="always"
-        style={stylesSearchBar.textInput}
+        style={searchBarStyle.textInput}
         value={searchQuery}
         onChangeText={(query) => handleSearch(query)}
       />
       <TouchableOpacity
-        style={stylesSearchBar.searchButton}
+        style={searchBarStyle.searchButton}
       >
         <Icon name="search" size={24} color="white" />
       </TouchableOpacity>

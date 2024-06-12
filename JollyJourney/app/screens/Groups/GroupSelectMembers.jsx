@@ -2,27 +2,20 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
-  StatusBar,
   Image,
   FlatList,
-  Modal, 
-  Platform
+  Modal,
 } from "react-native";
-import {
-  getFirestore,
-  collection,
-  getDocs
-} from "@firebase/firestore";
+import { getFirestore, collection, getDocs } from "@firebase/firestore";
 import { useUser } from "../../../context/UserContext";
 import filter from "lodash.filter";
 import Cards from "../../component/Card/Cards";
 import SearchBar from "../../component/SearchBar";
 import { IMAGES } from "../../theme/theme";
+import { selectMembersStyle } from "../../style/selectMembersStyle";
 
-const GroupSelectMembers = ({navigation}) => {
-
+const GroupSelectMembers = ({ navigation }) => {
   const { user, selectedUsers, setSelectedUsers } = useUser();
 
   const [search, setSearch] = useState("");
@@ -42,21 +35,20 @@ const GroupSelectMembers = ({navigation}) => {
 
   const contains = ({ pseudo, email }, query) => {
     if (pseudo && pseudo.includes(query)) {
-        return true;
+      return true;
     }
 
-    const emailPrefix = email.split('@')[0];
+    const emailPrefix = email.split("@")[0];
     if (emailPrefix.includes(query)) {
-        return true;
+      return true;
     }
 
     return false;
   };
 
-
   useEffect(() => {
     const fetchUserEmail = async (user) => {
-      setSelectedUsers([user])
+      setSelectedUsers([user]);
       try {
         const firestore = getFirestore();
         const UserSnapshot = await getDocs(collection(firestore, "users"));
@@ -76,9 +68,8 @@ const GroupSelectMembers = ({navigation}) => {
   }, []);
 
   const toggleSelection = (event) => {
-    
     const user = event;
-  
+
     setSelectedUsers((prevUsers) => {
       const isUserSelected = prevUsers.some((u) => u.email === user.email);
 
@@ -90,30 +81,30 @@ const GroupSelectMembers = ({navigation}) => {
 
   const renderItem = ({ item }) => {
     return (
-      <Cards behaviorType="toggle" name={item.pseudo} image={item.imageURL ? { uri: item.imageURL } : IMAGES.defaultProfile} isSelected={selectedUsers.includes(item)} onSelect={() => toggleSelection(item)}/>
+      <Cards
+        behaviorType="toggle"
+        name={item.pseudo}
+        image={item.imageURL ? { uri: item.imageURL } : IMAGES.defaultProfile}
+        isSelected={selectedUsers.includes(item)}
+        onSelect={() => toggleSelection(item)}
+      />
     );
   };
 
   return (
-    <View
-      style={{
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-        backgroundColor: "#FEF5EE",
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 91, alignSelf: 'center' }}>Mes amis</Text>
-      
+    <View style={selectMembersStyle.container}>
+      <Text style={selectMembersStyle.headerText}>Mes amis</Text>
+
       <SearchBar searchQuery={search} handleSearch={handleSearch} />
 
-      <Modal 
-        visible={errorModalVisible} transparent={true} backdropColor="none"
+      <Modal
+        visible={errorModalVisible}
+        transparent={true}
+        backdropColor="none"
       >
-        <View style={styles.modalContainerError}>
-          <View  style={styles.modalContentError}>
-            <Text style={styles.modalErrorText}>{errorMessage}</Text>
+        <View style={selectMembersStyle.modalContainerError}>
+          <View style={selectMembersStyle.modalContentError}>
+            <Text style={selectMembersStyle.modalErrorText}>{errorMessage}</Text>
           </View>
         </View>
       </Modal>
@@ -125,10 +116,10 @@ const GroupSelectMembers = ({navigation}) => {
       />
 
       <TouchableOpacity
-        style={[styles.button, styles.Button, styles.arrowButton]}
+        style={[selectMembersStyle.button, selectMembersStyle.Button, selectMembersStyle.arrowButton]}
         onPress={() => {
           if (selectedUsers.length > 1) {
-            navigation.navigate("GroupInfo", {creatorId: user.uid})
+            navigation.navigate("GroupInfo", { creatorId: user.uid });
           } else {
             setErrorMessage("Au moins un contact doit être sélectionné");
             setErrorModalVisible(true);
@@ -136,139 +127,10 @@ const GroupSelectMembers = ({navigation}) => {
           }
         }}
       >
-        <Image
-          source={IMAGES.whitePlaneBtn}
-          style={styles.arrowImage}
-        />
+        <Image source={IMAGES.whitePlaneBtn} style={selectMembersStyle.arrowImage} />
       </TouchableOpacity>
-
     </View>
   );
-}
+};
 
 export default GroupSelectMembers;
-
-const styles = StyleSheet.create({
-  arrowButton: {
-    width: 50,
-    height: 50,
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-  },
-  arrowImage: {
-    width: 30,
-    height: 30,
-  },
-  card: {
-    width: 344,
-    height: 68,
-    borderRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: 'white',
-  },
-  profileImage: {
-  width: 35,
-  height: 35,
-  borderRadius: 10,
-  },
-  userInfo: {
-    marginLeft: 10,
-  },
-  userName: {
-    fontSize: 18,
-  },
-  selectionButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 'auto',
-  },
-  selectedIndicator: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#6E4B6B',
-  },
-  Button: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 150,
-    height: 70,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFB703",
-    fontWeight: "bold",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  modalContainerError: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    marginBottom: 80,
-  },
-  modalContentError: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5);',
-    padding: 20,
-    borderRadius: 10,
-    // elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  modalErrorText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  modalInput: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  modalButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  modalButton: {
-    padding: 10,
-    borderRadius: 5,
-    width: "45%",
-    alignItems: "center",
-  },
-  modalButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-});

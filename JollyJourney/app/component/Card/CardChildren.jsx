@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, View, Text } from 'react-native';
-import { stylesCards } from '../../style/StyleCards';
+import { cardsStyle } from '../../style/cardsStyle';
 
 const CardChildren = ({image, name}) => {
 
@@ -9,11 +9,11 @@ const CardChildren = ({image, name}) => {
         {image &&(
             <Image
                 source={image}
-                style={stylesCards.profileImage}
+                style={cardsStyle.profileImage}
             />
         )}
-      <View style={stylesCards.userInfo}>
-        <Text style={stylesCards.userName}>{name}</Text>
+      <View style={cardsStyle.userInfo}>
+        <Text style={cardsStyle.userName}>{name}</Text>
       </View>
     </View>
   );

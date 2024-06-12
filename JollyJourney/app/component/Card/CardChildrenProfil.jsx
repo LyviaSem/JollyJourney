@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Button } from 'react-native';
-import { stylesCards } from '../../style/StyleCards';
+import { cardsStyle } from '../../style/cardsStyle';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 
@@ -18,8 +18,8 @@ const CardChildrenProfil = ({ isEditing, newData, setNewData, type, setIsEditing
         ) : (
           
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={stylesCards.userInfo}>
-                <Text style={stylesCards.userName}>{name}</Text>
+              <View style={cardsStyle.userInfo}>
+                <Text style={cardsStyle.userName}>{name}</Text>
               </View>
             </View>
           

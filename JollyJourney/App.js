@@ -9,7 +9,9 @@ export default function App() {
 
   let [fontsLoaded] = useFonts({
     "Inter-Bold": require("./app/fonts/Inter-Bold.ttf"),
-    "Inter-Regular": require('./app/fonts/Inter-Regular.ttf')
+    "Inter-SemiBold": require("./app/fonts/Inter-SemiBold.ttf"),
+    "Inter-Regular": require('./app/fonts/Inter-Regular.ttf'),
+    "PlayfairDisplay-ExtraBold": require('./app/fonts/PlayfairDisplay-ExtraBold.ttf'),
   })
 
   if(!fontsLoaded) {

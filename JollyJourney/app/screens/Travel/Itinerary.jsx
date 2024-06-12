@@ -1,13 +1,14 @@
-import { View, Text, StyleSheet, FlatList} from "react-native";
+import { View, Text, FlatList} from "react-native";
 import React, {useState, useEffect} from "react";
 import TodoList from "../../component/TodoList";
 import Moment from 'moment';
-import { collection, orderBy, setDoc, getDocs, addDoc, updateDoc, query, deleteDoc, doc } from "firebase/firestore";
+import { collection, orderBy, setDoc, getDocs, updateDoc, query, deleteDoc, doc } from "firebase/firestore";
 import { firestore } from "../../../FirebaseConfig";
+import { itineraryStyle } from "../../style/itineraryStyle";
 import 'moment/locale/fr';
 
 
-const ItineraireContent = ({route}) => {
+const Itinerary = ({route}) => {
 
   const {trip} = route.params;
 
@@ -111,69 +112,17 @@ const ItineraireContent = ({route}) => {
   };
 
   return (
-    <View
-      style={{ 
-        paddingTop: 10,
-        backgroundColor: "#FEF5EE",
-        flex: 1, 
-        justifyContent:"center",
-      }}
-    >
-      <Text style={{textAlign:"center", fontWeight:"bold", marginBottom:10}}>Liste des activités :</Text>
-      <FlatList
-        data={elements}
-        keyExtractor={(item) => item.id}
-        renderItem={renderJours}
-      />
+    <View style={itineraryStyle.container}>
+      <Text style={itineraryStyle.title}>Liste des activités :</Text>
+      <View style={itineraryStyle.flatListContainer}>
+        <FlatList
+          data={elements}
+          keyExtractor={(item) => item.id}
+          renderItem={renderJours}
+        />
+      </View>
     </View>
   );
 };
 
-export default ItineraireContent;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginRight: 10,
-  },
-  addButton: {
-    backgroundColor: 'blue',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  taskContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  taskText: {
-    flex: 1,
-    fontSize: 18,
-  },
-  deleteButton: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
-});
+export default Itinerary;

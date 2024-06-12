@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { textStyles } from '../style/textStyles';
 
 const Dropdown = ({ group, onSelectItem }) => {
   const { user } = useUser();
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
   },
   selectedItemText: {
     fontSize: 16,
+    ...textStyles.text
   },
   dropdown: {
     borderColor: 'gray',
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
+    ...textStyles.text
   },
 });
 

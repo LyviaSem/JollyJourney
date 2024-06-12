@@ -2,6 +2,7 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { COLORS } from "../theme/theme";
+import { textStyles } from "../style/textStyles";
 
 const Btn = ({
   name,
@@ -37,9 +38,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.white,
+    ...textStyles.buttonText,
   },
   iconContainer: {
-    marginRight: 10,
+    marginRight: 5,
   },
 });
 

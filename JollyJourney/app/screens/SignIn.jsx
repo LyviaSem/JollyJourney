@@ -12,8 +12,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useUser } from "../../context/UserContext";
 import { doc, getDoc } from "firebase/firestore";
 import { IMAGES, COLORS } from "../theme/theme";
-import { signInStyle } from "../style/StyleSignIn";
-import { styles } from "../style/Style";
+import { signInStyle } from "../style/signInStyle";
+import { style } from "../style/Style";
 import Btn from "../component/Btn";
 
 const SignIn = ({ navigation }) => {
@@ -64,13 +64,13 @@ const SignIn = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image source={IMAGES.logo} style={styles.logo} />
+    <View style={style.container}>
+      <View style={style.logoContainer}>
+        <Image source={IMAGES.logo} style={style.logo} />
       </View>
       <TextInput
         value={email}
-        style={styles.input}
+        style={style.input}
         placeholderTextColor={COLORS.purple}
         placeholder="Email"
         autoCapitalize="none"
@@ -79,7 +79,7 @@ const SignIn = ({ navigation }) => {
       <TextInput
         secureTextEntry={true}
         value={password}
-        style={styles.input}
+        style={style.input}
         placeholderTextColor={COLORS.purple}
         placeholder="Password"
         autoCapitalize="none"
@@ -92,8 +92,7 @@ const SignIn = ({ navigation }) => {
         <Btn
           name="Connexion"
           action={signIn}
-          textStyle={styles.buttonTextStyle}
-          buttonStyle={styles.buttonStyle}
+          buttonStyle={style.buttonStyle}
         />
       )}
 
@@ -102,10 +101,10 @@ const SignIn = ({ navigation }) => {
       </View>
 
       <TouchableOpacity
-        style={styles.switchButton}
+        style={style.switchButton}
         onPress={() => navigation.navigate("SignUp")}
       >
-        <Text style={styles.switchButtonText}>
+        <Text style={style.switchButtonText}>
           Pas encore inscrit ? S'inscrire
         </Text>
       </TouchableOpacity>

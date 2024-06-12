@@ -15,6 +15,7 @@ import { useUser } from "../../context/UserContext";
 import { COLORS } from "../theme/theme";
 import { deleteExpense } from "../services/firebaseFunction";
 import { updateExpense } from "../services/firebaseFunction";
+import { textStyles } from "../style/textStyles";
 
 const AddExpenseForm = ({
   group,
@@ -169,7 +170,7 @@ const AddExpenseForm = ({
             <TouchableOpacity
               onPress={handleSubmit}
             >
-              <Text> Enregistrer </Text>
+              <Text style={textStyles.text}> Enregistrer </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onClose}>
               <Icon name={"close"} size={24} color={"gray"} />
@@ -205,7 +206,7 @@ const AddExpenseForm = ({
               size={24}
               color={selectAll ? COLORS.purple : COLORS.yellow}
             />
-            <Text>Pour qui ?</Text>
+            <Text style={textStyles.text}>Pour qui ?</Text>
           </TouchableOpacity>
 
           <View style={{ flex: 1 }}>
@@ -229,7 +230,7 @@ const AddExpenseForm = ({
                       color={checkedItems.includes(item.id) ? COLORS.purple : COLORS.yellow}
                     />
                   </TouchableOpacity>
-                  <Text>{item.pseudo}</Text>
+                  <Text style={textStyles.text}>{item.pseudo}</Text>
                 </View>
               )}
             />
@@ -242,7 +243,7 @@ const AddExpenseForm = ({
                 setIsVisible(false);
               }}
             >
-              <Text> Supprimer </Text>
+              <Text style={textStyles.text}> Supprimer </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -271,6 +272,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: "gray",
     borderBottomWidth: 1,
+    ...textStyles.text
   },
   amountContainer: {
     flexDirection: "row",

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Modal, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { getUserInfo } from "../services/firebaseFunction";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { textStyles } from "../style/textStyles";
 
 
 const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
@@ -34,8 +35,8 @@ const DebtsModal = ({ visible, setDebtsModalVisible, debts }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text>
-        <Text style={styles.bold}>{item.debtor}</Text> doit {item.amount} à <Text style={styles.bold}>{item.creditor}</Text>
+      <Text style={textStyles.text}>
+        <Text style={textStyles.subTitle}>{item.debtor}</Text> doit {item.amount} à <Text style={textStyles.subTitle}>{item.creditor}</Text>
       </Text>
     </View>
   );
@@ -88,6 +89,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     marginBottom: 20,
+    ...textStyles.subTitle
   },
   item: {
     padding: 10,
@@ -95,9 +97,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     borderRadius: 5,
     width: '100%',
-  },
-  bold: {
-    fontWeight: 'bold',
   },
 });
 

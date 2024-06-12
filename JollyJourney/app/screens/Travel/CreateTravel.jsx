@@ -5,10 +5,9 @@ import {
   Image,
   StyleSheet,
   TextInput,
-  Text,
   Platform,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Calendar } from "react-native-calendars";
 import {
   getFirestore,
@@ -19,6 +18,8 @@ import {
 import { IMAGES } from "../../theme/theme";
 import PicModal from "../../component/PicModal";
 import { uploadImage, removeImage } from "../../services/imageService";
+import Btn from "../../component/Btn";
+import { createTravelStyle } from "../../style/createTravelStyle";
 
 const CreateTravel = ({ navigation: { goBack }, route }) => {
   const { groupTrips, groupId } = route.params;
@@ -29,7 +30,6 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [imageUri, setImageUri] = useState();
 
-
   const handleDayPress = (day) => {
     if (!selectedStartDate || selectedEndDate) {
       setSelectedStartDate(day.dateString);
@@ -39,17 +39,50 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
     }
   };
 
+  const getMarkedDates = (start, end) => {
+    const markedDates = {};
+    if (start) {
+      markedDates[start] = {
+        selected: true,
+        startingDay: true,
+        color: "green",
+        textColor: "white",
+      };
+      if (end) {
+        markedDates[end] = {
+          selected: true,
+          endingDay: true,
+          color: "green",
+          textColor: "white",
+        };
+
+        let currentDate = new Date(start);
+        const endDate = new Date(end);
+
+        while (currentDate < endDate) {
+          currentDate.setDate(currentDate.getDate() + 1);
+          const dateString = currentDate.toISOString().split("T")[0];
+          if (dateString !== end) {
+            markedDates[dateString] = {
+              selected: true,
+              color: "green",
+              textColor: "white",
+            };
+          }
+        }
+      }
+    }
+    return markedDates;
+  };
+
   const handleSubmit = () => {
     if (!selectedStartDate || !selectedEndDate) {
-      alert(
-        "Erreur",
-        "Veuillez sélectionner une date de début et une date de fin."
-      );
+      alert("Veuillez sélectionner une date de début et une date de fin.");
       return;
     }
 
     if (!nom.trim()) {
-      alert("Erreur", "Veuillez entrer le nom de la destination.");
+      alert("Veuillez entrer le nom de la destination.");
       return;
     }
 
@@ -96,8 +129,6 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
       const tripId = newTripRef.id;
 
       updateFirebase(newTripRef, tripId);
-
-      alert("Voyage créé avec succès avec l'ID:", newTripRef.id);
     } catch (error) {
       console.error("Erreur lors de la création du voyage:", error);
       return null;
@@ -109,28 +140,22 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
   };
 
   return (
-    <View
-      style={{
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-        backgroundColor: "#FEF5EE",
-        flex: 1,
-      }}
-    >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <View style={styles.groupInfo}>
+    <View style={createTravelStyle.container}>
+      <View style={createTravelStyle.modalContainer}>
+        <View style={createTravelStyle.modalContent}>
+          <View style={createTravelStyle.groupInfo}>
             <TouchableOpacity
-              style={styles.profilImageContainer}
+              style={createTravelStyle.profilImageContainer}
               onPress={() => setModalVisible(true)}
             >
               <Image
                 source={imageUri ? { uri: imageUri } : IMAGES.defaultProfile}
-                style={styles.profilImage}
+                style={createTravelStyle.profilImage}
               />
             </TouchableOpacity>
 
             <TextInput
-              style={{ paddingHorizontal: 10 }}
+              style={createTravelStyle.textInput}
               placeholder="Destination"
               value={nom}
               onChangeText={(text) => setNom(text)}
@@ -138,21 +163,9 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
           </View>
           <Calendar
             onDayPress={handleDayPress}
-            markedDates={{
-              [selectedStartDate]: {
-                selected: true,
-                startingDay: true,
-                color: "green",
-              },
-              [selectedEndDate]: {
-                selected: true,
-                endingDay: true,
-                color: "green",
-              },
-            }}
+            markedDates={getMarkedDates(selectedStartDate, selectedEndDate)}
             minDate={new Date().toISOString().split("T")[0]}
             theme={{
-              calendarBackground: "#FEF5EE",
               textSectionTitleColor: "black",
               selectedDayBackgroundColor: "#6E4B6B",
               selectedDayTextColor: "white",
@@ -165,20 +178,17 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
               indicatorColor: "purple",
             }}
           />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.loginButton]}
-              onPress={handleSubmit}
-            >
-              <Text style={styles.buttonText}>Valider</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.loginButton]}
-              onPress={() => goBack()}
-            >
-              <Text style={styles.buttonText}>Annuler</Text>
-            </TouchableOpacity>
+          <View style={createTravelStyle.buttonContainer}>
+            <Btn
+              name="Annuler"
+              action={() => goBack()}
+              buttonStyle={createTravelStyle.btn}
+            />
+            <Btn
+              name="Valider"
+              action={handleSubmit}
+              buttonStyle={createTravelStyle.btn}
+            />
           </View>
         </View>
       </View>
@@ -196,216 +206,3 @@ const CreateTravel = ({ navigation: { goBack }, route }) => {
 };
 
 export default CreateTravel;
-
-const styles = StyleSheet.create({
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loginButton: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 100,
-    height: 50,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  backButton: {
-    width: 40,
-    height: 34,
-  },
-  backgroundImage: {
-    width: 414,
-    height: 189,
-    marginBottom: 30,
-  },
-  input: {
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    width: "100%",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-  },
-  card: {
-    width: 344,
-    height: 68,
-    borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    marginBottom: 30,
-  },
-  profileImage: {
-    width: 35,
-    height: 35,
-    borderRadius: 10,
-  },
-  userInfo: {
-    marginLeft: 10,
-  },
-  userName: {
-    fontSize: 18,
-  },
-  Button: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 190,
-    height: 57,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  arrowButton: {
-    width: 50,
-    height: 50,
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-  },
-  arrowImage: {
-    width: 30,
-    height: 30,
-  },
-  card: {
-    width: 344,
-    height: 68,
-    borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: "white",
-  },
-  profileImage: {
-    width: 35,
-    height: 35,
-    borderRadius: 10,
-  },
-  userInfo: {
-    marginLeft: 10,
-  },
-  userName: {
-    fontSize: 18,
-  },
-  selectionButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: "auto",
-  },
-  selectedIndicator: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "#6E4B6B",
-  },
-  Button: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 150,
-    height: 70,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFB703",
-    fontWeight: "bold",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  modalContainerError: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    marginBottom: 80,
-  },
-  modalContentError: {
-    backgroundColor: "rgba(0, 0, 0, 0.5);",
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  modalErrorText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  modalInput: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  modalButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  modalButton: {
-    padding: 10,
-    borderRadius: 5,
-    width: "45%",
-    alignItems: "center",
-  },
-  modalButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  profilImage: {
-    borderRadius: 75,
-    width: 50,
-    height: 50,
-    borderColor: "black",
-    borderWidth: 1,
-  },
-  groupInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 30,
-    height: 70,
-    borderColor: "gray",
-    borderWidth: 1,
-    borderRadius: 5,
-    width: 380,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-});

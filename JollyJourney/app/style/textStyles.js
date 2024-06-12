@@ -6,5 +6,11 @@ export const textStyles = StyleSheet.create({
     },
     text: {
         fontFamily: "Inter-Regular"
-    }
+    },
+    title: {
+        fontFamily: "PlayfairDisplay-ExtraBold"
+    },
+    subTitle: {
+        fontFamily: "Inter-SemiBold"
+    },
 });

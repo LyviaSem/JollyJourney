@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Image, View } from 'react-native';
-import { stylesCards } from '../../style/StyleCards';
+import { cardsStyle } from '../../style/cardsStyle';
 import CardChildren from './CardChildren';
 import CardChildrenProfil from './CardChildrenProfil';
 import { useNavigation } from '@react-navigation/native';
@@ -31,7 +31,7 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
   let buttonContent;
   if (behaviorType === 'type1' && isEditing[type]) {
     buttonContent = (
-      <View style={stylesCards.editing}>
+      <View style={cardsStyle.editing}>
         <TouchableOpacity 
           onPress={() => handleSavePress(type)}
         >
@@ -48,7 +48,7 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
   } else if (behaviorType === 'toggle') {
     buttonContent = (
       <TouchableOpacity onPress={onSelect}>
-        <View style={[stylesCards.selectionButton, isSelected ? { backgroundColor: '#6E4B6B', borderColor: '#6E4B6B' } : { borderColor: '#6E4B6B' }]}>
+        <View style={[cardsStyle.selectionButton, isSelected ? { backgroundColor: '#6E4B6B', borderColor: '#6E4B6B' } : { borderColor: '#6E4B6B' }]}>
         </View>
       </TouchableOpacity>
     );
@@ -57,14 +57,14 @@ const Cards = ({onPressProps, behaviorType, name, onSelect, isSelected, isEditin
       <TouchableOpacity onPress={handlePress}>
         <Image
           source={IMAGES.planeBtn}
-          style={[stylesCards.backButton]}
+          style={[cardsStyle.backButton]}
         />
       </TouchableOpacity>
     );
   }
 
   return (
-    <View style={stylesCards.card}>
+    <View style={cardsStyle.card}>
       <ChildComponent name={name} image={image} isEditing={isEditing} newData={newData} setNewData={setNewData} type={type} handleSavePress={handleSavePress} setIsEditing={setIsEditing}/>
       {buttonContent}
     </View>

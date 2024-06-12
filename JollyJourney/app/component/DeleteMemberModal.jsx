@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, View, Text, StyleSheet } from "react-native";
-import Btn from "../Btn";
+import Btn from "./Btn";
+import { textStyles } from "../style/textStyles";
 
 const CustomModal = ({ visible, onClose, message, onConfirm }) => {
   return (
@@ -12,7 +13,7 @@ const CustomModal = ({ visible, onClose, message, onConfirm }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text>{message}</Text>
+          <Text style={textStyles.text}>{message}</Text>
           <View style={{flexDirection:"row", gap:20, marginTop: 30 }}>
             <Btn name="Oui" action={onConfirm} buttonStyle={{ paddingHorizontal: 30 }} />
             <Btn

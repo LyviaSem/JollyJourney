@@ -4,10 +4,9 @@ import {
   TouchableOpacity,
   Animated,
   FlatList,
-  StyleSheet,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
-import { stylesApercuContent } from "../../style/StyleApercuContent";
+import React, { useState, useRef, useEffect } from "react";
 import { firestore } from "../../../FirebaseConfig";
 import {
   collection,
@@ -23,8 +22,11 @@ import TodoList from "../../component/TodoList";
 import Input from "../../component/Input";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RenderOptions from "../../component/RenderOptions";
+import { COLORS } from "../../theme/theme";
+import { textStyles } from "../../style/textStyles";
+import { overviewStyles } from "../../style/overviewStyle";
 
-const ApercuContent = ({ route, navigation }) => {
+const Overview = ({ route }) => {
   const { trip } = route.params;
   const [loading, setLoading] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
@@ -41,7 +43,6 @@ const ApercuContent = ({ route, navigation }) => {
     { type: "input", label: "Moyen de locomotion", value: "" },
     { type: "input", label: "Prix du moyen de locomotion", value: "" },
   ];
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -212,21 +213,29 @@ const ApercuContent = ({ route, navigation }) => {
             marginBottom: 10,
           }}
         >
-          <Input item={item} handleElementChange={handleElementChange} removeElement={removeElement} />
+          <Input
+            item={item}
+            handleElementChange={handleElementChange}
+            removeElement={removeElement}
+          />
         </View>
       );
     } else if (item.type === "todo") {
       return (
         <View
-        style={{flexDirection:"row", alignItems:"center", gap:10, marginBottom: 10}}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 10,
+          }}
         >
           <TodoList element={item} onElementChange={handleElementChange} />
           <TouchableOpacity
-        style={stylesApercuContent.deleteButton}
-        onPress={() => removeElement(item.id)}
-      >
-        <Icon name="trash-can-outline" size={24} color="black" />
-      </TouchableOpacity>
+            onPress={() => removeElement(item.id)}
+          >
+            <Icon name="trash-can-outline" size={24} color="black" />
+          </TouchableOpacity>
         </View>
       );
     }
@@ -236,41 +245,42 @@ const ApercuContent = ({ route, navigation }) => {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading...</Text>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: COLORS.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={COLORS.purple} />
       </View>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: 10,
-        backgroundColor: "#FEF5EE",
-        flex: 1,
-      }}
-    >
-      <Text>
+    <View style={overviewStyles.container}>
+      <Text style={textStyles.text}>
         Date du voyage: {trip.dateDebut} à {trip.dateFin}
       </Text>
-      <Text>Destination: {trip.nom}</Text>
+      <Text style={textStyles.text}>Destination: {trip.nom}</Text>
 
-      <View style={{ justifyContent: "center", alignItems: "center", padding:10 }}>
+      <View style={overviewStyles.listContainer}>
         <FlatList
           data={overviewElements}
           keyExtractor={(item) => item.id}
           renderItem={renderElement}
-          contentContainerStyle={{}}
+          contentContainerStyle={overviewStyles.flatListContentContainer}
         />
       </View>
 
-      <TouchableOpacity style={styles.addButton} onPress={toggleOptions}>
+      <TouchableOpacity style={overviewStyles.addButton} onPress={toggleOptions}>
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
           <Icon name={"plus"} size={24} color="white" />
         </Animated.View>
       </TouchableOpacity>
       {showOptions && (
-        <View style={styles.optionsContainer}>
+        <View style={overviewStyles.optionsContainer}>
           <RenderOptions options={addOptions} />
         </View>
       )}
@@ -278,74 +288,4 @@ const ApercuContent = ({ route, navigation }) => {
   );
 };
 
-export default ApercuContent;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  tabContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "#6E4B6B",
-    gap: -5,
-  },
-  tabButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  selectedTabButton: {
-    borderBottomWidth: 2,
-    borderBottomColor: "blue",
-  },
-  tabText: {
-    fontSize: 16,
-    color: "black",
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  backgroundImage: {
-    width: 414,
-    height: 189,
-    marginBottom: 10,
-  },
-  backButton: {
-    width: 40,
-    height: 34,
-  },
-  addButton: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 50,
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    elevation: 5,
-  },
-  optionsContainer: {
-    position: "absolute",
-    bottom: 80,
-    right: 20,
-    width: 200,
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 10,
-    elevation: 3,
-  },
-  option: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  optionText: {
-    color: "black",
-    fontSize: 16,
-  },
-});
+export default Overview;

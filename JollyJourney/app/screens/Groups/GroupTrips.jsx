@@ -1,15 +1,12 @@
 import {
   View,
-  StatusBar,
   TouchableOpacity,
   Image,
   ImageBackground,
-  StyleSheet,
   FlatList,
   Text,
-  ScrollView,
-  Platform,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useLayoutEffect } from "react";
 import { collection, where, query, onSnapshot } from "@firebase/firestore";
@@ -18,6 +15,10 @@ import { IMAGES } from "../../theme/theme";
 import { firestore } from "../../../FirebaseConfig";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RenderOptions from "../../component/RenderOptions";
+import { groupTripsStyle } from "../../style/groupTripsStyle";
+import Btn from "../../component/Btn";
+import { textStyles } from "../../style/textStyles";
+import { COLORS } from "../../theme/theme";
 
 const GroupTrips = ({ route, navigation }) => {
   const { group } = route.params;
@@ -29,7 +30,7 @@ const GroupTrips = ({ route, navigation }) => {
   const redirectOptions = [
     {
       id: "1",
-      name: "Créer un nouveau voyage",
+      name: "Créer un voyage",
       action: () =>
         navigation.navigate("CreateTravel", {
           groupTrips: groupTrips,
@@ -79,15 +80,23 @@ const GroupTrips = ({ route, navigation }) => {
     />
   );
 
-  // if(loading){
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: COLORS.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={COLORS.purple} />
+      </View>
+    );
+  }
+
   return (
-    <View
-      style={{
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-        backgroundColor: "#FEF5EE",
-        flex: 1,
-      }}
-    >
+    <View style={groupTripsStyle.container}>
       <View>
         <ImageBackground
           source={
@@ -95,176 +104,63 @@ const GroupTrips = ({ route, navigation }) => {
               ? { uri: group.info.imageURL }
               : IMAGES.defaultImage
           }
-          style={styles.backgroundImage}
+          style={groupTripsStyle.backgroundImage}
         >
-          <View style={styles.overlay} />
+          <View style={groupTripsStyle.overlay} />
           <TouchableOpacity
             onPress={() => navigation.navigate("Groups")}
-            style={{ top: 25, left: 20 }}
+            style={groupTripsStyle.backButtonContainer}
           >
-            <Image source={IMAGES.planeBtn} style={styles.backButton} />
+            <Image
+              source={IMAGES.planeBtn}
+              style={groupTripsStyle.backButton}
+            />
           </TouchableOpacity>
         </ImageBackground>
 
-        <View style={{ position: "absolute", top: 20, right: 10 }}>
+        <View style={groupTripsStyle.optionsIconContainer}>
           <TouchableOpacity onPress={() => setRenderOptions(!renderOptions)}>
             <Icon name={"dots-vertical"} size={35} color="#6E4B6B" />
           </TouchableOpacity>
           {renderOptions && (
-            <View style={styles.optionsContainer}>
+            <View style={groupTripsStyle.optionsContainer}>
               <RenderOptions options={redirectOptions} />
             </View>
           )}
         </View>
 
         {groupTrips.length > 0 ? (
-          <SafeAreaView
-            style={{ alignItems: "center", justifyContent: "center" }}
-          >
+          <View style={groupTripsStyle.safeAreaView}>
             <FlatList
+              style={groupTripsStyle.flatlistHeight}
               data={groupTrips}
               keyExtractor={(item) => item.id}
               renderItem={renderTripsItem}
             />
-          </SafeAreaView>
+          </View>
         ) : (
           <View>
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 20,
-                marginTop: 91,
-                alignSelf: "center",
-              }}
-            >
+            <Text style={groupTripsStyle.noTripText}>
               Pas encore de voyage pour ce groupe
             </Text>
-            <View style={{ alignItems: "center" }}>
-              <TouchableOpacity
-                style={[styles.button, styles.Button]}
-                onPress={() =>
+            <View style={groupTripsStyle.centeredContainer}>
+              <Btn
+                name="Créer le premier voyage"
+                action={() =>
                   navigation.navigate("CreateTravel", {
                     groupTrips: groupTrips,
                     groupId: group.info.id,
                   })
                 }
-              >
-                <Text style={styles.buttonText}>Créer le premier voyage</Text>
-              </TouchableOpacity>
+                buttonStyle={{ marginTop: 20 }}
+                textStyle={textStyles.buttonText}
+              />
             </View>
           </View>
         )}
       </View>
     </View>
   );
-  //}
 };
 
 export default GroupTrips;
-
-const styles = StyleSheet.create({
-  button: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loginButton: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 100,
-    height: 50,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  backButton: {
-    width: 40,
-    height: 34,
-  },
-  backgroundImage: {
-    width: 414,
-    height: 189,
-    marginBottom: 30,
-},
-overlay: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  backgroundColor: 'rgba(255, 255, 255, 0.6)',
-},
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
-  },
-  input: {
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    width: "100%",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-  },
-  card: {
-    width: 344,
-    height: 68,
-    borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    marginBottom: 30,
-    backgroundColor: "white",
-  },
-  profileImage: {
-    width: 35,
-    height: 35,
-    borderRadius: 10,
-  },
-  userInfo: {
-    marginLeft: 10,
-  },
-  userName: {
-    fontSize: 18,
-  },
-  Button: {
-    backgroundColor: "#6E4B6B",
-    borderRadius: 15,
-    width: 190,
-    height: 57,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  optionsContainer: {
-    width: 200,
-    position: "absolute",
-    top: 40, // ajustez cette valeur en fonction de vos besoins
-    right: 0,
-    backgroundColor: "white", // ou la couleur de votre choix
-    borderRadius: 5,
-    padding: 10,
-    elevation: 5, // pour Android
-    shadowColor: "#000", // pour iOS
-    shadowOffset: { width: 0, height: 2 }, // pour iOS
-    shadowOpacity: 0.8, // pour iOS
-    shadowRadius: 2, // pour iOS
-  },
-});

@@ -4,16 +4,13 @@ import { textStyles } from './textStyles';
 
 const { screenWidth, screenHeight } = DIMENSIONS;
 
-export const styles = StyleSheet.create({
+export const style = StyleSheet.create({
   container: {
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     backgroundColor: COLORS.background,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  buttonTextStyle: {
-    ...textStyles.buttonText,
   },
   buttonStyle: {
     width: screenWidth * 0.4,

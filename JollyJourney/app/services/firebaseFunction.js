@@ -1,20 +1,19 @@
-import { collection, query, getDocs, where, getDoc, doc, deleteDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, getDocs, where, getDoc, doc, deleteDoc, serverTimestamp, setDoc, updateDoc, orderBy } from 'firebase/firestore';
 import { firestore } from '../../FirebaseConfig'; 
 
 export const fetchUserGroupsFromFirebase = async (userId) => {
-
     const userGroups = [];
-    
+
     try {
-        const groupsQuery = query(collection(firestore, "groups"));
+        // Trier les groupes par date de création (createdAt) en ordre décroissant
+        const groupsQuery = query(collection(firestore, "groups"), orderBy("createdAt", "desc"));
         const groupDocs = await getDocs(groupsQuery);
 
         for (const groupDoc of groupDocs.docs) {
-           
             const membersCollection = collection(groupDoc.ref, "members");
             const membersQuery = query(membersCollection, where("userId", "==", userId));
             const membersDocs = await getDocs(membersQuery);
-            const members = await getDocs(membersCollection)
+            const members = await getDocs(membersCollection);
 
             if (!membersDocs.empty) {
                 const groupData = groupDoc.data();

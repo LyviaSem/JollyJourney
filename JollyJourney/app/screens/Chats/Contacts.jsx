@@ -11,15 +11,23 @@ import {
 } from "react-native";
 import Cards from "../../component/Card/Cards";
 import { IMAGES } from "../../theme/theme";
+import { COLORS } from "../../theme/theme";
 
 const Contacts = ({}) => {
   const { userGroups, loadingGroups } = useUser();
 
   if (loadingGroups) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.background,
+      }}
+    >
+      <ActivityIndicator size="large" color={COLORS.purple} />
+    </View>
     );
   }
 
