@@ -146,8 +146,6 @@ const AddExpenseForm = ({
           checkedItems,
           setIsVisible,
           setExpenses,
-          setTitle,
-          setAmount,
           selectedItem.pseudo,
           resetForm
         );

@@ -5,7 +5,6 @@ export const fetchUserGroupsFromFirebase = async (userId) => {
     const userGroups = [];
 
     try {
-        // Trier les groupes par date de création (createdAt) en ordre décroissant
         const groupsQuery = query(collection(firestore, "groups"), orderBy("createdAt", "desc"));
         const groupDocs = await getDocs(groupsQuery);
 
@@ -72,8 +71,9 @@ export const deleteMembers = async (groupId, userId, updateUserGroups, navigate,
     }
 }
 
-export const addExpense = async (tripId, label, amount, userId, participant, setIsVisible, setExpenses, setTitle, setAmount, userPseudo, resetForm) => {
+export const addExpense = async (tripId, label, amount, userId, participant, setIsVisible, setExpenses, userPseudo, resetForm) => {
     try{
+        const clientDate = new Date();
         const expensesCollection = collection(firestore, 'trips', tripId, 'expenses');
         const newExpenseDocRef = doc(expensesCollection);
         const docId = newExpenseDocRef.id;
@@ -86,7 +86,7 @@ export const addExpense = async (tripId, label, amount, userId, participant, set
             label: label,
             amount: amount,
             participants: participant,
-            date: serverTimestamp()
+            date: clientDate
         }
 
         await setDoc(newExpenseDocRef, newExpense);

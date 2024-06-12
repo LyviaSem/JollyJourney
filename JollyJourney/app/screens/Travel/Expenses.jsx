@@ -96,11 +96,19 @@ const Expenses = ({ route, navigation }) => {
   }, []);
 
   const formatDate = (date) => {
-    const jsDate = new Date(date.seconds * 1000);
-    const day = jsDate.getDate().toString().padStart(2, '0');
-    const month = (jsDate.getMonth() + 1).toString().padStart(2, '0');
-    const year = jsDate.getFullYear();
-    return `${day}/${month}/${year}`;
+    if (date && date.seconds) {
+      const jsDate = new Date(date.seconds * 1000);
+      const day = jsDate.getDate().toString().padStart(2, '0');
+      const month = (jsDate.getMonth() + 1).toString().padStart(2, '0');
+      const year = jsDate.getFullYear();
+      return `${day}/${month}/${year}`;
+    } else if (date instanceof Date) {
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+    return "Date non définie";
   };
 
   if (loading) {
